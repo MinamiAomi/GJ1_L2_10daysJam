@@ -6,7 +6,7 @@ class CommandContext;
 
 class Bloom {
 public:
-    static const uint32_t kMaxLevel = 5;
+    static const uint32_t kMaxLevel = 4;
     
     void Initialize(ColorBuffer* originalTexture);
     void Render(CommandContext& commandContext, uint32_t level = kMaxLevel);

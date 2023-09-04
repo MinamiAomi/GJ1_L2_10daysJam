@@ -15,18 +15,13 @@ class SwapChain {
 public:
     static const uint32_t kNumBuffers = 2;
 
-    static SwapChain* GetInstance();
-
-    void Initialize();
+    void Create(HWND hWnd);
     void Present();
 
     ColorBuffer& GetColorBuffer() { return *buffers_[currentBufferIndex_]; }
+    uint32_t GetBufferIndex() const { return currentBufferIndex_; }
 
 private:
-    SwapChain() = default;
-    SwapChain(const SwapChain&) = delete;
-    SwapChain& operator=(const SwapChain&) = delete;
-
     Microsoft::WRL::ComPtr<IDXGISwapChain4> swapChain_;
     std::unique_ptr<ColorBuffer> buffers_[kNumBuffers];
     uint32_t currentBufferIndex_ = 0;

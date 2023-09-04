@@ -54,7 +54,7 @@ void ColorBuffer::CreateViews() {
         rtvDesc.Texture2DArray.ArraySize = UINT(arraySize_);
 
         srvDesc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2DARRAY;
-        srvDesc.Texture2DArray.MipLevels = 0;
+        srvDesc.Texture2DArray.MipLevels = 1;
         srvDesc.Texture2DArray.MostDetailedMip = 0;
         srvDesc.Texture2DArray.FirstArraySlice = 0;
         srvDesc.Texture2DArray.ArraySize = UINT(arraySize_);
@@ -64,7 +64,7 @@ void ColorBuffer::CreateViews() {
         rtvDesc.Texture2D.MipSlice = 0;
 
         srvDesc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D;
-        srvDesc.Texture2D.MipLevels = 0;
+        srvDesc.Texture2D.MipLevels = 1;
         srvDesc.Texture2D.MostDetailedMip = 0;
     }
 

@@ -12,8 +12,8 @@ class CommandContext;
 
 class GaussianBlur {
 public:
-    // ルートシグネチャの生成を行う
-    static void StaticInitialize();
+    GaussianBlur();
+    ~GaussianBlur();
 
     void Initialize(ColorBuffer* originalTexture);
     void Render(CommandContext& commandContext, float blurPower);
@@ -23,19 +23,12 @@ public:
 private:
     static const uint32_t kNumWeights = 8;
 
-    struct PipelineSet {
-        PipelineState horizontalBlurPSO;
-        PipelineState verticalBlurPSO;
-    };
-
-    static RootSignature rootSignature_;
-    static std::map<DXGI_FORMAT, std::unique_ptr<PipelineSet>> pipelineStateMap_;
-
-    static void CreatePipelineState(DXGI_FORMAT format);
+    GaussianBlur(const GaussianBlur&) = delete;
+    GaussianBlur& operator=(const GaussianBlur&) = delete;
 
     void UpdateWeightTable(float blurPower);
 
-    ColorBuffer* originalTexture_;
+    ColorBuffer* originalTexture_ = nullptr;
     ColorBuffer horizontalBlurTexture_;
     ColorBuffer verticalBlurTexture_;
     UploadBuffer constantBuffer_;

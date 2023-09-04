@@ -15,6 +15,7 @@ void CommandContext::Create() {
 }
 
 void CommandContext::Close() {
+    FlushResourceBarriers();
     ASSERT_IF_FAILED(commandList_->Close());
 }
 
@@ -24,8 +25,8 @@ void CommandContext::Reset() {
 
     auto graphics = Graphics::GetInstance();
     ID3D12DescriptorHeap* ppHeaps[] = {
-    (ID3D12DescriptorHeap*)graphics->GetDescriptorHeap(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV),
-    (ID3D12DescriptorHeap*)graphics->GetDescriptorHeap(D3D12_DESCRIPTOR_HEAP_TYPE_SAMPLER) };
+        (ID3D12DescriptorHeap*)graphics->GetDescriptorHeap(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV),
+        (ID3D12DescriptorHeap*)graphics->GetDescriptorHeap(D3D12_DESCRIPTOR_HEAP_TYPE_SAMPLER) };
     commandList_->SetDescriptorHeaps(_countof(ppHeaps), ppHeaps);
     rootSignature_ = nullptr;
     pipelineState_ = nullptr;

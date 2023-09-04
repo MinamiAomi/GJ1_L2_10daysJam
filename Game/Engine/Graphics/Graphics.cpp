@@ -7,8 +7,6 @@
 
 #include "Helper.h"
 
-#include "DescriptorHeap.h"
-
 #pragma comment(lib,"d3d12.lib")
 #pragma comment(lib,"dxgi.lib")
 #pragma comment(lib,"dxguid.lib")
@@ -42,6 +40,8 @@ Graphics* Graphics::GetInstance() {
 void Graphics::Initialize() {
     CreateDevice();
 
+    commandQueue_.Create();
+
     uint32_t numDescriptorsTable[D3D12_DESCRIPTOR_HEAP_TYPE_NUM_TYPES];
     numDescriptorsTable[D3D12_DESCRIPTOR_HEAP_TYPE_RTV] = kNumRTVs;
     numDescriptorsTable[D3D12_DESCRIPTOR_HEAP_TYPE_DSV] = kNumDSVs;
@@ -49,13 +49,12 @@ void Graphics::Initialize() {
     numDescriptorsTable[D3D12_DESCRIPTOR_HEAP_TYPE_SAMPLER] = kNumSamplers;
 
     for (int i = 0; i < D3D12_DESCRIPTOR_HEAP_TYPE_NUM_TYPES; ++i) {
-        descriptorHeaps_[i] = std::make_unique<DescriptorHeap>();
-        descriptorHeaps_[i]->Create(D3D12_DESCRIPTOR_HEAP_TYPE(i), numDescriptorsTable[i]);
+        descriptorHeaps_[i].Create(D3D12_DESCRIPTOR_HEAP_TYPE(i), numDescriptorsTable[i]);
     }
 }
 
 DescriptorHandle Graphics::AllocateDescriptor(D3D12_DESCRIPTOR_HEAP_TYPE type) {
-    return descriptorHeaps_[type]->Allocate();
+    return descriptorHeaps_[type].Allocate();
 }
 
 void Graphics::CreateDevice() {

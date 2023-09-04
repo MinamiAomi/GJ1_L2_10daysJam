@@ -7,24 +7,23 @@
 #include <memory>
 
 #include "DescriptorHandle.h"
-
-class DescriptorHeap;
+#include "DescriptorHeap.h"
+#include "CommandQueue.h"
 
 class Graphics {
 public:
     static Graphics* GetInstance();
 
     void Initialize();
-    void Terminate();
 
     DescriptorHandle AllocateDescriptor(D3D12_DESCRIPTOR_HEAP_TYPE type);
 
     ID3D12Device* GetDevice() const { return device_.Get(); }
-    ID3D12CommandQueue* GetCommandQueue() const { return commandQueue_.Get(); }
-    DescriptorHeap* GetDescriptorHeap(D3D12_DESCRIPTOR_HEAP_TYPE type) const { return descriptorHeaps_[type].get(); }
+    CommandQueue& GetCommandQueue() { return commandQueue_; }
+    DescriptorHeap& GetDescriptorHeap(D3D12_DESCRIPTOR_HEAP_TYPE type) { return descriptorHeaps_[type]; }
 
 private:
-    static const uint32_t kNumRTVs = 8;
+    static const uint32_t kNumRTVs = 16;
     static const uint32_t kNumDSVs = 1;
     static const uint32_t kNumSRVs = 256;
     static const uint32_t kNumSamplers = 1;
@@ -36,8 +35,7 @@ private:
     void CreateDevice();
 
     Microsoft::WRL::ComPtr<ID3D12Device> device_;
-    Microsoft::WRL::ComPtr<ID3D12CommandQueue> commandQueue_;
-
-    std::unique_ptr<DescriptorHeap> descriptorHeaps_[D3D12_DESCRIPTOR_HEAP_TYPE_NUM_TYPES];
+    CommandQueue commandQueue_;
+    DescriptorHeap descriptorHeaps_[D3D12_DESCRIPTOR_HEAP_TYPE_NUM_TYPES];
     
 };

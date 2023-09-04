@@ -7,14 +7,20 @@
 #include "ShaderManager.h"
 #include "CommandContext.h"
 
-RootSignature GaussianBlur::rootSignature_;
-std::map<DXGI_FORMAT, std::unique_ptr<GaussianBlur::PipelineSet>> GaussianBlur::pipelineStateMap_;
+namespace {
 
+    struct PipelineSet {
+        PipelineState horizontalBlurPSO;
+        PipelineState verticalBlurPSO;
+    };
 
-void GaussianBlur::StaticInitialize() {
-    assert(!rootSignature_);
+    std::unique_ptr<RootSignature> gbRootSignature_;
+    std::map<DXGI_FORMAT, std::unique_ptr<PipelineSet>> gbPipelineStateMap_;
+    uint32_t gbInstanceCount = 0;
 
-    {
+    void CreateRootSignature() {
+        gbRootSignature_ = std::make_unique<RootSignature>();
+
         CD3DX12_DESCRIPTOR_RANGE range{};
         range.Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, 0);
 
@@ -31,12 +37,60 @@ void GaussianBlur::StaticInitialize() {
         rootSignatureDesc.NumStaticSamplers = 1;
         rootSignatureDesc.Flags = D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT;
 
-        rootSignature_.Create(L"GaussianBlur RootSignature", rootSignatureDesc);
+        gbRootSignature_->Create(L"GaussianBlur RootSignature", rootSignatureDesc);
+    }
+
+    void CreatePipelineState(DXGI_FORMAT format) {
+        if (gbPipelineStateMap_.contains(format)) {
+            auto psos = std::make_unique<PipelineSet>();
+
+            auto shaderManager = ShaderManager::GetInstance();
+
+            D3D12_GRAPHICS_PIPELINE_STATE_DESC psoDesc{};
+            psoDesc.pRootSignature = *gbRootSignature_;
+
+            auto vs = shaderManager->Compile(L"Engine/Graphics/Shader/HorizontalGaussianBlurVS.hlsl", ShaderManager::kVertex);
+            auto ps = shaderManager->Compile(L"Engine/Graphics/Shader/GaussianBlurPS.hlsl", ShaderManager::kPixel);
+            psoDesc.VS = CD3DX12_SHADER_BYTECODE(vs->GetBufferPointer(), vs->GetBufferSize());
+            psoDesc.PS = CD3DX12_SHADER_BYTECODE(ps->GetBufferPointer(), ps->GetBufferSize());
+            psoDesc.BlendState = Helper::BlendDisable;
+            psoDesc.RasterizerState = Helper::RasterizerDefault;
+            psoDesc.NumRenderTargets = 1;
+            psoDesc.RTVFormats[0] = format;
+            psoDesc.SampleMask = D3D12_DEFAULT_SAMPLE_MASK;
+            psoDesc.PrimitiveTopologyType = D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE;
+            psoDesc.SampleDesc.Count = 1;
+
+            psos->horizontalBlurPSO.Create(L"GaussianBlur HorizontalPSO", psoDesc);
+
+            vs = shaderManager->Compile(L"Engine/Graphics/Shader/VerticalGaussianBlurVS.hlsl", ShaderManager::kVertex);
+            psoDesc.VS = CD3DX12_SHADER_BYTECODE(vs->GetBufferPointer(), vs->GetBufferSize());
+            psos->verticalBlurPSO.Create(L"GaussianBlur VerticalPSO", psoDesc);
+
+            gbPipelineStateMap_[format] = std::move(psos);
+        }
+    }
+}
+
+GaussianBlur::GaussianBlur() {
+    gbInstanceCount++;
+}
+
+GaussianBlur::~GaussianBlur() {
+    assert(gbInstanceCount > 0);
+    gbInstanceCount--;
+    if (gbInstanceCount == 0) {
+        gbRootSignature_.reset();
+        gbPipelineStateMap_.clear();
     }
 }
 
 void GaussianBlur::Initialize(ColorBuffer* originalTexture) {
     assert(originalTexture);
+
+    if (gbRootSignature_) {
+        CreateRootSignature();
+    }
 
     originalTexture_ = originalTexture;
     horizontalBlurTexture_.Create(
@@ -58,7 +112,7 @@ void GaussianBlur::Initialize(ColorBuffer* originalTexture) {
 void GaussianBlur::Render(CommandContext& commandContext, float blurPower) {
     UpdateWeightTable(blurPower);
 
-    auto pipelineSet = pipelineStateMap_[originalTexture_->GetFormat()].get();
+    auto pipelineSet = gbPipelineStateMap_[originalTexture_->GetFormat()].get();
 
     commandContext.TransitionResource(*originalTexture_, D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE);
     commandContext.TransitionResource(horizontalBlurTexture_, D3D12_RESOURCE_STATE_RENDER_TARGET);
@@ -66,7 +120,7 @@ void GaussianBlur::Render(CommandContext& commandContext, float blurPower) {
     commandContext.ClearColor(horizontalBlurTexture_);
     commandContext.SetViewportAndScissorRect(0, 0, horizontalBlurTexture_.GetWidth(), horizontalBlurTexture_.GetHeight());
 
-    commandContext.SetRootSignature(rootSignature_);
+    commandContext.SetRootSignature(*gbRootSignature_);
     commandContext.SetPipelineState(pipelineSet->horizontalBlurPSO);
     commandContext.SetPrimitiveTopology(D3D10_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
     commandContext.SetDescriptorTable(0, originalTexture_->GetSRV());
@@ -79,7 +133,7 @@ void GaussianBlur::Render(CommandContext& commandContext, float blurPower) {
     commandContext.ClearColor(verticalBlurTexture_);
     commandContext.SetViewportAndScissorRect(0, 0, verticalBlurTexture_.GetWidth(), verticalBlurTexture_.GetHeight());
 
-    commandContext.SetRootSignature(rootSignature_);
+    commandContext.SetRootSignature(*gbRootSignature_);
     commandContext.SetPipelineState(pipelineSet->verticalBlurPSO);
     commandContext.SetPrimitiveTopology(D3D10_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
     commandContext.SetDescriptorTable(0, horizontalBlurTexture_.GetSRV());
@@ -87,39 +141,6 @@ void GaussianBlur::Render(CommandContext& commandContext, float blurPower) {
     commandContext.Draw(3);
 
     commandContext.TransitionResource(verticalBlurTexture_, D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE);
-}
-
-void GaussianBlur::CreatePipelineState(DXGI_FORMAT format) {
-
-    if (pipelineStateMap_.contains(format)) {
-        auto psos = std::make_unique<PipelineSet>();
-
-        auto shaderManager = ShaderManager::GetInstance();
-
-        D3D12_GRAPHICS_PIPELINE_STATE_DESC psoDesc{};
-        psoDesc.pRootSignature = rootSignature_;
-
-        auto vs = shaderManager->Compile(L"Engine/Graphics/Shader/HorizontalGaussianBlurVS.hlsl", ShaderManager::kVertex);
-        auto ps = shaderManager->Compile(L"Engine/Graphics/Shader/GaussianBlurPS.hlsl", ShaderManager::kPixel);
-        psoDesc.VS = CD3DX12_SHADER_BYTECODE(vs->GetBufferPointer(), vs->GetBufferSize());
-        psoDesc.PS = CD3DX12_SHADER_BYTECODE(ps->GetBufferPointer(), ps->GetBufferSize());
-        psoDesc.BlendState = Helper::BlendDisable;
-        psoDesc.RasterizerState = Helper::RasterizerDefault;
-        psoDesc.NumRenderTargets = 1;
-        psoDesc.RTVFormats[0] = format;
-        psoDesc.SampleMask = D3D12_DEFAULT_SAMPLE_MASK;
-        psoDesc.PrimitiveTopologyType = D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE;
-        psoDesc.SampleDesc.Count = 1;
-
-        psos->horizontalBlurPSO.Create(L"GaussianBlur HorizontalPSO", psoDesc);
-
-        vs = shaderManager->Compile(L"Engine/Graphics/Shader/VerticalGaussianBlurVS.hlsl", ShaderManager::kVertex);
-        psoDesc.VS = CD3DX12_SHADER_BYTECODE(vs->GetBufferPointer(), vs->GetBufferSize());
-        psos->verticalBlurPSO.Create(L"GaussianBlur VerticalPSO", psoDesc);
-
-        pipelineStateMap_[format] = std::move(psos);
-    }
-
 }
 
 void GaussianBlur::UpdateWeightTable(float blurPower) {

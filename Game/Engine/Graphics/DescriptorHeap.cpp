@@ -13,7 +13,7 @@ void DescriptorHeap::Create(D3D12_DESCRIPTOR_HEAP_TYPE type, uint32_t numDescrip
     D3D12_DESCRIPTOR_HEAP_DESC desc{};
     desc.Type = type;
     desc.NumDescriptors = numDescriptors;
-    if (type_ == D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV || type_ == D3D12_DESCRIPTOR_HEAP_TYPE_SAMPLER) {
+    if (type == D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV || type == D3D12_DESCRIPTOR_HEAP_TYPE_SAMPLER) {
         desc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE;
     }
     ASSERT_IF_FAILED(device->CreateDescriptorHeap(&desc, IID_PPV_ARGS(descriptorHeap_.ReleaseAndGetAddressOf())));

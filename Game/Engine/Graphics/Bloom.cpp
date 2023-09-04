@@ -23,7 +23,7 @@ void Bloom::Initialize(ColorBuffer* originalTexture) {
     {
         CD3DX12_DESCRIPTOR_RANGE ranges[kMaxLevel]{};
         for (uint32_t i = 0; i < kMaxLevel; ++i) {
-            ranges[kMaxLevel].Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, i);
+            ranges[i].Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, i);
         }
 
         CD3DX12_ROOT_PARAMETER rootParameters[kMaxLevel + 1]{};

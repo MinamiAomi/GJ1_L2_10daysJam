@@ -18,7 +18,7 @@ public:
 private:
     void CreateViews();
 
-    float clearColor_[4]{};
+    float clearColor_[4]{ 0.0f,0.0f,0.0f,0.0f };
     DescriptorHandle srvHandle_;
     DescriptorHandle rtvHandle_;
 };

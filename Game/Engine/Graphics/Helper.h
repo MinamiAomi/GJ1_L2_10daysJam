@@ -7,6 +7,8 @@
 namespace Helper {
 
     extern const D3D12_RASTERIZER_DESC RasterizerDefault;
+    extern const D3D12_RASTERIZER_DESC RasterizerNoCull;
+    extern const D3D12_RASTERIZER_DESC RasterizerWireframe;
 
     extern const D3D12_BLEND_DESC BlendNoColorWrite;    
     extern const D3D12_BLEND_DESC BlendDisable;     // ブレンド無効

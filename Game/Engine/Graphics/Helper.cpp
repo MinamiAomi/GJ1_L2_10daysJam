@@ -5,6 +5,33 @@
 
 namespace {
 
+    D3D12_RASTERIZER_DESC CreateRasterizerDesc(
+        D3D12_FILL_MODE fillMode,
+        D3D12_CULL_MODE cullMode,
+        BOOL frontCounterClockwise = FALSE,
+        INT depthBias = D3D12_DEFAULT_DEPTH_BIAS,
+        FLOAT depthBiasClamp = D3D12_DEFAULT_DEPTH_BIAS_CLAMP,
+        FLOAT slopeScaledDepthBias = D3D12_DEFAULT_SLOPE_SCALED_DEPTH_BIAS,
+        BOOL depthClipEnable = TRUE,
+        BOOL multisampleEnable = FALSE,
+        BOOL antialiasedLineEnable = FALSE,
+        UINT forcedSampleCount = 0,
+        D3D12_CONSERVATIVE_RASTERIZATION_MODE conservativeRaster = D3D12_CONSERVATIVE_RASTERIZATION_MODE_OFF) {
+        D3D12_RASTERIZER_DESC rasterizerDesc{};
+        rasterizerDesc.FillMode = fillMode;
+        rasterizerDesc.CullMode = cullMode;
+        rasterizerDesc.FrontCounterClockwise = frontCounterClockwise;
+        rasterizerDesc.DepthBias = depthBias;
+        rasterizerDesc.DepthBiasClamp = depthBiasClamp;
+        rasterizerDesc.SlopeScaledDepthBias = slopeScaledDepthBias;
+        rasterizerDesc.DepthClipEnable = depthClipEnable;
+        rasterizerDesc.MultisampleEnable = multisampleEnable;
+        rasterizerDesc.AntialiasedLineEnable = antialiasedLineEnable;
+        rasterizerDesc.ForcedSampleCount = forcedSampleCount;
+        rasterizerDesc.ConservativeRaster = conservativeRaster;
+        return rasterizerDesc;
+    }
+
     D3D12_BLEND_DESC CreateBlendDesc(BOOL blendEnabled,
         D3D12_BLEND srcBlend, D3D12_BLEND destBlend, D3D12_BLEND_OP blendOp,
         D3D12_BLEND srcBlendAlpha, D3D12_BLEND destBlendAlpha, D3D12_BLEND_OP blendOpAlpha,
@@ -34,7 +61,9 @@ namespace {
 
 namespace Helper {
 
-    const D3D12_RASTERIZER_DESC RasterizerDefault = CD3DX12_RASTERIZER_DESC(D3D12_DEFAULT);
+    const D3D12_RASTERIZER_DESC RasterizerDefault = CreateRasterizerDesc(D3D12_FILL_MODE_SOLID, D3D12_CULL_MODE_BACK);
+    const D3D12_RASTERIZER_DESC RasterizerNoCull = CreateRasterizerDesc(D3D12_FILL_MODE_SOLID, D3D12_CULL_MODE_NONE);
+    const D3D12_RASTERIZER_DESC RasterizerWireframe = CreateRasterizerDesc(D3D12_FILL_MODE_WIREFRAME, D3D12_CULL_MODE_NONE);
 
     const D3D12_BLEND_DESC BlendNoColorWrite =
         CreateBlendDesc(FALSE,

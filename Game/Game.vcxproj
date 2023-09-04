@@ -24,11 +24,11 @@
     <ClInclude Include="..\Externals\ImGui\imstb_rectpack.h" />
     <ClInclude Include="..\Externals\ImGui\imstb_textedit.h" />
     <ClInclude Include="..\Externals\ImGui\imstb_truetype.h" />
-    <ClInclude Include="Engine\Application\GameWindow.h" />
+    <ClInclude Include="Engine\GameWindow.h" />
     <ClInclude Include="Engine\Graphics\Bloom.h" />
     <ClInclude Include="Engine\Graphics\ColorBuffer.h" />
     <ClInclude Include="Engine\Graphics\CommandContext.h" />
-    <ClInclude Include="Engine\Graphics\CommonBuffers.h" />
+    <ClInclude Include="Engine\Graphics\CommandQueue.h" />
     <ClInclude Include="Engine\Graphics\DescriptorHandle.h" />
     <ClInclude Include="Engine\Graphics\DescriptorHeap.h" />
     <ClInclude Include="Engine\Graphics\GaussianBlur.h" />
@@ -41,6 +41,7 @@
     <ClInclude Include="Engine\Graphics\SwapChain.h" />
     <ClInclude Include="Engine\Graphics\Graphics.h" />
     <ClInclude Include="Engine\Graphics\UploadBuffer.h" />
+    <ClInclude Include="Engine\ImGuiManager.h" />
     <ClInclude Include="Engine\RenderManager.h" />
     <ClInclude Include="Engine\Utility.h" />
   </ItemGroup>
@@ -52,11 +53,11 @@
     <ClCompile Include="..\Externals\ImGui\imgui_impl_win32.cpp" />
     <ClCompile Include="..\Externals\ImGui\imgui_tables.cpp" />
     <ClCompile Include="..\Externals\ImGui\imgui_widgets.cpp" />
-    <ClCompile Include="Engine\Application\GameWindow.cpp" />
+    <ClCompile Include="Engine\GameWindow.cpp" />
     <ClCompile Include="Engine\Graphics\Bloom.cpp" />
     <ClCompile Include="Engine\Graphics\ColorBuffer.cpp" />
     <ClCompile Include="Engine\Graphics\CommandContext.cpp" />
-    <ClCompile Include="Engine\Graphics\CommonBuffer.cpp" />
+    <ClCompile Include="Engine\Graphics\CommandQueue.cpp" />
     <ClCompile Include="Engine\Graphics\DescriptorHeap.cpp" />
     <ClCompile Include="Engine\Graphics\GaussianBlur.cpp" />
     <ClCompile Include="Engine\Graphics\Helper.cpp" />
@@ -67,6 +68,8 @@
     <ClCompile Include="Engine\Graphics\SwapChain.cpp" />
     <ClCompile Include="Engine\Graphics\Graphics.cpp" />
     <ClCompile Include="Engine\Graphics\UploadBuffer.cpp" />
+    <ClCompile Include="Engine\ImGuiManager.cpp" />
+    <ClCompile Include="Engine\RenderManager.cpp" />
     <ClCompile Include="Engine\Utility.cpp" />
     <ClCompile Include="main.cpp" />
   </ItemGroup>

@@ -1,7 +1,10 @@
 
-#define MAX_LEVEL 5
+#define NUM_TEXTURES 4
 
-Texture2D<float4> blurTexture_[MAX_LEVEL] : register(t0);
+Texture2D<float4> blurTexture0_ : register(t0);
+Texture2D<float4> blurTexture1_ : register(t1);
+Texture2D<float4> blurTexture2_ : register(t2);
+Texture2D<float4> blurTexture3_ : register(t3);
 SamplerState sampler_ : register(s0);
 
 struct Param {
@@ -19,13 +22,15 @@ struct PSOutput {
 };
 
 PSOutput main(PSInput input) {
-    PSOutput output = float4(0.0f, 0.0f, 0.0f, 0.0f);
+    PSOutput output;
+    output.color = float4(0.0f, 0.0f, 0.0f, 0.0f);
     
-    for (uint i = 0; i < param_.level; ++i) {
-        output.color += blurTexture_[i].Sample(sampler_, input.texcoord);
-    }
+    output.color += blurTexture0_.Sample(sampler_, input.texcoord);
+    output.color += blurTexture1_.Sample(sampler_, input.texcoord);
+    output.color += blurTexture2_.Sample(sampler_, input.texcoord);
+    output.color += blurTexture3_.Sample(sampler_, input.texcoord);
     
-    output.color /= param_.level;
+    output.color /= NUM_TEXTURES;
     output.color.a = 1.0f;
     
     return output;

@@ -63,9 +63,6 @@
     <ClInclude Include="Engine\Graphics\Graphics.h">
       <Filter>Engine\Graphics</Filter>
     </ClInclude>
-    <ClInclude Include="Engine\Application\GameWindow.h">
-      <Filter>Engine\Application</Filter>
-    </ClInclude>
     <ClInclude Include="Engine\Utility.h">
       <Filter>Engine</Filter>
     </ClInclude>
@@ -79,9 +76,6 @@
       <Filter>Engine\Graphics</Filter>
     </ClInclude>
     <ClInclude Include="Engine\Graphics\PixelBuffer.h">
-      <Filter>Engine\Graphics</Filter>
-    </ClInclude>
-    <ClInclude Include="Engine\Graphics\CommonBuffers.h">
       <Filter>Engine\Graphics</Filter>
     </ClInclude>
     <ClInclude Include="Engine\RenderManager.h">
@@ -111,6 +105,15 @@
     <ClInclude Include="Engine\Graphics\Bloom.h">
       <Filter>Engine\Graphics</Filter>
     </ClInclude>
+    <ClInclude Include="Engine\Graphics\CommandQueue.h">
+      <Filter>Engine\Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\GameWindow.h">
+      <Filter>Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\ImGuiManager.h">
+      <Filter>Engine</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Externals\ImGui\imgui.cpp">
@@ -134,9 +137,6 @@
     <ClCompile Include="..\Externals\ImGui\imgui_widgets.cpp">
       <Filter>Externals\ImGui</Filter>
     </ClCompile>
-    <ClCompile Include="Engine\Application\GameWindow.cpp">
-      <Filter>Engine\Application</Filter>
-    </ClCompile>
     <ClCompile Include="Engine\Utility.cpp">
       <Filter>Engine</Filter>
     </ClCompile>
@@ -153,9 +153,6 @@
       <Filter>Engine\Graphics</Filter>
     </ClCompile>
     <ClCompile Include="Engine\Graphics\ColorBuffer.cpp">
-      <Filter>Engine\Graphics</Filter>
-    </ClCompile>
-    <ClCompile Include="Engine\Graphics\CommonBuffer.cpp">
       <Filter>Engine\Graphics</Filter>
     </ClCompile>
     <ClCompile Include="main.cpp" />
@@ -182,6 +179,18 @@
     </ClCompile>
     <ClCompile Include="Engine\Graphics\UploadBuffer.cpp">
       <Filter>Engine\Graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\GameWindow.cpp">
+      <Filter>Engine</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\RenderManager.cpp">
+      <Filter>Engine</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\Graphics\CommandQueue.cpp">
+      <Filter>Engine\Graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\ImGuiManager.cpp">
+      <Filter>Engine</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
