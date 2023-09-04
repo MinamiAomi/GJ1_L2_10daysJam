@@ -1,6 +1,7 @@
 #include "Helper.h"
 
 #include <format>
+#include <cassert>
 
 namespace {
 
@@ -25,7 +26,7 @@ namespace {
         D3D12_DEPTH_STENCIL_DESC depthStencilDesc{};
         depthStencilDesc.DepthEnable = depthEnabled;
         depthStencilDesc.DepthWriteMask = depthWriteMask;
-        depthStencilDesc.DepthFunc;
+        depthStencilDesc.DepthFunc = depthFunc;
         return depthStencilDesc;
     }
 

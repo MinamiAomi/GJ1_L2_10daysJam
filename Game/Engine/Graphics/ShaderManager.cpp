@@ -12,7 +12,7 @@ using namespace Microsoft::WRL;
 
 namespace {
 
-    std::wstring profile[ShaderManager::kNumTypes] = {
+    std::wstring profiles[ShaderManager::kNumTypes] = {
         L"vs_6_0",
         L"ps_6_0",
         L"gs_6_0",
@@ -35,7 +35,7 @@ void ShaderManager::Initialize() {
 }
 
 Microsoft::WRL::ComPtr<IDxcBlob> ShaderManager::Compile(const std::wstring& path, Type type) {
-    return Compile(path, profile[type]);
+    return Compile(path, profiles[type]);
 }
 
 Microsoft::WRL::ComPtr<IDxcBlob> ShaderManager::Compile(const std::wstring& path, const std::wstring& profile) {
