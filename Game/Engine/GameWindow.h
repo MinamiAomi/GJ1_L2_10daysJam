@@ -9,7 +9,7 @@ public:
 
     void Initialize(const wchar_t* title, uint32_t clientWidth, uint32_t clientHeight);
     bool ProcessMessage() const;
-    void Terminate();
+    void Shutdown();
 
     HWND GetHWND() const { return hWnd_; }
     uint32_t GetClientWidth() const { return clientWidth_; }

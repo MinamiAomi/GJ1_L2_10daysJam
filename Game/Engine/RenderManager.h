@@ -11,7 +11,9 @@ public:
     static RenderManager* GetInstance();
 
     void Initialize();
-    void Render();
+    void BeginRender();
+    void EndRender();
+    void Shutdown();
 
     SwapChain& GetSwapChain() { return swapChain_; }
 
@@ -20,11 +22,15 @@ private:
     RenderManager(const RenderManager&) = delete;
     RenderManager& operator=(const RenderManager&) = delete;
 
+    void InitializePostEffect();
+
     Graphics* graphics_ = nullptr;
     SwapChain swapChain_;
     CommandContext commandContexts_[SwapChain::kNumBuffers];
 
-    ColorBuffer sceneColorBuffer;
+    ColorBuffer mainColorBuffer;
+    RootSignature postEffectRootSignature_;
+    PipelineState postEffectPipelineState_;
     Bloom bloom;
 
 };

@@ -78,7 +78,7 @@ public:
     void DrawInstanced(UINT vertexCountPerInstance, UINT instanceCount, UINT startVertexLocation = 0, UINT startInstanceLocation = 0);
     void DrawIndexedInstanced(UINT indexCountPerInstance, UINT instanceCount, UINT startIndexLocation = 0, INT baseVertexLocation = 0, UINT startInstanceLocation = 0);
 
-    operator ID3D12CommandList* () const { return commandList_.Get(); }
+    operator ID3D12GraphicsCommandList* () const { return commandList_.Get(); }
 
 private:
     static const uint32_t kMaxNumResourceBarriers = 16;

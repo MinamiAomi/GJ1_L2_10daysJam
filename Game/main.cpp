@@ -3,6 +3,7 @@
 
 #include "Engine/GameWindow.h"
 #include "Engine/RenderManager.h"
+#include "Engine/TextureManager.h"
 
 int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 
@@ -10,16 +11,19 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
     gameWindow->Initialize(L"Title", 1280, 720);
 
     auto renderManager = RenderManager::GetInstance();
-    renderManager->Initialize(gameWindow->GetHWND());
+    renderManager->Initialize();
 
+    TextureManager::GetInstance()->Load("Resources/uvChecker.png");
 
     while (gameWindow->ProcessMessage()) {
 
-        renderManager->Render();
+        renderManager->BeginRender();
 
+
+        renderManager->EndRender();
     }
-
-    gameWindow->Terminate();
+    renderManager->Shutdown();
+    gameWindow->Shutdown();
 
     return 0;
 }

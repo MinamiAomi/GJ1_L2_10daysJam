@@ -80,7 +80,7 @@ bool GameWindow::ProcessMessage() const {
     return msg.message != WM_QUIT;
 }
 
-void GameWindow::Terminate() {
+void GameWindow::Shutdown() {
     CloseWindow(hWnd_);
     hWnd_ = nullptr;
     CoUninitialize();

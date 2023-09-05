@@ -40,19 +40,35 @@
     <ClInclude Include="Engine\Graphics\ShaderManager.h" />
     <ClInclude Include="Engine\Graphics\SwapChain.h" />
     <ClInclude Include="Engine\Graphics\Graphics.h" />
+    <ClInclude Include="Engine\Graphics\Texture.h" />
     <ClInclude Include="Engine\Graphics\UploadBuffer.h" />
     <ClInclude Include="Engine\ImGuiManager.h" />
     <ClInclude Include="Engine\RenderManager.h" />
+    <ClInclude Include="Engine\TextureManager.h" />
     <ClInclude Include="Engine\Utility.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\Externals\ImGui\imgui.cpp" />
-    <ClCompile Include="..\Externals\ImGui\imgui_demo.cpp" />
-    <ClCompile Include="..\Externals\ImGui\imgui_draw.cpp" />
-    <ClCompile Include="..\Externals\ImGui\imgui_impl_dx12.cpp" />
-    <ClCompile Include="..\Externals\ImGui\imgui_impl_win32.cpp" />
-    <ClCompile Include="..\Externals\ImGui\imgui_tables.cpp" />
-    <ClCompile Include="..\Externals\ImGui\imgui_widgets.cpp" />
+    <ClCompile Include="..\Externals\ImGui\imgui.cpp">
+      <Optimization Condition="'$(Configuration)|$(Platform)'=='Release|x64'">MinSpace</Optimization>
+    </ClCompile>
+    <ClCompile Include="..\Externals\ImGui\imgui_demo.cpp">
+      <Optimization Condition="'$(Configuration)|$(Platform)'=='Release|x64'">MinSpace</Optimization>
+    </ClCompile>
+    <ClCompile Include="..\Externals\ImGui\imgui_draw.cpp">
+      <Optimization Condition="'$(Configuration)|$(Platform)'=='Release|x64'">MinSpace</Optimization>
+    </ClCompile>
+    <ClCompile Include="..\Externals\ImGui\imgui_impl_dx12.cpp">
+      <Optimization Condition="'$(Configuration)|$(Platform)'=='Release|x64'">MinSpace</Optimization>
+    </ClCompile>
+    <ClCompile Include="..\Externals\ImGui\imgui_impl_win32.cpp">
+      <Optimization Condition="'$(Configuration)|$(Platform)'=='Release|x64'">MinSpace</Optimization>
+    </ClCompile>
+    <ClCompile Include="..\Externals\ImGui\imgui_tables.cpp">
+      <Optimization Condition="'$(Configuration)|$(Platform)'=='Release|x64'">MinSpace</Optimization>
+    </ClCompile>
+    <ClCompile Include="..\Externals\ImGui\imgui_widgets.cpp">
+      <Optimization Condition="'$(Configuration)|$(Platform)'=='Release|x64'">MinSpace</Optimization>
+    </ClCompile>
     <ClCompile Include="Engine\GameWindow.cpp" />
     <ClCompile Include="Engine\Graphics\Bloom.cpp" />
     <ClCompile Include="Engine\Graphics\ColorBuffer.cpp" />
@@ -67,9 +83,11 @@
     <ClCompile Include="Engine\Graphics\ShaderManager.cpp" />
     <ClCompile Include="Engine\Graphics\SwapChain.cpp" />
     <ClCompile Include="Engine\Graphics\Graphics.cpp" />
+    <ClCompile Include="Engine\Graphics\Texture.cpp" />
     <ClCompile Include="Engine\Graphics\UploadBuffer.cpp" />
     <ClCompile Include="Engine\ImGuiManager.cpp" />
     <ClCompile Include="Engine\RenderManager.cpp" />
+    <ClCompile Include="Engine\TextureManager.cpp" />
     <ClCompile Include="Engine\Utility.cpp" />
     <ClCompile Include="main.cpp" />
   </ItemGroup>
