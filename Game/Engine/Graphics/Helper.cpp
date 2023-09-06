@@ -80,16 +80,25 @@ namespace Helper {
             D3D12_BLEND_INV_SRC_ALPHA,
             D3D12_BLEND_OP_ADD,
             D3D12_BLEND_ONE,
+            D3D12_BLEND_ZERO,
+            D3D12_BLEND_OP_ADD,
+            D3D12_COLOR_WRITE_ENABLE_ALL);     // ブレンド無効
+    const D3D12_BLEND_DESC BlendAlpha =
+        CreateBlendDesc(TRUE,
+            D3D12_BLEND_SRC_ALPHA,
+            D3D12_BLEND_INV_SRC_ALPHA,
+            D3D12_BLEND_OP_ADD,
+            D3D12_BLEND_ONE,
             D3D12_BLEND_INV_SRC_ALPHA,
             D3D12_BLEND_OP_ADD,
             D3D12_COLOR_WRITE_ENABLE_ALL);     // ブレンド無効
     const D3D12_BLEND_DESC BlendMultiply =
         CreateBlendDesc(TRUE,
             D3D12_BLEND_ONE,
-            D3D12_BLEND_INV_SRC_ALPHA,
+            D3D12_BLEND_ZERO,
             D3D12_BLEND_OP_ADD,
-            D3D12_BLEND_ONE,
-            D3D12_BLEND_INV_SRC_ALPHA,
+            D3D12_BLEND_ZERO,
+            D3D12_BLEND_SRC_COLOR,
             D3D12_BLEND_OP_ADD,
             D3D12_COLOR_WRITE_ENABLE_ALL);     // ブレンド無効
     const D3D12_BLEND_DESC BlendAdditive =
@@ -98,7 +107,16 @@ namespace Helper {
             D3D12_BLEND_ONE,
             D3D12_BLEND_OP_ADD,
             D3D12_BLEND_ONE,
-            D3D12_BLEND_INV_SRC_ALPHA,
+            D3D12_BLEND_ZERO,
+            D3D12_BLEND_OP_ADD,
+            D3D12_COLOR_WRITE_ENABLE_ALL);    // 加算合成
+    const D3D12_BLEND_DESC BlendSubtract =
+        CreateBlendDesc(TRUE,
+            D3D12_BLEND_ONE,
+            D3D12_BLEND_ONE,
+            D3D12_BLEND_OP_REV_SUBTRACT,
+            D3D12_BLEND_ONE,
+            D3D12_BLEND_ZERO,
             D3D12_BLEND_OP_ADD,
             D3D12_COLOR_WRITE_ENABLE_ALL);    // 加算合成
 

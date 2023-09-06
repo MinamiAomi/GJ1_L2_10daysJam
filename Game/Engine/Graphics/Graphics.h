@@ -24,9 +24,9 @@ public:
 
 private:
     static const uint32_t kNumRTVs = 16;
-    static const uint32_t kNumDSVs = 1;
+    static const uint32_t kNumDSVs = 2;
     static const uint32_t kNumSRVs = 256;
-    static const uint32_t kNumSamplers = 1;
+    static const uint32_t kNumSamplers = 16;
 
     Graphics() = default;
     Graphics(const Graphics&) = delete;

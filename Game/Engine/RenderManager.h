@@ -8,6 +8,7 @@
 
 class RenderManager {
 public:
+
     static RenderManager* GetInstance();
 
     void Initialize();
@@ -16,6 +17,12 @@ public:
     void Shutdown();
 
     SwapChain& GetSwapChain() { return swapChain_; }
+    CommandContext& GetCommandContext() { return commandContexts_[swapChain_.GetBufferIndex()]; }
+
+    DXGI_FORMAT GetSwapChainRTVFormat() const { return swapChain_.GetColorBuffer().GetFormat(); }
+    DXGI_FORMAT GetMainBufferRTVFormat() const { return mainColorBuffer.GetFormat(); }
+
+    void SetBloom(float v) { bloom.SetThreshold(v); }
 
 private:
     RenderManager() = default;
@@ -32,5 +39,4 @@ private:
     RootSignature postEffectRootSignature_;
     PipelineState postEffectPipelineState_;
     Bloom bloom;
-
 };

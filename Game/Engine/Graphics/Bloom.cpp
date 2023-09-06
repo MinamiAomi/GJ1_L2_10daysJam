@@ -56,7 +56,7 @@ void Bloom::Initialize(ColorBuffer* originalTexture) {
         psoDesc.VS = CD3DX12_SHADER_BYTECODE(vs->GetBufferPointer(), vs->GetBufferSize());
         psoDesc.PS = CD3DX12_SHADER_BYTECODE(ps->GetBufferPointer(), ps->GetBufferSize());
         psoDesc.BlendState = Helper::BlendDisable;
-        psoDesc.RasterizerState = Helper::RasterizerDefault;
+        psoDesc.RasterizerState = Helper::RasterizerNoCull;
         psoDesc.NumRenderTargets = 1;
         psoDesc.RTVFormats[0] = format;
         psoDesc.SampleMask = D3D12_DEFAULT_SAMPLE_MASK;
@@ -83,11 +83,13 @@ void Bloom::Render(CommandContext& commandContext, uint32_t level) {
     commandContext.SetRootSignature(rootSignature_);
     commandContext.SetPipelineState(luminacePipelineState_);
     commandContext.SetPrimitiveTopology(D3D10_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+    commandContext.SetConstants(0, float(threshold_));
     commandContext.SetDescriptorTable(1, originalTexture_->GetSRV());
     commandContext.Draw(3);
 
+    const float power[kMaxLevel] = { 0.5f, 0.5f, 0.5f, 0.5f };
     for (uint32_t i = 0; i < level; ++i) {
-        gaussianBlurs_[i].Render(commandContext, 10.0f);
+        gaussianBlurs_[i].Render(commandContext);
     }
     
     commandContext.TransitionResource(*originalTexture_, D3D12_RESOURCE_STATE_RENDER_TARGET);
@@ -97,7 +99,7 @@ void Bloom::Render(CommandContext& commandContext, uint32_t level) {
     commandContext.SetRootSignature(rootSignature_);
     commandContext.SetPipelineState(additivePipelineState_);
     commandContext.SetPrimitiveTopology(D3D10_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-    commandContext.SetConstants(0, uint32_t(level));
+    commandContext.SetConstants(0, float(intensity_));
     for (uint32_t i = 0; i < level; ++i) {
         commandContext.SetDescriptorTable(i + 1, gaussianBlurs_[i].GetResult().GetSRV());
     }

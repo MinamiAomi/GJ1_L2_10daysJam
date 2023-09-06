@@ -6,6 +6,7 @@
 #include <format>
 
 #include "Helper.h"
+#include "SamplerManager.h"
 
 #pragma comment(lib,"d3d12.lib")
 #pragma comment(lib,"dxgi.lib")
@@ -51,6 +52,8 @@ void Graphics::Initialize() {
     for (int i = 0; i < D3D12_DESCRIPTOR_HEAP_TYPE_NUM_TYPES; ++i) {
         descriptorHeaps_[i].Create(D3D12_DESCRIPTOR_HEAP_TYPE(i), numDescriptorsTable[i]);
     }
+
+    SamplerManager::Initialize();
 }
 
 DescriptorHandle Graphics::AllocateDescriptor(D3D12_DESCRIPTOR_HEAP_TYPE type) {

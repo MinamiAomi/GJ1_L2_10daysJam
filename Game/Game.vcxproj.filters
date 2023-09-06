@@ -28,6 +28,9 @@
     <Filter Include="Engine\Graphics\Shader">
       <UniqueIdentifier>{95350017-0928-4747-bad1-b272333ed05f}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Engine\Shader">
+      <UniqueIdentifier>{a42b1e84-dc38-4e5b-888f-b8dcb03fe1b4}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Externals\ImGui\imconfig.h">
@@ -120,6 +123,36 @@
     <ClInclude Include="Engine\TextureManager.h">
       <Filter>Engine</Filter>
     </ClInclude>
+    <ClInclude Include="Engine\Graphics\SamplerManager.h">
+      <Filter>Engine\Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\TriangleRenderer.h">
+      <Filter>Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\Math\Camera.h">
+      <Filter>Engine\Math</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\Math\Geometry.h">
+      <Filter>Engine\Math</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\Math\LightStructs.h">
+      <Filter>Engine\Math</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\Math\MathUtils.h">
+      <Filter>Engine\Math</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\Math\Transform.h">
+      <Filter>Engine\Math</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\TOMATOsEngine.h">
+      <Filter>Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\SpriteRenderer.h">
+      <Filter>Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\Graphics\LinearAllocator.h">
+      <Filter>Engine\Graphics</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Externals\ImGui\imgui.cpp">
@@ -204,6 +237,27 @@
     <ClCompile Include="Engine\TextureManager.cpp">
       <Filter>Engine</Filter>
     </ClCompile>
+    <ClCompile Include="Engine\Graphics\SamplerManager.cpp">
+      <Filter>Engine\Graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\TriangleRenderer.cpp">
+      <Filter>Engine</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\Math\Camera.cpp">
+      <Filter>Engine\Math</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\Math\Geometry.cpp">
+      <Filter>Engine\Math</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\Math\MathUtils.cpp">
+      <Filter>Engine\Math</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\TOMATOsEngine.cpp">
+      <Filter>Engine</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\Graphics\LinearAllocator.cpp">
+      <Filter>Engine\Graphics</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Text Include="..\Externals\ImGui\LICENSE.txt">
@@ -228,6 +282,15 @@
     </None>
     <None Include="Engine\Graphics\Shader\LuminanceExtractionrPS.hlsl">
       <Filter>Engine\Graphics\Shader</Filter>
+    </None>
+    <None Include="Engine\Shader\PostEffectPS.hlsl">
+      <Filter>Engine\Shader</Filter>
+    </None>
+    <None Include="Engine\Shader\TriangleVS.hlsl">
+      <Filter>Engine\Shader</Filter>
+    </None>
+    <None Include="Engine\Shader\TrianglePS.hlsl">
+      <Filter>Engine\Shader</Filter>
     </None>
   </ItemGroup>
 </Project>

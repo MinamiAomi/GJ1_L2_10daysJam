@@ -2,6 +2,11 @@
 Texture2D<float4> src_ : register(t0);
 SamplerState sampler_ : register(s0);
 
+struct Param {
+    float threshold;
+};
+ConstantBuffer<Param> param_ : register(b0);
+
 struct PSInput {
     float4 position : SV_POSITION;
     float2 texcoord : TEXCOORD0;
@@ -18,7 +23,7 @@ PSOutput main(PSInput input) {
     
     float luminance = dot(output.color.xyz, float3(0.2125f, 0.7154f, 0.0721f));
     
-    clip(luminance - 1.0f);
+    clip(luminance - param_.threshold);
 
     return output;
 }

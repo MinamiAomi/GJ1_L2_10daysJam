@@ -16,7 +16,8 @@ public:
     ~GaussianBlur();
 
     void Initialize(ColorBuffer* originalTexture);
-    void Render(CommandContext& commandContext, float blurPower);
+    void Render(CommandContext& commandContext);
+    void UpdateWeightTable(float blurPower);
 
     ColorBuffer& GetResult() { return verticalBlurTexture_; }
 
@@ -26,7 +27,6 @@ private:
     GaussianBlur(const GaussianBlur&) = delete;
     GaussianBlur& operator=(const GaussianBlur&) = delete;
 
-    void UpdateWeightTable(float blurPower);
 
     ColorBuffer* originalTexture_ = nullptr;
     ColorBuffer horizontalBlurTexture_;

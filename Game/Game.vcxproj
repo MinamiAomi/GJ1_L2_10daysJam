@@ -24,6 +24,9 @@
     <ClInclude Include="..\Externals\ImGui\imstb_rectpack.h" />
     <ClInclude Include="..\Externals\ImGui\imstb_textedit.h" />
     <ClInclude Include="..\Externals\ImGui\imstb_truetype.h" />
+    <ClInclude Include="Engine\Graphics\LinearAllocator.h" />
+    <ClInclude Include="Engine\SpriteRenderer.h" />
+    <ClInclude Include="Engine\TOMATOsEngine.h" />
     <ClInclude Include="Engine\GameWindow.h" />
     <ClInclude Include="Engine\Graphics\Bloom.h" />
     <ClInclude Include="Engine\Graphics\ColorBuffer.h" />
@@ -37,14 +40,21 @@
     <ClInclude Include="Engine\Graphics\PipelineState.h" />
     <ClInclude Include="Engine\Graphics\PixelBuffer.h" />
     <ClInclude Include="Engine\Graphics\RootSignature.h" />
+    <ClInclude Include="Engine\Graphics\SamplerManager.h" />
     <ClInclude Include="Engine\Graphics\ShaderManager.h" />
     <ClInclude Include="Engine\Graphics\SwapChain.h" />
     <ClInclude Include="Engine\Graphics\Graphics.h" />
     <ClInclude Include="Engine\Graphics\Texture.h" />
     <ClInclude Include="Engine\Graphics\UploadBuffer.h" />
     <ClInclude Include="Engine\ImGuiManager.h" />
+    <ClInclude Include="Engine\Math\Camera.h" />
+    <ClInclude Include="Engine\Math\Geometry.h" />
+    <ClInclude Include="Engine\Math\LightStructs.h" />
+    <ClInclude Include="Engine\Math\MathUtils.h" />
+    <ClInclude Include="Engine\Math\Transform.h" />
     <ClInclude Include="Engine\RenderManager.h" />
     <ClInclude Include="Engine\TextureManager.h" />
+    <ClInclude Include="Engine\TriangleRenderer.h" />
     <ClInclude Include="Engine\Utility.h" />
   </ItemGroup>
   <ItemGroup>
@@ -69,6 +79,8 @@
     <ClCompile Include="..\Externals\ImGui\imgui_widgets.cpp">
       <Optimization Condition="'$(Configuration)|$(Platform)'=='Release|x64'">MinSpace</Optimization>
     </ClCompile>
+    <ClCompile Include="Engine\Graphics\LinearAllocator.cpp" />
+    <ClCompile Include="Engine\TOMATOsEngine.cpp" />
     <ClCompile Include="Engine\GameWindow.cpp" />
     <ClCompile Include="Engine\Graphics\Bloom.cpp" />
     <ClCompile Include="Engine\Graphics\ColorBuffer.cpp" />
@@ -80,14 +92,19 @@
     <ClCompile Include="Engine\Graphics\PipelineState.cpp" />
     <ClCompile Include="Engine\Graphics\PixelBuffer.cpp" />
     <ClCompile Include="Engine\Graphics\RootSignature.cpp" />
+    <ClCompile Include="Engine\Graphics\SamplerManager.cpp" />
     <ClCompile Include="Engine\Graphics\ShaderManager.cpp" />
     <ClCompile Include="Engine\Graphics\SwapChain.cpp" />
     <ClCompile Include="Engine\Graphics\Graphics.cpp" />
     <ClCompile Include="Engine\Graphics\Texture.cpp" />
     <ClCompile Include="Engine\Graphics\UploadBuffer.cpp" />
     <ClCompile Include="Engine\ImGuiManager.cpp" />
+    <ClCompile Include="Engine\Math\Camera.cpp" />
+    <ClCompile Include="Engine\Math\Geometry.cpp" />
+    <ClCompile Include="Engine\Math\MathUtils.cpp" />
     <ClCompile Include="Engine\RenderManager.cpp" />
     <ClCompile Include="Engine\TextureManager.cpp" />
+    <ClCompile Include="Engine\TriangleRenderer.cpp" />
     <ClCompile Include="Engine\Utility.cpp" />
     <ClCompile Include="main.cpp" />
   </ItemGroup>
@@ -146,6 +163,33 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
     </None>
   </ItemGroup>
+  <ItemGroup>
+    <None Include="Engine\Shader\PostEffectPS.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Pixel</ShaderType>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <FileType>Document</FileType>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Engine\Shader\TriangleVS.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Vertex</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Vertex</ShaderType>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <FileType>Document</FileType>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Engine\Shader\TrianglePS.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Pixel</ShaderType>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <FileType>Document</FileType>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </None>
+  </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>
     <Keyword>Win32Proj</Keyword>
@@ -192,7 +236,7 @@
     <ClCompile>
       <WarningLevel>Level4</WarningLevel>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_DEBUG;_WINDOWS;NOMINMAX;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <TreatWarningAsError>true</TreatWarningAsError>
@@ -221,7 +265,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>NDEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>NDEBUG;_WINDOWS;NOMINMAX;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <TreatWarningAsError>true</TreatWarningAsError>

@@ -10,8 +10,8 @@ namespace Math {
     constexpr float HalfPi = Pi * 0.5f;
     constexpr float ToRadian = Pi / 180.0f;
     constexpr float ToDegree = 180.0f / Pi;
-    constexpr float positiveInfinity = std::numeric_limits<float>::max();
-    constexpr float negativeInfinity = std::numeric_limits<float>::min();
+    constexpr float positiveInfinity = (std::numeric_limits<float>::max)();
+    constexpr float negativeInfinity = (std::numeric_limits<float>::min)();
 
     inline constexpr float Lerp(float t, float start, float end) {
         return start + t * (end - start);
@@ -616,6 +616,178 @@ public:
 #pragma region メンバ変数
     float x, y, z, w;
 #pragma endregion
+};
+
+class Matrix3x3 {
+public:
+    static const Matrix3x3 identity;
+
+    static inline Matrix3x3 MakeScaling(const Vector2& scale) noexcept {
+        return {
+            scale.x, 0.0f, 0.0f,
+            0.0f, scale.y, 0.0f,
+            0.0f, 0.0f, 1.0f };
+    }
+
+    static inline Matrix3x3 MakeRotation(float rotate) noexcept {
+        float s = std::sin(rotate);
+        float c = std::cos(rotate);
+        return {
+            c,		s,		0.0f,
+            -s,		c,		0.0f,
+            0.0f,	0.0f,	1.0f };
+    }
+    static inline constexpr Matrix3x3 MakeTranslation(const Vector2& translate) noexcept {
+        return {
+            1.0f,		0.0f,		0.0f,
+            0.0f,		1.0f,		0.0f,
+            translate.x,	translate.y,	1.0f };
+    }
+    static inline Matrix3x3 MakeAffineTransform(const Vector2& scale, float rotate, const Vector2& translate) noexcept {
+        float s = std::sin(rotate);
+        float c = std::cos(rotate);
+        return {
+                scale.x * c,
+                scale.x * s,
+                0.0f,
+
+                scale.y * -s,
+                scale.y * c,
+                0.0f,
+
+                translate.x,
+                translate.y,
+                1.0f };
+    }
+
+    inline constexpr Matrix3x3() noexcept {
+        *this = identity;
+    }
+    inline constexpr Matrix3x3(
+        float _00, float _01, float _02,
+        float _10, float _11, float _12,
+        float _20, float _21, float _22) noexcept {
+        m[0][0] = _00, m[0][1] = _01, m[0][2] = _02;
+        m[1][0] = _10, m[1][1] = _11, m[1][2] = _12;
+        m[2][0] = _20, m[2][1] = _21, m[2][2] = _22;
+    }
+
+    friend inline constexpr Matrix3x3 operator*(const Matrix3x3& lhs, const Matrix3x3& rhs) noexcept {
+        return {
+             lhs.m[0][0] * rhs.m[0][0] + lhs.m[0][1] * rhs.m[1][0] + lhs.m[0][2] * rhs.m[2][0],
+             lhs.m[0][0] * rhs.m[0][1] + lhs.m[0][1] * rhs.m[1][1] + lhs.m[0][2] * rhs.m[2][1],
+             lhs.m[0][0] * rhs.m[0][2] + lhs.m[0][1] * rhs.m[1][2] + lhs.m[0][2] * rhs.m[2][2],
+
+             lhs.m[1][0] * rhs.m[0][0] + lhs.m[1][1] * rhs.m[1][0] + lhs.m[1][2] * rhs.m[2][0],
+             lhs.m[1][0] * rhs.m[0][1] + lhs.m[1][1] * rhs.m[1][1] + lhs.m[1][2] * rhs.m[2][1],
+             lhs.m[1][0] * rhs.m[0][2] + lhs.m[1][1] * rhs.m[1][2] + lhs.m[1][2] * rhs.m[2][2],
+
+             lhs.m[2][0] * rhs.m[0][0] + lhs.m[2][1] * rhs.m[1][0] + lhs.m[2][2] * rhs.m[2][0],
+             lhs.m[2][0] * rhs.m[0][1] + lhs.m[2][1] * rhs.m[1][1] + lhs.m[2][2] * rhs.m[2][1],
+             lhs.m[2][0] * rhs.m[0][2] + lhs.m[2][1] * rhs.m[1][2] + lhs.m[2][2] * rhs.m[2][2]
+        };
+    }
+    friend inline constexpr Vector2 operator*(const Vector2& lhs, const Matrix3x3& rhs) noexcept {
+        return {
+                lhs.x * rhs.m[0][0] + lhs.y * rhs.m[1][0] + rhs.m[2][0],
+                lhs.x * rhs.m[0][1] + lhs.y * rhs.m[1][1] + rhs.m[2][1] };
+    }
+    friend inline constexpr Vector3 operator*(const Vector3& lhs, const Matrix3x3& rhs) noexcept {
+        return {
+                lhs.x * rhs.m[0][0] + lhs.y * rhs.m[1][0] + lhs.z * rhs.m[2][0],
+                lhs.x * rhs.m[0][1] + lhs.y * rhs.m[1][1] + lhs.z * rhs.m[2][1],
+                lhs.x * rhs.m[0][2] + lhs.y * rhs.m[1][2] + lhs.z * rhs.m[2][2] };
+    }
+    friend inline constexpr Matrix3x3 operator*(float lhs, const Matrix3x3& rhs) noexcept {
+        return {
+            lhs * rhs.m[0][0], lhs * rhs.m[0][1], lhs * rhs.m[0][2] ,
+            lhs * rhs.m[1][0], lhs * rhs.m[1][1], lhs * rhs.m[1][2] ,
+            lhs * rhs.m[2][0], lhs * rhs.m[2][1], lhs * rhs.m[2][2] };
+    }
+    friend inline constexpr Matrix3x3 operator*(const Matrix3x3& lhs, float rhs) noexcept {
+        return {
+            lhs.m[0][0] * rhs, lhs.m[0][1] * rhs, lhs.m[0][2] * rhs,
+            lhs.m[1][0] * rhs, lhs.m[1][1] * rhs, lhs.m[1][2] * rhs,
+            lhs.m[2][0] * rhs, lhs.m[2][1] * rhs, lhs.m[2][2] * rhs, };
+    }
+    friend inline constexpr Matrix3x3& operator*=(Matrix3x3& lhs, const Matrix3x3& rhs) noexcept {
+        lhs = lhs * rhs;
+        return lhs;
+    }
+    // 行
+    inline constexpr Matrix3x3& SetRow(size_t i, const Vector3& v) noexcept {
+        m[i][0] = v.x, m[i][1] = v.y, m[i][2] = v.z;
+        return *this;
+    }
+    // 行
+    inline constexpr Vector3 GetRow(size_t i) const noexcept {
+        return { m[i][0], m[i][1], m[i][2] };
+    }
+    // 列
+    inline constexpr Matrix3x3& SetColumn(size_t i, const Vector3& v) noexcept {
+        m[0][i] = v.x, m[1][i] = v.y, m[2][i] = v.z;
+        return *this;
+    }
+    // 列
+    inline constexpr Vector3 GetColumn(size_t i) const noexcept {
+        return { m[0][i], m[1][i], m[2][i] };
+    }
+    inline constexpr Matrix3x3& SetXAxis(const Vector2& v) noexcept {
+        m[0][0] = v.x, m[0][1] = v.y;
+        return *this;
+    }
+    inline constexpr Vector2 GetXAxis() const noexcept {
+        return { m[0][0], m[0][1] };
+    }
+    inline constexpr Matrix3x3& SetYAxis(const Vector2& v) noexcept {
+        m[1][0] = v.x, m[1][1] = v.y;
+        return *this;
+    }
+    inline constexpr Vector2 GetYAxis() const noexcept {
+        return { m[1][0], m[1][1] };
+    }
+    inline constexpr Matrix3x3& SetZAxis(const Vector2& v) noexcept {
+        m[2][0] = v.x, m[2][1] = v.y;
+        return *this;
+    }
+    inline constexpr Vector2 GetZAxis() const noexcept {
+        return { m[2][0], m[2][1] };
+    }
+    inline constexpr Matrix3x3& SetTranslate(const Vector2& v) noexcept {
+        m[2][0] = v.x, m[2][1] = v.y;
+        return *this;
+    }
+    inline constexpr Vector2 GetTranslate() const noexcept {
+        return { m[2][0], m[2][1] };
+    }
+    inline float Determinant() const noexcept {
+        return m[0][0] * m[1][1] * m[2][2] + m[0][1] * m[1][2] * m[2][0] + m[0][2] * m[1][0] * m[2][1]
+            - m[0][2] * m[1][1] * m[2][0] - m[0][1] * m[1][0] * m[2][2] - m[0][0] * m[1][2] * m[2][1];
+    }
+    inline Matrix3x3 Adjugate() const noexcept {
+        return {
+              m[1][1] * m[2][2] - m[1][2] * m[2][1],
+            -(m[0][1] * m[2][2] - m[0][2] * m[2][1]),
+              m[0][1] * m[1][2] - m[0][2] * m[1][1],
+
+            -(m[1][0] * m[2][2] - m[1][2] * m[2][0]),
+              m[0][0] * m[2][2] - m[0][2] * m[2][0],
+            -(m[0][0] * m[1][2] - m[0][2] * m[1][0]),
+
+              m[1][0] * m[2][1] - m[1][1] * m[2][0],
+            -(m[0][0] * m[2][1] - m[0][1] * m[2][0]),
+              m[0][0] * m[1][1] - m[0][1] * m[1][0] };
+    }
+    inline Matrix3x3 Inverse() const noexcept {
+        return 1.0f / Determinant() * Adjugate();
+    }
+    inline constexpr Matrix3x3 Transpose() const noexcept {
+        return {
+            m[0][0], m[1][0], m[2][0],
+            m[0][1], m[1][1], m[2][1],
+            m[0][2], m[1][2], m[2][2] };
+    }
+    float m[3][3];
 };
 
 class Matrix4x4 {

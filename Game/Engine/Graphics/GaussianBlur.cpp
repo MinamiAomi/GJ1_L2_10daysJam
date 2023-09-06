@@ -41,7 +41,7 @@ namespace {
     }
 
     void CreatePipelineState(DXGI_FORMAT format) {
-        if (gbPipelineStateMap_.contains(format)) {
+        if (!gbPipelineStateMap_.contains(format)) {
             auto psos = std::make_unique<PipelineSet>();
 
             auto shaderManager = ShaderManager::GetInstance();
@@ -54,7 +54,7 @@ namespace {
             psoDesc.VS = CD3DX12_SHADER_BYTECODE(vs->GetBufferPointer(), vs->GetBufferSize());
             psoDesc.PS = CD3DX12_SHADER_BYTECODE(ps->GetBufferPointer(), ps->GetBufferSize());
             psoDesc.BlendState = Helper::BlendDisable;
-            psoDesc.RasterizerState = Helper::RasterizerDefault;
+            psoDesc.RasterizerState = Helper::RasterizerNoCull;
             psoDesc.NumRenderTargets = 1;
             psoDesc.RTVFormats[0] = format;
             psoDesc.SampleMask = D3D12_DEFAULT_SAMPLE_MASK;
@@ -88,7 +88,7 @@ GaussianBlur::~GaussianBlur() {
 void GaussianBlur::Initialize(ColorBuffer* originalTexture) {
     assert(originalTexture);
 
-    if (gbRootSignature_) {
+    if (!gbRootSignature_) {
         CreateRootSignature();
     }
 
@@ -107,10 +107,11 @@ void GaussianBlur::Initialize(ColorBuffer* originalTexture) {
     constantBuffer_.Create(L"GaussianBlur Constant", sizeof(weights_));
 
     CreatePipelineState(originalTexture->GetFormat());
+
+    UpdateWeightTable(1.0f);
 }
 
-void GaussianBlur::Render(CommandContext& commandContext, float blurPower) {
-    UpdateWeightTable(blurPower);
+void GaussianBlur::Render(CommandContext& commandContext) {
 
     auto pipelineSet = gbPipelineStateMap_[originalTexture_->GetFormat()].get();
 
@@ -129,8 +130,8 @@ void GaussianBlur::Render(CommandContext& commandContext, float blurPower) {
 
     commandContext.TransitionResource(horizontalBlurTexture_, D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE);
     commandContext.TransitionResource(verticalBlurTexture_, D3D12_RESOURCE_STATE_RENDER_TARGET);
-    commandContext.SetRenderTarget(verticalBlurTexture_.GetRTV());
     commandContext.ClearColor(verticalBlurTexture_);
+    commandContext.SetRenderTarget(verticalBlurTexture_.GetRTV());
     commandContext.SetViewportAndScissorRect(0, 0, verticalBlurTexture_.GetWidth(), verticalBlurTexture_.GetHeight());
 
     commandContext.SetRootSignature(*gbRootSignature_);

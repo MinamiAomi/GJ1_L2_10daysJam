@@ -12,6 +12,7 @@ class TextureHandle {
 public:
     Texture& GetTexture() const;
     bool IsValid() const { return index_ != ((size_t)-1); }
+    size_t GetIndex() const { return index_; }
 private:
     size_t index_ = ((size_t)-1);
 };

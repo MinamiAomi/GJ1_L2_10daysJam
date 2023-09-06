@@ -10,8 +10,12 @@ public:
     
     void Initialize(ColorBuffer* originalTexture);
     void Render(CommandContext& commandContext, uint32_t level = kMaxLevel);
+    
+    void SetThreshold(float threshold) { threshold_ = threshold; }
 
     ColorBuffer& GetResult() { return *originalTexture_; }
+
+    ColorBuffer& GetLuminanceTexture() { return luminanceTexture_; }
 
 private:
     RootSignature rootSignature_;
@@ -21,4 +25,7 @@ private:
     ColorBuffer* originalTexture_;
     ColorBuffer luminanceTexture_;
     GaussianBlur gaussianBlurs_[kMaxLevel];
+
+    float threshold_ = 1.0f;
+    float intensity_ = 1.0f;
 };

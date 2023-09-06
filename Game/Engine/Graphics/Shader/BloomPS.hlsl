@@ -8,7 +8,7 @@ Texture2D<float4> blurTexture3_ : register(t3);
 SamplerState sampler_ : register(s0);
 
 struct Param {
-    uint level;
+    float intensity;
 };
 ConstantBuffer<Param> param_ : register(b0);
 
@@ -23,15 +23,16 @@ struct PSOutput {
 
 PSOutput main(PSInput input) {
     PSOutput output;
-    output.color = float4(0.0f, 0.0f, 0.0f, 0.0f);
-    
-    output.color += blurTexture0_.Sample(sampler_, input.texcoord);
-    output.color += blurTexture1_.Sample(sampler_, input.texcoord);
-    output.color += blurTexture2_.Sample(sampler_, input.texcoord);
-    output.color += blurTexture3_.Sample(sampler_, input.texcoord);
-    
-    output.color /= NUM_TEXTURES;
-    output.color.a = 1.0f;
+
+    float4 bloom = float4(0.0f, 0.0f, 0.0f, 0.0f);
+    bloom += blurTexture0_.Sample(sampler_, input.texcoord);
+    bloom += blurTexture1_.Sample(sampler_, input.texcoord);
+    bloom += blurTexture2_.Sample(sampler_, input.texcoord);
+    bloom += blurTexture3_.Sample(sampler_, input.texcoord);
+    bloom /= NUM_TEXTURES;
+    bloom.a = 1.0f;
+
+    output.color = bloom;
     
     return output;
 }

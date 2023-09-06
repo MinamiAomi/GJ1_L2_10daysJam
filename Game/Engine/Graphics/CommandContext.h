@@ -10,6 +10,8 @@
 #include "PipelineState.h"
 #include "RootSignature.h"
 #include "ColorBuffer.h"
+#include "LinearAllocator.h"
+#include "Helper.h"
 
 struct DWParam {
     DWParam(FLOAT f) : v{ .f = f } {}
@@ -73,6 +75,12 @@ public:
     void SetVertexBuffer(UINT slot, UINT numViews, const D3D12_VERTEX_BUFFER_VIEW vbvs[]);
     void SetIndexBuffer(const D3D12_INDEX_BUFFER_VIEW& ibv);
 
+    void SetDynamicConstantBufferView(UINT rootIndex, size_t bufferSize, const void* bufferData);
+    void SetDynamicShaderResourceView(UINT rootIndex, size_t bufferSize, const void* bufferData);
+    void SetDynamicVertexBuffer(UINT slot, size_t numVertices, size_t vertexStride, const void* vertexData);
+    void SetDynamicIndexBuffer(size_t numIndices, DXGI_FORMAT indexFormat, const void* indexData);
+
+
     void Draw(UINT vertexCount, UINT vertexStartOffset = 0);
     void DrawIndexed(UINT indexCount, UINT startIndexLocation = 0, INT baseVertexLocation = 0);
     void DrawInstanced(UINT vertexCountPerInstance, UINT instanceCount, UINT startVertexLocation = 0, UINT startInstanceLocation = 0);
@@ -91,6 +99,8 @@ private:
 
     ID3D12RootSignature* rootSignature_;
     ID3D12PipelineState* pipelineState_;
+
+    LinearAllocator dynamicBuffer_;
 };
 
 inline void CommandContext::TransitionResource(GPUResource& resource, D3D12_RESOURCE_STATES newState) {
@@ -257,6 +267,56 @@ inline void CommandContext::SetVertexBuffer(UINT slot, UINT numViews, const D3D1
 }
 
 inline void CommandContext::SetIndexBuffer(const D3D12_INDEX_BUFFER_VIEW& ibv) {
+    commandList_->IASetIndexBuffer(&ibv);
+}
+
+inline void CommandContext::SetDynamicConstantBufferView(UINT rootIndex, size_t bufferSize, const void* bufferData) {
+    assert(bufferData);
+    assert(Helper::IsAligned(bufferData, 16));
+
+    auto allocation = dynamicBuffer_.Allocate(bufferSize, 256);
+    memcpy(allocation.cpu, bufferData, bufferSize);
+    commandList_->SetGraphicsRootConstantBufferView(rootIndex, allocation.gpu);
+}
+
+inline void CommandContext::SetDynamicShaderResourceView(UINT rootIndex, size_t bufferSize, const void* bufferData) {
+    assert(bufferData);
+    assert(Helper::IsAligned(bufferData, 16));
+
+    auto allocation = dynamicBuffer_.Allocate(bufferSize, 256);
+    memcpy(allocation.cpu, bufferData, bufferSize);
+    commandList_->SetGraphicsRootShaderResourceView(rootIndex, allocation.gpu);
+}
+
+inline void CommandContext::SetDynamicVertexBuffer(UINT slot, size_t numVertices, size_t vertexStride, const void* vertexData) {
+    assert(vertexData);
+    assert(Helper::IsAligned(vertexData, 16));
+
+    size_t bufferSize = Helper::AlignUp(numVertices * vertexStride, 16);
+    auto allocation = dynamicBuffer_.Allocate(bufferSize);
+    memcpy(allocation.cpu, vertexData, bufferSize);
+    D3D12_VERTEX_BUFFER_VIEW vbv{
+        .BufferLocation = allocation.gpu,
+        .SizeInBytes = UINT(bufferSize),
+        .StrideInBytes = UINT(vertexStride)
+    };
+    commandList_->IASetVertexBuffers(slot, 1, &vbv);
+}
+
+inline void CommandContext::SetDynamicIndexBuffer(size_t numIndices, DXGI_FORMAT indexFormat, const void* indexData) {
+    assert(indexData);
+    assert(Helper::IsAligned(indexData, 16));
+    assert(indexFormat == DXGI_FORMAT_R16_UINT || indexFormat == DXGI_FORMAT_R32_UINT);
+
+    size_t stride = (indexFormat == DXGI_FORMAT_R16_UINT) ? sizeof(uint16_t) : sizeof(uint32_t);
+    size_t bufferSize = Helper::AlignUp(numIndices * stride, 16);
+    auto allocation = dynamicBuffer_.Allocate(bufferSize);
+    memcpy(allocation.cpu, indexData, bufferSize);
+    D3D12_INDEX_BUFFER_VIEW ibv{
+        .BufferLocation = allocation.gpu,
+        .SizeInBytes = UINT(numIndices * stride),
+        .Format = indexFormat
+    };
     commandList_->IASetIndexBuffer(&ibv);
 }
 

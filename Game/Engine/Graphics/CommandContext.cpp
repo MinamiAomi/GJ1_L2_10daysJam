@@ -23,6 +23,8 @@ void CommandContext::Reset() {
     ASSERT_IF_FAILED(commandAllocator_->Reset());
     ASSERT_IF_FAILED(commandList_->Reset(commandAllocator_.Get(), nullptr));
 
+    dynamicBuffer_.Reset();
+
     auto graphics = Graphics::GetInstance();
     ID3D12DescriptorHeap* ppHeaps[] = {
         (ID3D12DescriptorHeap*)graphics->GetDescriptorHeap(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV),
