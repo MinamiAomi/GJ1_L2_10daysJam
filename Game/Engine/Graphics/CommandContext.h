@@ -10,6 +10,7 @@
 #include "PipelineState.h"
 #include "RootSignature.h"
 #include "ColorBuffer.h"
+#include "DepthBuffer.h"
 #include "LinearAllocator.h"
 #include "Helper.h"
 
@@ -47,6 +48,8 @@ public:
 
     void ClearColor(ColorBuffer& target);
     void ClearColor(ColorBuffer& target, float clearColor[4]);
+    void ClearDepth(DepthBuffer& target);
+    void ClearDepth(DepthBuffer& target, float clearValue);
 
     void SetRenderTargets(UINT numRTVs, const D3D12_CPU_DESCRIPTOR_HANDLE rtvs[]);
     void SetRenderTargets(UINT numRTVs, const D3D12_CPU_DESCRIPTOR_HANDLE rtvs[], D3D12_CPU_DESCRIPTOR_HANDLE dsv);
@@ -167,6 +170,16 @@ inline void CommandContext::ClearColor(ColorBuffer& target) {
 inline void CommandContext::ClearColor(ColorBuffer& target, float clearColor[4]) {
     FlushResourceBarriers();
     commandList_->ClearRenderTargetView(target.GetRTV(), clearColor, 0, nullptr);
+}
+
+inline void CommandContext::ClearDepth(DepthBuffer& target) {
+    FlushResourceBarriers();
+    commandList_->ClearDepthStencilView(target.GetDSV(), D3D12_CLEAR_FLAG_DEPTH, target.GetClearValue(), 0, 0, nullptr);
+}
+
+inline void CommandContext::ClearDepth(DepthBuffer& target, float clearValue) {
+    FlushResourceBarriers();
+    commandList_->ClearDepthStencilView(target.GetDSV(), D3D12_CLEAR_FLAG_DEPTH, clearValue, 0, 0, nullptr);
 }
 
 inline void CommandContext::SetRenderTargets(UINT numRTVs, const D3D12_CPU_DESCRIPTOR_HANDLE rtvs[]) {

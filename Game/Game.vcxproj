@@ -24,7 +24,9 @@
     <ClInclude Include="..\Externals\ImGui\imstb_rectpack.h" />
     <ClInclude Include="..\Externals\ImGui\imstb_textedit.h" />
     <ClInclude Include="..\Externals\ImGui\imstb_truetype.h" />
+    <ClInclude Include="Engine\Graphics\DepthBuffer.h" />
     <ClInclude Include="Engine\Graphics\LinearAllocator.h" />
+    <ClInclude Include="Engine\Monitor.h" />
     <ClInclude Include="Engine\SpriteRenderer.h" />
     <ClInclude Include="Engine\TextureHandle.h" />
     <ClInclude Include="Engine\TOMATOsEngine.h" />
@@ -80,7 +82,9 @@
     <ClCompile Include="..\Externals\ImGui\imgui_widgets.cpp">
       <Optimization Condition="'$(Configuration)|$(Platform)'=='Release|x64'">MinSpace</Optimization>
     </ClCompile>
+    <ClCompile Include="Engine\Graphics\DepthBuffer.cpp" />
     <ClCompile Include="Engine\Graphics\LinearAllocator.cpp" />
+    <ClCompile Include="Engine\Monitor.cpp" />
     <ClCompile Include="Engine\SpriteRenderer.cpp" />
     <ClCompile Include="Engine\TOMATOsEngine.cpp" />
     <ClCompile Include="Engine\GameWindow.cpp" />
@@ -203,6 +207,22 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Engine\Shader\SpritePS.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Pixel</ShaderType>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <FileType>Document</FileType>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Engine\Shader\MonitorVS.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Vertex</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Vertex</ShaderType>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <FileType>Document</FileType>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Engine\Shader\MonitorPS.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Pixel</ShaderType>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>

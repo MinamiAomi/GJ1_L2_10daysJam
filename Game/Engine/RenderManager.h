@@ -4,6 +4,7 @@
 #include "Graphics/SwapChain.h"
 #include "Graphics/CommandContext.h"
 #include "Graphics/ColorBuffer.h"
+#include "Graphics/DepthBuffer.h"
 #include "Graphics/Bloom.h"
 
 class RenderManager {
@@ -12,6 +13,7 @@ public:
     static RenderManager* GetInstance();
 
     void Initialize();
+    void Reset();
     void BeginRender();
     void EndRender();
     void Shutdown();
@@ -21,10 +23,9 @@ public:
     Bloom& GetBloom() { return bloom; }
 
     DXGI_FORMAT GetSwapChainRTVFormat() const { return swapChain_.GetColorBuffer().GetFormat(); }
-    DXGI_FORMAT GetMainBufferRTVFormat() const { return mainColorBuffer.GetFormat(); }
-
+    DXGI_FORMAT GetMainBufferRTVFormat() const { return mainColorBuffer_.GetFormat(); }
+    DXGI_FORMAT GetMainDepthDSVFormat() const { return mainDepthBuffer_.GetFormat(); }
     
-
 private:
     RenderManager() = default;
     RenderManager(const RenderManager&) = delete;
@@ -36,7 +37,8 @@ private:
     SwapChain swapChain_;
     CommandContext commandContexts_[SwapChain::kNumBuffers];
 
-    ColorBuffer mainColorBuffer;
+    ColorBuffer mainColorBuffer_;
+    DepthBuffer mainDepthBuffer_;
     RootSignature postEffectRootSignature_;
     PipelineState postEffectPipelineState_;
     Bloom bloom;

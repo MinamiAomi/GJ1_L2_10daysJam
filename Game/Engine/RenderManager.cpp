@@ -14,50 +14,58 @@ void RenderManager::Initialize() {
     // 描画デバイスを初期化
     graphics_ = Graphics::GetInstance();
     graphics_->Initialize();
-    
+
     // シェーダー関連を初期化
     ShaderManager::GetInstance()->Initialize();
-    
+
     // スワップチェーンを初期化
     auto window = GameWindow::GetInstance();
     swapChain_.Create(window->GetHWND());
-    
+
     // コマンドリストを初期化
     for (auto& commandContext : commandContexts_) {
         commandContext.Create();
         commandContext.Close();
     }
-    
+
     // メインとなるバッファを初期化
     auto& swapChainBuffer = swapChain_.GetColorBuffer();
     float clearColor[4] = { 0.0f,0.0f,0.0f,0.0f };
-    mainColorBuffer.SetClearColor(clearColor);
-    mainColorBuffer.Create(L"SceneColorBuffer", swapChainBuffer.GetWidth(), swapChainBuffer.GetHeight(), DXGI_FORMAT_R32G32B32A32_FLOAT);
+    mainColorBuffer_.SetClearColor(clearColor);
+    mainColorBuffer_.Create(L"SceneColorBuffer", swapChainBuffer.GetWidth(), swapChainBuffer.GetHeight(), DXGI_FORMAT_R32G32B32A32_FLOAT);
+
+    mainDepthBuffer_.Create(L"SceneDepthBuffer", swapChainBuffer.GetWidth(), swapChainBuffer.GetHeight(), DXGI_FORMAT_R32_FLOAT);
 
     // ブルームを初期化
-    bloom.Initialize(&mainColorBuffer);
-    
+    bloom.Initialize(&mainColorBuffer_);
+
     // ポストエフェクトを初期化
     InitializePostEffect();
-    
+
     // ImGuiを初期化
     auto imguiManager = ImGuiManager::GetInstance();
     imguiManager->Initialize(window->GetHWND(), swapChain_.GetColorBuffer().GetFormat());
 }
 
-void RenderManager::BeginRender() {
-
+void RenderManager::Reset() {
     auto imguiManager = ImGuiManager::GetInstance();
     imguiManager->NewFrame();
 
     auto& commandContext = commandContexts_[swapChain_.GetBufferIndex()];
 
     commandContext.Reset();
+}
+
+void RenderManager::BeginRender() {
+    auto& commandContext = commandContexts_[swapChain_.GetBufferIndex()];
+
     // メインカラーバッファをレンダ―ターゲットに
-    commandContext.TransitionResource(mainColorBuffer, D3D12_RESOURCE_STATE_RENDER_TARGET);
-    commandContext.SetRenderTarget(mainColorBuffer.GetRTV());
-    commandContext.ClearColor(mainColorBuffer);
-    commandContext.SetViewportAndScissorRect(0, 0, mainColorBuffer.GetWidth(), mainColorBuffer.GetHeight());
+    commandContext.TransitionResource(mainColorBuffer_, D3D12_RESOURCE_STATE_RENDER_TARGET);
+    commandContext.TransitionResource(mainDepthBuffer_, D3D12_RESOURCE_STATE_DEPTH_WRITE);
+    commandContext.SetRenderTarget(mainColorBuffer_.GetRTV(), mainDepthBuffer_.GetDSV());
+    commandContext.ClearColor(mainColorBuffer_);
+    commandContext.ClearDepth(mainDepthBuffer_);
+    commandContext.SetViewportAndScissorRect(0, 0, mainColorBuffer_.GetWidth(), mainColorBuffer_.GetHeight());
 }
 
 void RenderManager::EndRender() {
@@ -75,7 +83,7 @@ void RenderManager::EndRender() {
     commandContext.SetViewportAndScissorRect(0, 0, swapChainBuffer.GetWidth(), swapChainBuffer.GetHeight());
 
     //ColorBuffer& buffer = bloom.GetLuminanceTexture();
-    ColorBuffer& buffer = mainColorBuffer;
+    ColorBuffer& buffer = mainColorBuffer_;
     // メインカラーバッファをスワップチェーンに移す
     commandContext.TransitionResource(buffer, D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE);
     commandContext.SetRootSignature(postEffectRootSignature_);

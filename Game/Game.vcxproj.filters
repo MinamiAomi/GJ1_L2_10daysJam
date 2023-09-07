@@ -156,6 +156,12 @@
     <ClInclude Include="Engine\TextureHandle.h">
       <Filter>Engine\Graphics</Filter>
     </ClInclude>
+    <ClInclude Include="Engine\Monitor.h">
+      <Filter>Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\Graphics\DepthBuffer.h">
+      <Filter>Engine\Graphics</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Externals\ImGui\imgui.cpp">
@@ -264,6 +270,12 @@
     <ClCompile Include="Engine\SpriteRenderer.cpp">
       <Filter>Engine</Filter>
     </ClCompile>
+    <ClCompile Include="Engine\Graphics\DepthBuffer.cpp">
+      <Filter>Engine\Graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\Monitor.cpp">
+      <Filter>Engine</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Text Include="..\Externals\ImGui\LICENSE.txt">
@@ -302,6 +314,12 @@
       <Filter>Engine\Shader</Filter>
     </None>
     <None Include="Engine\Shader\SpritePS.hlsl">
+      <Filter>Engine\Shader</Filter>
+    </None>
+    <None Include="Engine\Shader\MonitorVS.hlsl">
+      <Filter>Engine\Shader</Filter>
+    </None>
+    <None Include="Engine\Shader\MonitorPS.hlsl">
       <Filter>Engine\Shader</Filter>
     </None>
   </ItemGroup>

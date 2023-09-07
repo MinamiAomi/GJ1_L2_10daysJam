@@ -7,6 +7,7 @@
 #include "TriangleRenderer.h"
 #include "SpriteRenderer.h"
 #include "TextureManager.h"
+#include "Monitor.h"
 
 namespace {
     GameWindow* gameWindow = nullptr;
@@ -15,7 +16,9 @@ namespace {
     SpriteRenderer* spriteRenderer = nullptr;
     TextureManager* textureManager = nullptr;
 
-    Matrix4x4 screenMatrix_;
+    Matrix4x4 screenMatrix;
+
+    Monitor monitor;
 
 }
 
@@ -42,9 +45,11 @@ namespace TOMATOsEngine {
 
         textureManager = TextureManager::GetInstance();
 
-        screenMatrix_ = Matrix4x4::MakeOrthographicProjection(float(kWindowWidth), float(kWindowHeight), 0.0f, 1.0f);
-        screenMatrix_ *= Matrix4x4::MakeScaling({ 1.0f, 1.0f,1.0f });
-        screenMatrix_ *= Matrix4x4::MakeTranslation({ -1.0f, -1.0f, 0.0f });
+        screenMatrix = Matrix4x4::MakeOrthographicProjection(float(kWindowWidth), float(kWindowHeight), 0.0f, 1.0f);
+        screenMatrix *= Matrix4x4::MakeScaling({ 1.0f, 1.0f,1.0f });
+        screenMatrix *= Matrix4x4::MakeTranslation({ -1.0f, -1.0f, 0.0f });
+
+        monitor.Initilaize(kMonitorWidth, kMonitorHeight, renderManager->GetMainBufferRTVFormat(), );
 
         renderManager->BeginRender();
     }
@@ -55,16 +60,19 @@ namespace TOMATOsEngine {
     }
 
     bool BeginFrame() {
-
+        renderManager->BeginRender();
+        monitor.Draw(renderManager->GetCommandContext(), Matrix4x4::identity);
         renderManager->EndRender();
 
         if (!gameWindow->ProcessMessage()) {
             return false;
         }
 
-        renderManager->BeginRender();
+        renderManager->Reset();
         triangleRenderer->Reset();
         spriteRenderer->Reset();
+
+        monitor.BeginRender(renderManager->GetCommandContext());
 
         return true;
     }
@@ -73,22 +81,19 @@ namespace TOMATOsEngine {
         return textureManager->Load(name);
     }
 
-    void DrawTriangle(const Vector2& pos0, const Vector2& pos1, const Vector2& pos2, uint32_t color, FillMode fillMode) {
+    void DrawTriangle(const Vector2& pos0, const Vector2& pos1, const Vector2& pos2, uint32_t color) {
         TriangleRenderer::Vertex vertices[] = {
-           { Vector3(pos0) * screenMatrix_, color },
-           { Vector3(pos1) * screenMatrix_, color },
-           { Vector3(pos2) * screenMatrix_, color },
+           { Vector3(pos0) * screenMatrix, color },
+           { Vector3(pos1) * screenMatrix, color },
+           { Vector3(pos2) * screenMatrix, color },
         };
 
-        if (fillMode == kFillModeSolid) {
-
-            triangleRenderer->Draw(
-                renderManager->GetCommandContext(),
-                vertices, 3);
-        }
+        triangleRenderer->Draw(
+            renderManager->GetCommandContext(),
+            vertices, 3);
     }
 
-    void DrawRect(const Vector2& min, const Vector2& max, uint32_t color, FillMode fillMode) {
+    void DrawRect(const Vector2& min, const Vector2& max, uint32_t color) {
         TriangleRenderer::Vertex vertices[] = {
             { { min.x, max.y, 0.0f }, color },
             { { min.x, min.y, 0.0f }, color },
@@ -99,17 +104,15 @@ namespace TOMATOsEngine {
         };
 
         for (auto& vertex : vertices) {
-            vertex.position = vertex.position * screenMatrix_;
+            vertex.position = vertex.position * screenMatrix;
         }
 
-        if (fillMode == kFillModeSolid) {
-            triangleRenderer->Draw(
-                renderManager->GetCommandContext(),
-                vertices, 2);
-        }
+        triangleRenderer->Draw(
+            renderManager->GetCommandContext(),
+            vertices, 2);
     }
 
-    void DrawRectAngle(const Vector2& pos, const Vector2& size, const Vector2& anchorPoint, float angle, uint32_t color, FillMode fillMode) {
+    void DrawRectAngle(const Vector2& pos, const Vector2& size, const Vector2& anchorPoint, float angle, uint32_t color) {
         Vector2 tmp[] = {
             { 0.0f, 1.0f },
             { 0.0f, 0.0f },
@@ -121,7 +124,7 @@ namespace TOMATOsEngine {
 
         for (auto& vertex : tmp) {
             vertex = vertex * matrix;
-            vertex = (Vector3(vertex) * screenMatrix_).GetXY();
+            vertex = (Vector3(vertex) * screenMatrix).GetXY();
         }
 
         TriangleRenderer::Vertex vertices[] = {
@@ -133,16 +136,14 @@ namespace TOMATOsEngine {
             { {tmp[3], 0.0f}, color },
         };
 
-        if (fillMode == kFillModeSolid) {
-            triangleRenderer->Draw(
-                renderManager->GetCommandContext(),
-                vertices, 2);
-        }
+        triangleRenderer->Draw(
+            renderManager->GetCommandContext(),
+            vertices, 2);
     }
 
 
 
-    void DrawCircle(const Vector2& pos, float radius, uint32_t color, FillMode fillMode) {
+    void DrawCircle(const Vector2& pos, float radius, uint32_t color) {
         constexpr uint32_t kNumSubdivisions = 16;
         constexpr uint32_t kNumTriangles = kNumSubdivisions - 2;
 
@@ -166,7 +167,7 @@ namespace TOMATOsEngine {
 
         Vector3 global[kNumSubdivisions]{};
         for (uint32_t i = 0; i < kNumSubdivisions; ++i) {
-            global[i] = Vector3(unitCircle.vertices[i] * matrix) * screenMatrix_;
+            global[i] = Vector3(unitCircle.vertices[i] * matrix) * screenMatrix;
         }
 
         TriangleRenderer::Vertex vertices[kNumTriangles][3]{};
@@ -179,11 +180,9 @@ namespace TOMATOsEngine {
             vertices[i][2].color = color;
         }
 
-        if (fillMode == kFillModeSolid) {
-            triangleRenderer->Draw(
-                renderManager->GetCommandContext(),
-                vertices[0], kNumTriangles);
-        }
+        triangleRenderer->Draw(
+            renderManager->GetCommandContext(),
+            vertices[0], kNumTriangles);
     }
 
     void DrawSpriteRect(const Vector2& min, const Vector2& max, const Vector2& texBase, const Vector2& texSize, TextureHandle texHandle, uint32_t color) {
@@ -210,7 +209,7 @@ namespace TOMATOsEngine {
         };
 
         for (auto& vertex : vertices) {
-            vertex.position = vertex.position * screenMatrix_;
+            vertex.position = vertex.position * screenMatrix;
         }
 
         spriteRenderer->Draw(renderManager->GetCommandContext(), vertices, 2, texture.GetSRV());
@@ -241,7 +240,7 @@ namespace TOMATOsEngine {
 
         for (auto& vertex : tmp) {
             vertex = vertex * matrix;
-            vertex = (Vector3(vertex) * screenMatrix_).GetXY();
+            vertex = (Vector3(vertex) * screenMatrix).GetXY();
         }
 
         SpriteRenderer::Vertex vertices[] = {
@@ -275,7 +274,7 @@ namespace TOMATOsEngine {
         };
 
         for (auto& vertex : tmp) {
-            vertex = (Vector3(vertex) * screenMatrix_).GetXY();
+            vertex = (Vector3(vertex) * screenMatrix).GetXY();
         }
 
         SpriteRenderer::Vertex vertices[] = {
