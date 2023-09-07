@@ -25,7 +25,3 @@ TextureHandle TextureManager::Load(const std::filesystem::path& path) {
     textures_.emplace_back(wstr, std::move(texture));
     return handle;
 }
-
-Texture& TextureHandle::GetTexture() const {
-    return TextureManager::GetInstance()->GetTexture(*this);
-}

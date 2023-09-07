@@ -27,12 +27,12 @@ void Bloom::Initialize(ColorBuffer* originalTexture) {
         }
 
         CD3DX12_ROOT_PARAMETER rootParameters[kMaxLevel + 1]{};
-        rootParameters[0].InitAsConstants(1, 0);
+        rootParameters[0].InitAsConstants(2, 0);
         for (uint32_t i = 0; i < kMaxLevel; ++i) {
             rootParameters[i + 1].InitAsDescriptorTable(1, &ranges[i]);
         }
 
-        CD3DX12_STATIC_SAMPLER_DESC staticSamplerDesc(0, D3D12_FILTER_MIN_MAG_MIP_LINEAR);
+        CD3DX12_STATIC_SAMPLER_DESC staticSamplerDesc(0, D3D12_FILTER_MIN_MAG_MIP_LINEAR, D3D12_TEXTURE_ADDRESS_MODE_CLAMP, D3D12_TEXTURE_ADDRESS_MODE_CLAMP,D3D12_TEXTURE_ADDRESS_MODE_CLAMP);
 
         D3D12_ROOT_SIGNATURE_DESC rootSignatureDesc{};
         rootSignatureDesc.pParameters = rootParameters;
@@ -73,7 +73,13 @@ void Bloom::Initialize(ColorBuffer* originalTexture) {
 
 void Bloom::Render(CommandContext& commandContext, uint32_t level) {
     assert(level <= kMaxLevel);
-
+    if (threshold_ == 0.0f) {
+        threshold_ = 0.00001f;
+    }
+    if (threshold_ == 1.0f) {
+        threshold_ = 1.00001f;
+    }
+        
     commandContext.TransitionResource(*originalTexture_, D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE);
     commandContext.TransitionResource(luminanceTexture_, D3D12_RESOURCE_STATE_RENDER_TARGET);
     commandContext.SetRenderTarget(luminanceTexture_.GetRTV());
@@ -83,7 +89,7 @@ void Bloom::Render(CommandContext& commandContext, uint32_t level) {
     commandContext.SetRootSignature(rootSignature_);
     commandContext.SetPipelineState(luminacePipelineState_);
     commandContext.SetPrimitiveTopology(D3D10_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-    commandContext.SetConstants(0, float(threshold_));
+    commandContext.SetConstants(0, float(threshold_), float(knee_));
     commandContext.SetDescriptorTable(1, originalTexture_->GetSRV());
     commandContext.Draw(3);
 

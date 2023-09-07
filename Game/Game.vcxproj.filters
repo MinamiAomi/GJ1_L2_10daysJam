@@ -153,6 +153,9 @@
     <ClInclude Include="Engine\Graphics\LinearAllocator.h">
       <Filter>Engine\Graphics</Filter>
     </ClInclude>
+    <ClInclude Include="Engine\TextureHandle.h">
+      <Filter>Engine\Graphics</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Externals\ImGui\imgui.cpp">
@@ -258,6 +261,9 @@
     <ClCompile Include="Engine\Graphics\LinearAllocator.cpp">
       <Filter>Engine\Graphics</Filter>
     </ClCompile>
+    <ClCompile Include="Engine\SpriteRenderer.cpp">
+      <Filter>Engine</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Text Include="..\Externals\ImGui\LICENSE.txt">
@@ -290,6 +296,12 @@
       <Filter>Engine\Shader</Filter>
     </None>
     <None Include="Engine\Shader\TrianglePS.hlsl">
+      <Filter>Engine\Shader</Filter>
+    </None>
+    <None Include="Engine\Shader\SpriteVS.hlsl">
+      <Filter>Engine\Shader</Filter>
+    </None>
+    <None Include="Engine\Shader\SpritePS.hlsl">
       <Filter>Engine\Shader</Filter>
     </None>
   </ItemGroup>

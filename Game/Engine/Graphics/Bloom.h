@@ -12,9 +12,10 @@ public:
     void Render(CommandContext& commandContext, uint32_t level = kMaxLevel);
     
     void SetThreshold(float threshold) { threshold_ = threshold; }
+    void SetKnee(float knee) { knee_ = knee; }
 
     ColorBuffer& GetResult() { return *originalTexture_; }
-
+    
     ColorBuffer& GetLuminanceTexture() { return luminanceTexture_; }
 
 private:
@@ -26,6 +27,7 @@ private:
     ColorBuffer luminanceTexture_;
     GaussianBlur gaussianBlurs_[kMaxLevel];
 
-    float threshold_ = 1.0f;
+    float threshold_ = 0.9f;
+    float knee_ = 0.2f;
     float intensity_ = 1.0f;
 };

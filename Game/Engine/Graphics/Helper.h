@@ -28,7 +28,7 @@ namespace Helper {
     }
 
     template<typename T>
-    T IsAligned(T value, size_t alignment) {
+    bool IsAligned(T value, size_t alignment) {
         return (size_t(value) & (alignment - 1)) == 0;
     }
 

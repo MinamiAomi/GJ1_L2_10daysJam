@@ -7,7 +7,7 @@
 
 #include "Math/MathUtils.h"
 
-#include "TextureManager.h"
+#include "TextureHandle.h"
 
 enum BlendMode {
     kBlendModeDisable,
@@ -50,11 +50,13 @@ namespace TOMATOsEngine {
 
     bool BeginFrame();
 
-    uint32_t LoadTexture(const std::string& name);
+    TextureHandle LoadTexture(const std::string& name);
 
     void DrawTriangle(const Vector2& pos0, const Vector2& pos1, const Vector2& pos2, uint32_t color, FillMode fillMode = kFillModeSolid);
     void DrawRect(const Vector2& min, const Vector2& max, uint32_t color, FillMode fillMode = kFillModeSolid);
     void DrawRectAngle(const Vector2& pos, const Vector2& size, const Vector2& anchorPoint, float angle, uint32_t color, FillMode fillMode = kFillModeSolid);
     void DrawCircle(const Vector2& pos, float radius, uint32_t color, FillMode fillMode = kFillModeSolid);
-
+    void DrawSpriteRect(const Vector2& min, const Vector2& max, const Vector2& texBase, const Vector2& texSize, TextureHandle texHandle, uint32_t color);
+    void DrawSpriteRectAngle(const Vector2& pos, const Vector2& size, const Vector2& anchorPoint, float angle, const Vector2& texBase, const Vector2& texSize, TextureHandle texHandle, uint32_t color);
+    void DrawSpriteQuad(const Vector2& lt, const Vector2& rt, const Vector2& lb, const Vector2& rb, const Vector2& texBase, const Vector2& texSize, TextureHandle texHandle, uint32_t color);
 }

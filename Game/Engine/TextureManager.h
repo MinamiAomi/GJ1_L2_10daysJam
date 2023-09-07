@@ -6,16 +6,7 @@
 #include <vector>
 
 #include "Graphics/Texture.h"
-
-class TextureHandle {
-    friend class TextureManager;
-public:
-    Texture& GetTexture() const;
-    bool IsValid() const { return index_ != ((size_t)-1); }
-    size_t GetIndex() const { return index_; }
-private:
-    size_t index_ = ((size_t)-1);
-};
+#include "TextureHandle.h"
 
 class TextureManager {
 public:

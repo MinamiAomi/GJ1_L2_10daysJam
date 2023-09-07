@@ -26,6 +26,7 @@
     <ClInclude Include="..\Externals\ImGui\imstb_truetype.h" />
     <ClInclude Include="Engine\Graphics\LinearAllocator.h" />
     <ClInclude Include="Engine\SpriteRenderer.h" />
+    <ClInclude Include="Engine\TextureHandle.h" />
     <ClInclude Include="Engine\TOMATOsEngine.h" />
     <ClInclude Include="Engine\GameWindow.h" />
     <ClInclude Include="Engine\Graphics\Bloom.h" />
@@ -80,6 +81,7 @@
       <Optimization Condition="'$(Configuration)|$(Platform)'=='Release|x64'">MinSpace</Optimization>
     </ClCompile>
     <ClCompile Include="Engine\Graphics\LinearAllocator.cpp" />
+    <ClCompile Include="Engine\SpriteRenderer.cpp" />
     <ClCompile Include="Engine\TOMATOsEngine.cpp" />
     <ClCompile Include="Engine\GameWindow.cpp" />
     <ClCompile Include="Engine\Graphics\Bloom.cpp" />
@@ -188,6 +190,23 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
       <FileType>Document</FileType>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Engine\Shader\SpriteVS.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Vertex</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Vertex</ShaderType>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+      <FileType>Document</FileType>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Engine\Shader\SpritePS.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Pixel</ShaderType>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <FileType>Document</FileType>
     </None>
   </ItemGroup>
   <PropertyGroup Label="Globals">
