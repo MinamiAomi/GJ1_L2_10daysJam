@@ -177,6 +177,7 @@
     <ClInclude Include="Engine\Math\Color.h">
       <Filter>Engine\Math</Filter>
     </ClInclude>
+    <ClInclude Include="BackGround.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Externals\ImGui\imgui.cpp">
@@ -303,6 +304,7 @@
     <ClCompile Include="Engine\Math\Color.cpp">
       <Filter>Engine\Math</Filter>
     </ClCompile>
+    <ClCompile Include="BackGround.cpp" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="..\Externals\ImGui\LICENSE.txt">

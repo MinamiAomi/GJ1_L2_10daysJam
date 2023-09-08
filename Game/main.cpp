@@ -2,6 +2,7 @@
 
 #include "Engine/TOMATOsEngine.h"
 
+#include "BackGround.h"
 #include "Field.h"
 #include "Player.h"
 
@@ -12,6 +13,9 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
     TOMATOsEngine::Initialize();
 
     auto tex = TOMATOsEngine::LoadTexture("Resources/playgame.png");
+
+    BackGround backGround;
+    backGround.Initialize();
 
     Field field;
     field.Initialize();
@@ -29,14 +33,17 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
             player.SetPosition({ field.GetSize().x * 0.5f, field.GetSize().y - 100.0f });
         }
 
+        backGround.Update();
         field.Update();
         player.Update();
 
 
+        backGround.Draw();
         field.Draw();
         player.Draw();
 
        // TOMATOsEngine::DrawSpriteRect({}, { 1280.0f, 720.0f }, {}, { 1280.0f, 720.0f }, tex, 0xFFFFFFFF);
+        //TOMATOsEngine::DrawSpriteRect({}, { 1280.0f, 720.0f }, {}, { 1280.0f, 720.0f }, tex, 0xFFFFFFFF);
 
         auto r = RenderManager::GetInstance();
         ImGui::Begin("Bloom");
