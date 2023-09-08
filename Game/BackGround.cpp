@@ -44,10 +44,10 @@ void BackGround::GrainUpdate() {
 		for (auto& grain : grains_) {
 			if (!grain->isAlive_) {
 				Random::RandomNumberGenerator rnd{};
-				const float kSize_Min = 20.0f;
-				const float kSize_Max = 30.0f;
-				const uint32_t kDeathTime_Min = 10;
-				const uint32_t kDeathTime_Max = 20;
+				const float kSize_Min = 5.0f;
+				const float kSize_Max = 15.0f;
+				const uint32_t kDeathTime_Min = 60;
+				const uint32_t kDeathTime_Max = 120;
 				// サイズ
 				float size = rnd.NextFloatRange(kSize_Min, kSize_Max);
 				grain->size_ = { size,size };
@@ -72,7 +72,7 @@ void BackGround::GrainUpdate() {
 		if (grain->isAlive_) {
 			grain->death_Time_--;
 			if (grain->death_Time_ <= 0) {
-				grain->isAlive_;
+				grain->isAlive_ = false;
 			}
 		}
 

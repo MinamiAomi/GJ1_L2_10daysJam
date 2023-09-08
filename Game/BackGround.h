@@ -30,10 +30,10 @@ private:
 private:
 	TextureHandle white_particle_TextureHandle_;
 	// 粒粒
-	static const uint32_t kGrain_Max = 5;
+	static const uint32_t kGrain_Max = 50;
 	std::array<std::unique_ptr<Grain>, kGrain_Max> grains_;
 	TextureHandle grain_TextureHandle_;
-	const uint32_t coolTime_ = 12;
+	const uint32_t coolTime_ = 30;
 	uint32_t count_;
 
 };
