@@ -21,7 +21,7 @@ public:
     };
     struct Vertex {
         Vector3 position;
-        uint32_t color;
+        uint32_t color{};
     };
     
     static const uint32_t kMaxNumTriangles = 1024;

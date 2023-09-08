@@ -16,6 +16,7 @@ namespace Math {
     inline constexpr float Lerp(float t, float start, float end) {
         return start + t * (end - start);
     }
+
 }
 
 #pragma region 前方宣言

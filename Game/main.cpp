@@ -42,6 +42,7 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
         field.Draw();
         player.Draw();
 
+       // TOMATOsEngine::DrawSpriteRect({}, { 1280.0f, 720.0f }, {}, { 1280.0f, 720.0f }, tex, 0xFFFFFFFF);
         //TOMATOsEngine::DrawSpriteRect({}, { 1280.0f, 720.0f }, {}, { 1280.0f, 720.0f }, tex, 0xFFFFFFFF);
 
         auto r = RenderManager::GetInstance();
