@@ -8,6 +8,7 @@
 #include "Math/MathUtils.h"
 
 #include "TextureHandle.h"
+#include "Input.h"
 
 enum BlendMode {
     kBlendModeDisable,
@@ -37,4 +38,16 @@ namespace TOMATOsEngine {
     void DrawSpriteRect(const Vector2& min, const Vector2& max, const Vector2& texBase, const Vector2& texSize, TextureHandle texHandle, uint32_t color);
     void DrawSpriteRectAngle(const Vector2& pos, const Vector2& size, const Vector2& anchorPoint, float angle, const Vector2& texBase, const Vector2& texSize, TextureHandle texHandle, uint32_t color);
     void DrawSpriteQuad(const Vector2& lt, const Vector2& rt, const Vector2& lb, const Vector2& rb, const Vector2& texBase, const Vector2& texSize, TextureHandle texHandle, uint32_t color);
+
+    bool IsKeyPressed(char keycode);
+    bool IsKeyTrigger(char keycode);
+    bool IsKeyRelease(char keycode);
+
+    bool IsMousePressed(int button);
+    bool IsMouseTrigger(int button);
+    bool IsMouseRelease(int button);
+    Vector2 GetMousePosition();
+    Vector2 GetMouseMove();
+    float GetMouseWheel();
+
 }

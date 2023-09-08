@@ -1,6 +1,7 @@
 #include "TOMATOsEngine.h"
 
 #include <cassert>
+#include <memory>
 
 #include "GameWindow.h"
 #include "RenderManager.h"
@@ -15,10 +16,11 @@ namespace {
     TriangleRenderer* triangleRenderer = nullptr;
     SpriteRenderer* spriteRenderer = nullptr;
     TextureManager* textureManager = nullptr;
+    Input* input = nullptr;
 
     Matrix4x4 screenMatrix;
 
-    Monitor monitor;
+    std::unique_ptr<Monitor> monitor;
 
 }
 
@@ -30,18 +32,25 @@ namespace TOMATOsEngine {
         assert(!triangleRenderer);
         assert(!spriteRenderer);
         assert(!textureManager);
+        assert(!input);
 
         gameWindow = GameWindow::GetInstance();
         gameWindow->Initialize(L"Title", 1280, 720);
 
+        input = Input::GetInstance();
+        input->Initialize(gameWindow->GetHWND());
+
         renderManager = RenderManager::GetInstance();
         renderManager->Initialize();
 
+        monitor = std::make_unique<Monitor>();
+        monitor->Initilaize(kMonitorWidth, kMonitorHeight, renderManager->GetMainBufferRTVFormat(), renderManager->GetMainDepthDSVFormat());
+
         triangleRenderer = TriangleRenderer::GetInstance();
-        triangleRenderer->Initialize(renderManager->GetMainBufferRTVFormat());
+        triangleRenderer->Initialize(monitor->GetColorBuffer().GetFormat());
 
         spriteRenderer = SpriteRenderer::GetInstance();
-        spriteRenderer->Initialize(renderManager->GetMainBufferRTVFormat());
+        spriteRenderer->Initialize(monitor->GetColorBuffer().GetFormat());
 
         textureManager = TextureManager::GetInstance();
 
@@ -49,30 +58,35 @@ namespace TOMATOsEngine {
         screenMatrix *= Matrix4x4::MakeScaling({ 1.0f, 1.0f,1.0f });
         screenMatrix *= Matrix4x4::MakeTranslation({ -1.0f, -1.0f, 0.0f });
 
-        monitor.Initilaize(kMonitorWidth, kMonitorHeight, renderManager->GetMainBufferRTVFormat(), );
+        renderManager->Reset();
 
         renderManager->BeginRender();
     }
 
     void Shutdown() {
+        monitor.reset();
         renderManager->Shutdown();
         gameWindow->Shutdown();
     }
 
     bool BeginFrame() {
         renderManager->BeginRender();
-        monitor.Draw(renderManager->GetCommandContext(), Matrix4x4::identity);
+        monitor->Draw(renderManager->GetCommandContext(), Matrix4x4::identity);
         renderManager->EndRender();
 
         if (!gameWindow->ProcessMessage()) {
             return false;
         }
 
+        input->Update();
+
         renderManager->Reset();
         triangleRenderer->Reset();
         spriteRenderer->Reset();
 
-        monitor.BeginRender(renderManager->GetCommandContext());
+
+        monitor->BeginRender(renderManager->GetCommandContext());
+
 
         return true;
     }
@@ -286,6 +300,43 @@ namespace TOMATOsEngine {
             { {tmp[3], 0.0f}, color, {ur, ub} },
         };
         spriteRenderer->Draw(renderManager->GetCommandContext(), vertices, 2, texture.GetSRV());
+    }
+
+    bool IsKeyPressed(char keycode) {
+        return input->IsKeyPressed(keycode);
+    }
+
+    bool IsKeyTrigger(char keycode) {
+        return input->IsKeyTrigger(keycode);
+    }
+
+    bool IsKeyRelease(char keycode) {
+        return input->IsKeyRelease(keycode);
+    }
+
+    bool IsMousePressed(int button) {
+        return input->IsMousePressed(button);
+    }
+
+    bool IsMouseTrigger(int button) {
+        return input->IsMouseTrigger(button);
+    }
+
+    bool IsMouseRelease(int button) {
+        return input->IsMouseRelease(button);
+    }
+
+    Vector2 GetMousePosition() {
+        auto point = input->GetMousePosition();
+        return { float(point.x), float(kWindowHeight - point.y) };
+    }
+
+    Vector2 GetMouseMove() {
+        return { float(input->GetMouseMoveX()), float(input->GetMouseMoveY()) };
+    }
+
+    float GetMouseWheel() {
+        return float(input->GetMouseWheel());
     }
 
 }

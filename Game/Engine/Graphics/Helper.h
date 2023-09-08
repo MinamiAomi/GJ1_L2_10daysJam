@@ -24,7 +24,7 @@ namespace Helper {
     template<typename T>
     T AlignUp(T value, size_t alignment) {
         size_t mask = alignment - 1;
-        return T((size_t)value & ~mask);
+        return T((size_t(value) + mask) & ~mask);
     }
 
     template<typename T>

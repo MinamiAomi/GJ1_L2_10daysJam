@@ -31,7 +31,7 @@ void DepthBuffer::CreateViews() {
     D3D12_DEPTH_STENCIL_VIEW_DESC dsvDesc{};
     D3D12_SHADER_RESOURCE_VIEW_DESC srvDesc{};
     dsvDesc.Format = Helper::GetDSVFormat(format_);
-    srvDesc.Format = Helper::GetDSVFormat(format_);
+    srvDesc.Format = Helper::GetDepthFormat(format_);
     srvDesc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
 
     if (arraySize_ > 1) {

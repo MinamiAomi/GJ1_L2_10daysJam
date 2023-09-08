@@ -26,6 +26,8 @@
     <ClInclude Include="..\Externals\ImGui\imstb_truetype.h" />
     <ClInclude Include="Engine\Graphics\DepthBuffer.h" />
     <ClInclude Include="Engine\Graphics\LinearAllocator.h" />
+    <ClInclude Include="Engine\Input.h" />
+    <ClInclude Include="Engine\Math\Random.h" />
     <ClInclude Include="Engine\Monitor.h" />
     <ClInclude Include="Engine\SpriteRenderer.h" />
     <ClInclude Include="Engine\TextureHandle.h" />
@@ -59,6 +61,8 @@
     <ClInclude Include="Engine\TextureManager.h" />
     <ClInclude Include="Engine\TriangleRenderer.h" />
     <ClInclude Include="Engine\Utility.h" />
+    <ClInclude Include="Field.h" />
+    <ClInclude Include="Player.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Externals\ImGui\imgui.cpp">
@@ -84,6 +88,7 @@
     </ClCompile>
     <ClCompile Include="Engine\Graphics\DepthBuffer.cpp" />
     <ClCompile Include="Engine\Graphics\LinearAllocator.cpp" />
+    <ClCompile Include="Engine\Input.cpp" />
     <ClCompile Include="Engine\Monitor.cpp" />
     <ClCompile Include="Engine\SpriteRenderer.cpp" />
     <ClCompile Include="Engine\TOMATOsEngine.cpp" />
@@ -112,7 +117,9 @@
     <ClCompile Include="Engine\TextureManager.cpp" />
     <ClCompile Include="Engine\TriangleRenderer.cpp" />
     <ClCompile Include="Engine\Utility.cpp" />
+    <ClCompile Include="Field.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="Player.cpp" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="..\Externals\ImGui\LICENSE.txt" />

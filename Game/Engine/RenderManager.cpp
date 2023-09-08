@@ -34,7 +34,7 @@ void RenderManager::Initialize() {
     mainColorBuffer_.SetClearColor(clearColor);
     mainColorBuffer_.Create(L"SceneColorBuffer", swapChainBuffer.GetWidth(), swapChainBuffer.GetHeight(), DXGI_FORMAT_R32G32B32A32_FLOAT);
 
-    mainDepthBuffer_.Create(L"SceneDepthBuffer", swapChainBuffer.GetWidth(), swapChainBuffer.GetHeight(), DXGI_FORMAT_R32_FLOAT);
+    mainDepthBuffer_.Create(L"SceneDepthBuffer", swapChainBuffer.GetWidth(), swapChainBuffer.GetHeight(), DXGI_FORMAT_D32_FLOAT);
 
     // ブルームを初期化
     bloom.Initialize(&mainColorBuffer_);
@@ -73,7 +73,7 @@ void RenderManager::EndRender() {
 
     // メインカラーバッファにブルームをかける
 
-    bloom.Render(commandContext);
+    //bloom.Render(commandContext);
 
     // スワップチェーンをレンダ―ターゲットに
     auto& swapChainBuffer = swapChain_.GetColorBuffer();

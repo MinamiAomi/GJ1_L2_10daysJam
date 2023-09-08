@@ -39,6 +39,15 @@ void Monitor::Initilaize(uint32_t width, uint32_t height, DXGI_FORMAT rtvFormat,
 
         desc.pRootSignature = rootSignature_;
 
+        D3D12_INPUT_ELEMENT_DESC inputElements[] = {
+            { "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, D3D12_APPEND_ALIGNED_ELEMENT, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },
+            { "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0, D3D12_APPEND_ALIGNED_ELEMENT, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },
+        };
+        D3D12_INPUT_LAYOUT_DESC inputLayoutDesc{};
+        inputLayoutDesc.pInputElementDescs = inputElements;
+        inputLayoutDesc.NumElements = _countof(inputElements);
+        desc.InputLayout = inputLayoutDesc;
+
         auto vs = shaderManager->Compile(L"Engine/Shader/MonitorVS.hlsl", ShaderManager::kVertex);
         auto ps = shaderManager->Compile(L"Engine/Shader/MonitorPS.hlsl", ShaderManager::kPixel);
         desc.VS = CD3DX12_SHADER_BYTECODE(vs->GetBufferPointer(), vs->GetBufferSize());
@@ -48,6 +57,7 @@ void Monitor::Initilaize(uint32_t width, uint32_t height, DXGI_FORMAT rtvFormat,
         desc.RasterizerState = Helper::RasterizerDefault;
         desc.NumRenderTargets = 1;
         desc.RTVFormats[0] = rtvFormat;
+        desc.DSVFormat = dsvFormat;
         desc.SampleMask = D3D12_DEFAULT_SAMPLE_MASK;
         desc.PrimitiveTopologyType = D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE;
         desc.SampleDesc.Count = 1;
