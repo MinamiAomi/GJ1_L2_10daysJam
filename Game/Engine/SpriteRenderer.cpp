@@ -73,7 +73,7 @@ void SpriteRenderer::Initialize(DXGI_FORMAT rtvFormat) {
         pipelineStates_[kBlendSubtract].Create(L"SpriteRenderer BlendSubtractPSO", desc);
     }
 
-    vertexBuffer_.Create(L"TriangleRenderer VertexBuffer", kMaxNumTriangles, sizeof(Vertex));
+    vertexBuffer_.Create(L"TriangleRenderer VertexBuffer", kMaxNumTriangles * 3, sizeof(Vertex));
     vbv_.BufferLocation = vertexBuffer_.GetGPUVirtualAddress();
     vbv_.SizeInBytes = UINT(vertexBuffer_.GetBufferSize());
     vbv_.StrideInBytes = sizeof(Vertex);

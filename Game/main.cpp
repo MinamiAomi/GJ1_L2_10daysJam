@@ -5,11 +5,13 @@
 #include "Field.h"
 #include "Player.h"
 
+#include "RenderManager.h"
+
 int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 
     TOMATOsEngine::Initialize();
 
-    auto tex = TOMATOsEngine::LoadTexture("Resources/uvChecker.png");
+    auto tex = TOMATOsEngine::LoadTexture("Resources/playgame.png");
 
     Field field;
     field.Initialize();
@@ -22,6 +24,7 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
     while (TOMATOsEngine::BeginFrame()) {
 
         if (TOMATOsEngine::IsKeyTrigger(DIK_SPACE)) {
+            field.Initialize();
             player.Initialize();
             player.SetPosition({ field.GetSize().x * 0.5f, field.GetSize().y - 100.0f });
         }
@@ -29,8 +32,23 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
         field.Update();
         player.Update();
 
+
         field.Draw();
         player.Draw();
+
+        TOMATOsEngine::DrawSpriteRect({}, { 1280.0f, 720.0f }, {}, { 1280.0f, 720.0f }, tex, 0xFFFFFFFF);
+
+        auto r = RenderManager::GetInstance();
+        ImGui::Begin("Bloom");
+        static float t = 0.0f;
+        ImGui::DragFloat("Threshold", &t, 0.01f, 0.0f, 1.0f);
+        r->GetBloom().SetThreshold(t);
+        static float k = 0.0f;
+        ImGui::DragFloat("Knee", &k, 0.01f, 0.0f, 1.0f);
+        r->GetBloom().SetKnee(k);
+        ImGui::End();
+
+        field.Edit();
     }
 
     TOMATOsEngine::Shutdown();

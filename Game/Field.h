@@ -8,12 +8,12 @@
 class Field {
 public:
     static const uint32_t kBlockSize = 40;
-    static const uint32_t kNumHorizontalBlocks = 9;
-    static const uint32_t kNumVerticalBlocks = 12;
+    static const uint32_t kNumHorizontalBlocks = 16;
+    static const uint32_t kNumVerticalBlocks = 24;
     static const uint32_t kGrowInterval = 120;
     static const uint32_t kNumGrowingBlocks = 4;
 
-    enum BlockType : unsigned char {
+    enum BlockType {
         None,
         Normal,
 
@@ -23,6 +23,8 @@ public:
     void Initialize();
     void Update();
     void Draw();
+
+    void BreakBlock(uint32_t blockIndexX, uint32_t blockIndexY);
 
     uint32_t CalcBlockIndexX(float worldPosX) const;
     uint32_t CalcBlockIndexY(float worldPosY) const;
@@ -36,6 +38,11 @@ public:
 
     const Vector2& GetSize() const { return fieldSize_; }
 
+    bool IsInField(const Vector2& worldPosition) const;
+    bool IsInField(uint32_t blockIndexX, uint32_t blockIndexY) const;
+
+    void Edit();
+
 private:
     void GrowField(uint32_t numBlocks);
     void Grow(uint32_t horizontalIndex);
@@ -47,7 +54,8 @@ private:
     Vector2 fieldSize_;
     // 伸びるまでの時間
     uint32_t growCoolTime_ = 0;
-    
+    uint32_t growInterval_ = 120;
+    uint32_t numGrowingBlocks_ = 4;
     // 乱数生成器
     Random::RandomNumberGenerator randomNumberGenerator_;
 };

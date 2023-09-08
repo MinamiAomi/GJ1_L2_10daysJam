@@ -73,7 +73,7 @@ void RenderManager::EndRender() {
 
     // メインカラーバッファにブルームをかける
 
-    //bloom.Render(commandContext);
+    bloom.Render(commandContext);
 
     // スワップチェーンをレンダ―ターゲットに
     auto& swapChainBuffer = swapChain_.GetColorBuffer();

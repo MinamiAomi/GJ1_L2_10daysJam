@@ -19,8 +19,8 @@ void Field::Initialize() {
 
 void Field::Update() {
     ++growCoolTime_;
-    if (growCoolTime_ >= kGrowInterval) {
-        GrowField(kNumGrowingBlocks);
+    if (growCoolTime_ >= growInterval_) {
+        GrowField(numGrowingBlocks_);
         growCoolTime_ = 0;
     }
 }
@@ -28,6 +28,10 @@ void Field::Update() {
 void Field::Draw() {
 
     TOMATOsEngine::DrawRect({}, fieldSize_, 0xFFFFFFFF);
+    if (std::abs(fieldSize_.y - float(kBlockSize * kNumVerticalBlocks)) > 0.0001f) {
+        int a = 0;
+        a = 0;
+    }
 
     for (uint32_t x = 0; x < kNumHorizontalBlocks; ++x) {
         // ブロックの矩形座標
@@ -47,6 +51,11 @@ void Field::Draw() {
 
     }
 
+}
+
+void Field::BreakBlock(uint32_t blockIndexX, uint32_t blockIndexY) {
+    assert(IsInField(blockIndexX, blockIndexY));
+    blocks_[blockIndexX][blockIndexY] = BlockType::None;
 }
 
 uint32_t Field::CalcBlockIndexX(float worldPosX) const {
@@ -80,6 +89,36 @@ float Field::GetBlockRight(uint32_t blockIndexX) const {
 }
 float Field::GetBlockBottom(uint32_t blockIndexY) const {
     return float(blockIndexY * kBlockSize);
+}
+
+bool Field::IsInField(const Vector2& worldPosition) const {
+    return IsInField(uint32_t(worldPosition.x / kBlockSize), uint32_t(worldPosition.y / kBlockSize));
+}
+
+bool Field::IsInField(uint32_t blockIndexX, uint32_t blockIndexY) const {
+    if (blockIndexX >= 0 && blockIndexX < kNumHorizontalBlocks &&
+        blockIndexY >= 0 && blockIndexY < kNumVerticalBlocks) {
+        return true;
+    }
+    return false;
+}
+
+void Field::Edit() {
+    ImGui::Begin("Field");
+    int coolTime = int(growCoolTime_);
+    ImGui::SliderInt("GrowCoolTime", &coolTime, 0, int(growInterval_));
+    growCoolTime_ = uint32_t(coolTime);
+
+    int interval = int(growInterval_);
+    ImGui::SliderInt("GrowInterbal", &interval, 0, 500);
+    growInterval_ = uint32_t(interval);
+
+    int numB = int(numGrowingBlocks_);
+    ImGui::SliderInt("NumGrowingBlocks", &numB, 0, int(kNumHorizontalBlocks - 1));
+    numGrowingBlocks_ = uint32_t(numB);
+
+    
+    ImGui::End();
 }
 
 void Field::GrowField(uint32_t numBlocks) {
