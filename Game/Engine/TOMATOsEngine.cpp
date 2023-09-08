@@ -22,6 +22,14 @@ namespace {
 
     std::unique_ptr<Monitor> monitor;
 
+
+    inline uint32_t RGBAtoABGR(uint32_t argb) {
+        uint8_t R = (argb >> 24) & 0xFFu;
+        uint8_t B = (argb >> 16) & 0xFFu;
+        uint8_t G = (argb >> 8) & 0xFFu;
+        uint8_t A = (argb >> 0) & 0xFFu;
+        return (A << 24) | (B << 16) | (G << 8) | (R << 0);
+    }
 }
 
 namespace TOMATOsEngine {
@@ -96,6 +104,8 @@ namespace TOMATOsEngine {
     }
 
     void DrawTriangle(const Vector2& pos0, const Vector2& pos1, const Vector2& pos2, uint32_t color) {
+        color = RGBAtoABGR(color);
+
         TriangleRenderer::Vertex vertices[] = {
            { Vector3(pos0) * screenMatrix, color },
            { Vector3(pos1) * screenMatrix, color },
@@ -108,6 +118,7 @@ namespace TOMATOsEngine {
     }
 
     void DrawRect(const Vector2& min, const Vector2& max, uint32_t color) {
+        color = RGBAtoABGR(color);
         TriangleRenderer::Vertex vertices[] = {
             { { min.x, max.y, 0.0f }, color },
             { { min.x, min.y, 0.0f }, color },
@@ -127,6 +138,7 @@ namespace TOMATOsEngine {
     }
 
     void DrawRectAngle(const Vector2& pos, const Vector2& size, const Vector2& anchorPoint, float angle, uint32_t color) {
+        color = RGBAtoABGR(color);
         Vector2 tmp[] = {
             { 0.0f, 1.0f },
             { 0.0f, 0.0f },
@@ -158,6 +170,7 @@ namespace TOMATOsEngine {
 
 
     void DrawCircle(const Vector2& pos, float radius, uint32_t color) {
+        color = RGBAtoABGR(color);
         constexpr uint32_t kNumSubdivisions = 16;
         constexpr uint32_t kNumTriangles = kNumSubdivisions - 2;
 
@@ -200,6 +213,7 @@ namespace TOMATOsEngine {
     }
 
     void DrawSpriteRect(const Vector2& min, const Vector2& max, const Vector2& texBase, const Vector2& texSize, TextureHandle texHandle, uint32_t color) {
+        color = RGBAtoABGR(color);
         assert(texHandle.IsValid());
 
         auto& texture = textureManager->GetTexture(texHandle);
@@ -230,6 +244,7 @@ namespace TOMATOsEngine {
     }
 
     void DrawSpriteRectAngle(const Vector2& pos, const Vector2& size, const Vector2& anchorPoint, float angle, const Vector2& texBase, const Vector2& texSize, TextureHandle texHandle, uint32_t color) {
+        color = RGBAtoABGR(color);
         assert(texHandle.IsValid());
 
         auto& texture = textureManager->GetTexture(texHandle);
@@ -269,6 +284,7 @@ namespace TOMATOsEngine {
     }
 
     void DrawSpriteQuad(const Vector2& lt, const Vector2& rt, const Vector2& lb, const Vector2& rb, const Vector2& texBase, const Vector2& texSize, TextureHandle texHandle, uint32_t color) {
+        color = RGBAtoABGR(color);
         auto& texture = textureManager->GetTexture(texHandle);
         auto& desc = texture.GetDesc();
 
