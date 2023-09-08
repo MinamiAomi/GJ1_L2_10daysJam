@@ -45,7 +45,7 @@ void Field::Draw() {
             // 通常ブロック
             if (blocks_[x][y] == BlockType::Normal) {
 
-                TOMATOsEngine::DrawRect(blockMinPos, blockMaxPos, 0xFF666666);
+                TOMATOsEngine::DrawRect(blockMinPos, blockMaxPos, 0x666666FF);
             }
         }
 

@@ -28,6 +28,7 @@
     <ClInclude Include="Engine\Graphics\DepthBuffer.h" />
     <ClInclude Include="Engine\Graphics\LinearAllocator.h" />
     <ClInclude Include="Engine\Input.h" />
+    <ClInclude Include="Engine\Math\Color.h" />
     <ClInclude Include="Engine\Math\Random.h" />
     <ClInclude Include="Engine\Monitor.h" />
     <ClInclude Include="Engine\SpriteRenderer.h" />
@@ -91,6 +92,7 @@
     <ClCompile Include="Engine\Graphics\DepthBuffer.cpp" />
     <ClCompile Include="Engine\Graphics\LinearAllocator.cpp" />
     <ClCompile Include="Engine\Input.cpp" />
+    <ClCompile Include="Engine\Math\Color.cpp" />
     <ClCompile Include="Engine\Monitor.cpp" />
     <ClCompile Include="Engine\SpriteRenderer.cpp" />
     <ClCompile Include="Engine\TOMATOsEngine.cpp" />

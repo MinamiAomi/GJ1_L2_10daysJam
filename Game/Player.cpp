@@ -95,7 +95,7 @@ void Player::Update() {
 void Player::Draw() {
     Vector2 rectMinPos = position_ - size_ * 0.5f;
     Vector2 rectMaxPos = position_ + size_ * 0.5f;
-    TOMATOsEngine::DrawRect(rectMinPos, rectMaxPos, 0xFF333388);
+    TOMATOsEngine::DrawRect(rectMinPos, rectMaxPos, 0x883333FF);
 }
 
 void Player::Bounce() {
