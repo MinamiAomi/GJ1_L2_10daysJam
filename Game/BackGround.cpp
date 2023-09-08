@@ -62,11 +62,20 @@ void BackGround::GrainUpdate() {
 				grain->death_Time_ = death_Time;
 				// フラグ
 				grain->isAlive_ = true;
-				
+
 				break;
 			}
 		}
 		count_ = coolTime_;
+	}
+	for (auto& grain : grains_) {
+		if (grain->isAlive_) {
+			grain->death_Time_--;
+			if (grain->death_Time_ <= 0) {
+				grain->isAlive_;
+			}
+		}
+
 	}
 }
 
@@ -76,5 +85,4 @@ void BackGround::GrainDraw() {
 			TOMATOsEngine::DrawSpriteRectAngle(grain->position_, grain->size_, Vector2(0.5f, 0.5f), 0.0f, {}, Vector2(32.0f, 32.0f), grain_TextureHandle_, 0xFFFFFFFF);
 		}
 	}
-	//TOMATOsEngine::DrawSpriteRect({}, { 1280.0f, 720.0f }, {}, { 1280.0f, 720.0f }, tex, 0xFFFFFFFF);
 }
