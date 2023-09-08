@@ -33,17 +33,14 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
             player.SetPosition({ field.GetSize().x * 0.5f, field.GetSize().y - 100.0f });
         }
 
-        backGround.Update();
         field.Update();
+        backGround.Update();
         player.Update();
 
 
+        field.Draw();
+        player.Draw();
         backGround.Draw();
-       /* field.Draw();
-        player.Draw();*/
-
-       // TOMATOsEngine::DrawSpriteRect({}, { 1280.0f, 720.0f }, {}, { 1280.0f, 720.0f }, tex, 0xFFFFFFFF);
-        //TOMATOsEngine::DrawSpriteRect({}, { 1280.0f, 720.0f }, {}, { 1280.0f, 720.0f }, tex, 0xFFFFFFFF);
 
         auto r = RenderManager::GetInstance();
         ImGui::Begin("Bloom");
