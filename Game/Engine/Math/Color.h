@@ -27,9 +27,11 @@ public:
     static Vector4 Convert(uint32_t rgba);
 
     Color() : rgba_(Vector4::one) {}
+    Color(const Color& color) : rgba_(color.rgba_) {}
     Color(float r, float g, float b, float a = 1.0f) : rgba_(r, g, b, a) {}
     Color(uint8_t r, uint8_t g, uint8_t b, uint8_t a = 0xFFu) : rgba_(Convert(Merge(r, g, b, a))) {}
     explicit Color(uint32_t rgba) : rgba_(Convert(rgba)) {}
+    explicit Color(const Vector4& rgba) : rgba_(rgba) {}
 
     operator const Vector4& () noexcept { return rgba_; }
     operator uint32_t() noexcept { return Convert(rgba_); }
