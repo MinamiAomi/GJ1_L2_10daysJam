@@ -24,6 +24,7 @@
     <ClInclude Include="..\Externals\ImGui\imstb_rectpack.h" />
     <ClInclude Include="..\Externals\ImGui\imstb_textedit.h" />
     <ClInclude Include="..\Externals\ImGui\imstb_truetype.h" />
+    <ClInclude Include="BackGround.h" />
     <ClInclude Include="Engine\Graphics\DepthBuffer.h" />
     <ClInclude Include="Engine\Graphics\LinearAllocator.h" />
     <ClInclude Include="Engine\Input.h" />
@@ -86,6 +87,7 @@
     <ClCompile Include="..\Externals\ImGui\imgui_widgets.cpp">
       <Optimization Condition="'$(Configuration)|$(Platform)'=='Release|x64'">MinSpace</Optimization>
     </ClCompile>
+    <ClCompile Include="BackGround.cpp" />
     <ClCompile Include="Engine\Graphics\DepthBuffer.cpp" />
     <ClCompile Include="Engine\Graphics\LinearAllocator.cpp" />
     <ClCompile Include="Engine\Input.cpp" />
