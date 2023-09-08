@@ -13,8 +13,14 @@ struct PSOutput {
 PSOutput main(PSInput input) {
     PSOutput output;
 
-    output.color = texture_.Sample(sampler_, input.texcoord);
-    //output.color = float4(input.texcoord.xy, 0.0f, 1.0f);
+    float2 texcoord = input.texcoord;
+    texcoord -= 0.5f;
+    float power = pow(length(texcoord), 0.2f);
+    texcoord *= power;
+    texcoord *= 1.25f;
+    texcoord += 0.5f;
+
+    output.color = texture_.Sample(sampler_, texcoord);
 
     return output;
 }

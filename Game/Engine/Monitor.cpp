@@ -94,13 +94,13 @@ void Monitor::Draw(CommandContext& commandContext, const Matrix4x4& camera) {
     };
 
     Vertex vertices[6] = {
-        {{ -0.8f, -0.8f, 0.0f }, {0.0f, 1.0f}},
-        {{ -0.8f,  0.8f, 0.0f }, {0.0f, 0.0f}},
-        {{  0.8f,  0.8f, 0.0f }, {1.0f, 0.0f}},
+        {{ -1.0f, -1.0f, 0.0f }, {0.0f, 1.0f}},
+        {{ -1.0f,  1.0f, 0.0f }, {0.0f, 0.0f}},
+        {{  1.0f,  1.0f, 0.0f }, {1.0f, 0.0f}},
         
-        {{ -0.8f, -0.8f, 0.0f }, {0.0f, 1.0f}},
-        {{  0.8f,  0.8f, 0.0f }, {1.0f, 0.0f}},
-        {{  0.8f, -0.8f, 0.0f }, {1.0f, 1.0f}},
+        {{ -1.0f, -1.0f, 0.0f }, {0.0f, 1.0f}},
+        {{  1.0f,  1.0f, 0.0f }, {1.0f, 0.0f}},
+        {{  1.0f, -1.0f, 0.0f }, {1.0f, 1.0f}},
     };
     commandContext.SetDynamicVertexBuffer(0, 6, sizeof(Vertex), vertices);
     commandContext.Draw(6, 0);
