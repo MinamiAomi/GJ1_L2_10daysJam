@@ -10,6 +10,7 @@ public:
     
     void Initialize();
     void Update();
+    void move();
     void Draw();
 
     void SetPosition(const Vector2& position) { position_ = position; }
