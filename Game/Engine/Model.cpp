@@ -1,30 +1,19 @@
-#include "ArcadeMachine.h"
+#include "Model.h"
 
-#include "Graphics/Helper.h"
+#include "Graphics/CommandContext.h"
 #include "Graphics/ShaderManager.h"
 
-void ArcadeMachine::Initialize(DXGI_FORMAT rtvFormat, DXGI_FORMAT dsvFormat) {
-    CreatePipeline(rtvFormat, dsvFormat);
-}
+RootSignature Model::rootSignature_;
+PipelineState Model::pipelineState_;
 
-void ArcadeMachine::Update()
-{
-}
-
-void ArcadeMachine::Draw(CommandContext& commandContext, const Matrix4x4& camera) {
-    commandContext;
-    camera;
-}
-
-void ArcadeMachine::CreatePipeline(DXGI_FORMAT rtvFormat, DXGI_FORMAT dsvFormat) {
-
+void Model::CreatePipeline(DXGI_FORMAT rtvFormat, DXGI_FORMAT dsvFormat) {
     {
         CD3DX12_DESCRIPTOR_RANGE ranges[1]{};
         ranges[0].Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, 0);
 
         CD3DX12_ROOT_PARAMETER rootParameters[2]{};
-        rootParameters[0].InitAsDescriptorTable(_countof(ranges), ranges);
-        rootParameters[1].InitAsConstantBufferView(0);
+        rootParameters[0].InitAsConstantBufferView(0);
+        rootParameters[1].InitAsDescriptorTable(_countof(ranges), ranges);
 
         CD3DX12_STATIC_SAMPLER_DESC staticSampler(
             0,
@@ -43,7 +32,7 @@ void ArcadeMachine::CreatePipeline(DXGI_FORMAT rtvFormat, DXGI_FORMAT dsvFormat)
         desc.NumStaticSamplers = 1;
         desc.Flags = D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT;
 
-        rootSignature_.Create(L"ArcadeMachine RootSignature", desc);
+        rootSignature_.Create(L"Model RootSignature", desc);
     }
 
     {
@@ -75,10 +64,32 @@ void ArcadeMachine::CreatePipeline(DXGI_FORMAT rtvFormat, DXGI_FORMAT dsvFormat)
         desc.SampleMask = D3D12_DEFAULT_SAMPLE_MASK;
         desc.PrimitiveTopologyType = D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE;
         desc.SampleDesc.Count = 1;
-        pipelineState_.Create(L"ArcadeMachine PSO", desc);
+        pipelineState_.Create(L"Model PSO", desc);
     }
 }
 
-void ArcadeMachine::LoadModels() {
+void Model::Draw(CommandContext& commandContext, const Matrix4x4& world, const Matrix4x4& camera) {
+
+    commandContext.SetRootSignature(rootSignature_);
+    commandContext.SetPipelineState(pipelineState_);
+    commandContext.SetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+
+    struct Transformation {
+        Matrix4x4 world;
+        Matrix4x4 worldViewProj;
+    };
+    Transformation transformation;
+    transformation.world = world;
+    transformation.worldViewProj = world * camera;
+
+    commandContext.SetDynamicConstantBufferView(0, sizeof(transformation), &transformation);
+    commandContext.SetVertexBuffer(0, vbView_);
+    commandContext.SetIndexBuffer(ibView_);
+
+    for (auto& mesh : meshes_) {
+        auto& material = materials_[mesh.materialIndex];
+        material.texture;
+//        commandContext.SetDescriptorTable(1, );
+    }
 
 }

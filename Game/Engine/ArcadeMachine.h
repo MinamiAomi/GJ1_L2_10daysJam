@@ -19,15 +19,6 @@ public:
     void Draw(CommandContext& commandContext, const Matrix4x4& camera);
 
 private:
-    enum Parts {
-        Body,
-        Button1,
-        Button2,
-        ButtonRim1,
-        ButtonRim2,
-        Stick,
-        StickRim
-    };
     struct Material {
         Vector4 color;
         std::unique_ptr<Texture> texture;
@@ -44,7 +35,7 @@ private:
         Matrix4x4 matrix;
     };
 
-    void CreatePipeline();
+    void CreatePipeline(DXGI_FORMAT rtvFormat, DXGI_FORMAT dsvFormat);
     void LoadModels();
         
     RootSignature rootSignature_;
@@ -54,4 +45,7 @@ private:
     UploadBuffer indexBuffer_;
     std::vector<Mesh> meshes_;
     std::vector<Material> materials_;
+
+    Matrix4x4 baseTransform_;
+    Transform stickTransform_;
 };

@@ -206,6 +206,9 @@
     <ClInclude Include="Engine\RealWorld.h">
       <Filter>Engine</Filter>
     </ClInclude>
+    <ClInclude Include="Engine\Model.h">
+      <Filter>Engine</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Externals\ImGui\imgui.cpp">
@@ -352,6 +355,9 @@
       <Filter>Game\Particle</Filter>
     </ClCompile>
     <ClCompile Include="Engine\ArcadeMachine.cpp" />
+    <ClCompile Include="Engine\Model.cpp">
+      <Filter>Engine</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Text Include="..\Externals\ImGui\LICENSE.txt">
@@ -396,6 +402,12 @@
       <Filter>Engine\Shader</Filter>
     </None>
     <None Include="Engine\Shader\MonitorPS.hlsl">
+      <Filter>Engine\Shader</Filter>
+    </None>
+    <None Include="Engine\Shader\ModelVS.hlsl">
+      <Filter>Engine\Shader</Filter>
+    </None>
+    <None Include="Engine\Shader\ModelPS.hlsl">
       <Filter>Engine\Shader</Filter>
     </None>
   </ItemGroup>
