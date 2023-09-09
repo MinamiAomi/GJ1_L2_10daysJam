@@ -3,6 +3,7 @@
 #include "Graphics/ColorBuffer.h"
 #include "Graphics/RootSignature.h"
 #include "Graphics/PipelineState.h"
+#include "Graphics/UploadBuffer.h"
 
 #include "Math/MathUtils.h"
 
