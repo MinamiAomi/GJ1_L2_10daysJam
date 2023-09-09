@@ -27,6 +27,7 @@ public:
 	void Draw();
 private:
 	Vector2 emitter_;
-	TextureHandle textureHandle_;
+	TextureHandle white_particle_textureHandle_;
+	TextureHandle star_TextureHandle_;
 	std::array<std::unique_ptr<Particle>, 31> particles_;
 };

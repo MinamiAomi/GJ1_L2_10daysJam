@@ -2,6 +2,7 @@
 
 #include <cstdint>
 
+#include "TextureHandle.h"
 #include "Math/MathUtils.h"
 #include "Math/Random.h"
 
@@ -63,4 +64,6 @@ private:
     Random::RandomNumberGenerator randomNumberGenerator_;
     // パーティクルマネージャー
     ParticleManager* particleManager_;
+    // テクスチャハンドル
+    TextureHandle textureHandle_;
 };

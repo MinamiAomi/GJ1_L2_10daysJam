@@ -6,18 +6,19 @@
 
 void Pop::Initialize() {
 	emitter_ = {0.0f, 0.0f};
-	textureHandle_ = TOMATOsEngine::LoadTexture("Resources/Particle/white1x1.png");
+	textureHandle_.at(static_cast<uint32_t>(Texture::kWhite1x1)) = TOMATOsEngine::LoadTexture("Resources/Particle/white1x1.png");
+	textureHandle_.at(static_cast<uint32_t>(Texture::kBlock)) = TOMATOsEngine::LoadTexture("Resources/block.png");
 	for (auto& particle : particles_) {
 		particle = std::make_unique<Particle>();
 	}
 }
 
-void Pop::Create(const Vector2 emitter, uint32_t MaxParticle) {
+void Pop::Create(const Vector2 emitter, uint32_t textureHandle, uint32_t MaxParticle) {
 	Random::RandomNumberGenerator rnd{};
 	const uint32_t deathtime_Min = 5;
 	const uint32_t deathtime_Max = 10;
-	const float size_Min = 5.0f;
-	const float size_Max = 10.0f;
+	const float size_Min = 10.0f;
+	const float size_Max = 15.0f;
 	const uint32_t count_Max = MaxParticle;
 	uint32_t count = 0;
 	emitter_ = emitter;
@@ -26,7 +27,7 @@ void Pop::Create(const Vector2 emitter, uint32_t MaxParticle) {
 			// 座標
 			particle->position_ = emitter_;
 			// 色
-			particle->color_ = Vector4(0.0f, 0.6f, 0.8f, 1.0f);
+			particle->color_ = Vector4(1.0f, 1.0f, 1.0f, 1.0f);
 			// 速度
 			float velocity_X = rnd.NextFloatRange(-100.0f, 100.0f);
 			float velocity_Y = rnd.NextFloatRange(-100.0f, 100.0f);
@@ -40,6 +41,7 @@ void Pop::Create(const Vector2 emitter, uint32_t MaxParticle) {
 			float size = rnd.NextFloatRange(size_Min, size_Max);
 			particle->size_Origin_ = {size, size};
 			particle->size_ = particle->size_Origin_;
+			particle->textureHandle_ = textureHandle_.at(textureHandle);
 			// 寿命
 			particle->time_ = rnd.NextUIntRange(deathtime_Min, deathtime_Max);
 			particle->count_ = 0;
@@ -68,7 +70,7 @@ void Pop::Update() {
 void Pop::Draw() {
 	for (auto& particle : particles_) {
 		if (particle->isAlive_) {
-			TOMATOsEngine::DrawSpriteRectAngle(particle->position_, particle->size_, Vector2(0.5f, 0.5f), 0.0f, {}, Vector2(32.0f, 32.0f), textureHandle_, Color(particle->color_));
+			TOMATOsEngine::DrawSpriteRectAngle(particle->position_, particle->size_, Vector2(0.5f, 0.5f), 0.0f, {}, Vector2(32.0f, 32.0f), particle->textureHandle_, Color(particle->color_));
 		}
 	}
 }

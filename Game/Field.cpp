@@ -16,6 +16,8 @@ void Field::Initialize() {
     GrowField(5);
 
     growCoolTime_ = 0;
+
+    textureHandle_ = TOMATOsEngine::LoadTexture("Resources/block.png");
 }
 
 void Field::Update() {
@@ -46,7 +48,8 @@ void Field::Draw() {
             // 通常ブロック
             if (blocks_[x][y] == BlockType::Normal) {
 
-                TOMATOsEngine::DrawRect(blockMinPos, blockMaxPos, 0x666666FF);
+                //TOMATOsEngine::DrawRect(blockMinPos, blockMaxPos, 0x666666FF);
+                TOMATOsEngine::DrawSpriteRect(blockMinPos, blockMaxPos, {},Vector2(32.0f,32.0f),textureHandle_, 0xFFFFFFFF);
             }
         }
 
@@ -66,7 +69,9 @@ void Field::BreakBlock(uint32_t blockIndexX, uint32_t blockIndexY) {
         Vector2(
             static_cast<float>(blockIndexX * kBlockSize),
             static_cast<float>(blockIndexY * kBlockSize)
-        ), 20);
+        ), 
+        1,
+        20);
 }
 
 uint32_t Field::CalcBlockIndexX(float worldPosX) const {

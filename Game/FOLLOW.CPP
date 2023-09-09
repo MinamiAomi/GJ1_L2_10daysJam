@@ -6,7 +6,8 @@
 
 void Follow::Initialize() {
 	emitter_ = { 0.0f, 0.0f };
-	textureHandle_ = TOMATOsEngine::LoadTexture("Resources/Particle/white_particle.png");
+	white_particle_textureHandle_ = TOMATOsEngine::LoadTexture("Resources/Particle/white_particle.png");
+	star_TextureHandle_ = TOMATOsEngine::LoadTexture("Resources/Particle/star.png");
 	for (auto& particle : particles_) {
 		particle = std::make_unique<Particle>();
 		particle->isAlive_ = false;
@@ -16,17 +17,18 @@ void Follow::Initialize() {
 void Follow::Create(const Vector2 emitter, uint32_t MaxParticle) {
 	Random::RandomNumberGenerator rnd{};
 	emitter_ = emitter;
-	const float kSize = 10.0f;
+	const float kSize = 32.0f;
 	const uint32_t kDeath_Time = 30;
 	const uint32_t count_Max = MaxParticle;
 	uint32_t count = 0;
-
+	emitter_.x -= kSize;
+	emitter_.y -= kSize;
 	for (auto& particle : particles_) {
 		if (count < count_Max && !particle->isAlive_) {
 			// 座標
 			particle->position_ = emitter_;
 			// 色
-			particle->color_ = Vector4(0.5f, 0.5f, 0.5f, 0.5f);
+			particle->color_ = Vector4(0.9f, 0.8f, 0.1f,1.0f);
 			// サイズ
 			particle->size_Origin_ = { kSize,kSize };
 			particle->size_ = particle->size_Origin_;
@@ -69,7 +71,7 @@ void Follow::Update() {
 void Follow::Draw() {
 	for (auto& particle : particles_) {
 		if (particle->isAlive_) {
-			TOMATOsEngine::DrawSpriteRectAngle(particle->position_, particle->size_, Vector2(0.5f, 0.5f), 0.0f, {}, Vector2(32.0f, 32.0f), textureHandle_, Color(particle->color_));
+			TOMATOsEngine::DrawSpriteRectAngle(particle->position_, particle->size_, Vector2(0.5f, 0.5f), 0.0f, {}, Vector2(32.0f, 32.0f), star_TextureHandle_, Color(particle->color_));
 		}
 	}
 }
