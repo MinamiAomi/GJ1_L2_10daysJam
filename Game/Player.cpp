@@ -56,7 +56,7 @@ void Player::move()
 
     // 仮移動
     Vector2 tempPosition = position_ + velocity_;
-    tempPosition.x = std::clamp(tempPosition.x, size_.x * 0.5f, field_->GetSize().x - size_.x * 0.5f);
+    tempPosition.x = std::clamp(tempPosition.x, size_.x * 0.5f, field_->GetSize().x - size_.x * 0.5f - 0.1f);
 
 #pragma endregion 
 
