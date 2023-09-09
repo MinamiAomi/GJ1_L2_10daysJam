@@ -199,6 +199,13 @@
     <ClInclude Include="Particle\YenLetter.h">
       <Filter>Game\Particle</Filter>
     </ClInclude>
+    <ClInclude Include="BackGround.h" />
+    <ClInclude Include="Engine\ArcadeMachine.h">
+      <Filter>Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\RealWorld.h">
+      <Filter>Engine</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Externals\ImGui\imgui.cpp">

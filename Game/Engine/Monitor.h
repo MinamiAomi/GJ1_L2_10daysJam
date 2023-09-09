@@ -3,9 +3,10 @@
 #include "Graphics/ColorBuffer.h"
 #include "Graphics/RootSignature.h"
 #include "Graphics/PipelineState.h"
-#include "Graphics/CommandContext.h"
 
 #include "Math/MathUtils.h"
+
+class CommandContext;
 
 class Monitor {
 public:
