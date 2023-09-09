@@ -56,6 +56,7 @@ void Player::move()
 
     // 仮移動
     Vector2 tempPosition = position_ + velocity_;
+    tempPosition.x = std::clamp(tempPosition.x, size_.x * 0.5f, field_->GetSize().x - size_.x * 0.5f);
 
 #pragma endregion 
 
@@ -164,13 +165,11 @@ void Player::move()
 					// パーティクル
 					ParticleUpdate(blockRight, blockBottom);
                 }
-              ComboUpdate(bottom, blockLeft, blockBottom);
+                ComboUpdate(bottom, blockLeft, blockBottom);
                 tempPosition.y += blockTopPosition - bottom;
             }
         }
     }
-
-  
   
 #pragma endregion
 
