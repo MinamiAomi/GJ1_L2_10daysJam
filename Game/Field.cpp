@@ -18,10 +18,6 @@ void Field::Initialize() {
 	growCoolTime_ = 0;
 
 	textureHandle_ = TOMATOsEngine::LoadTexture("Resources/block.png");
-	// 階段
-	preStep_ = 0;
-	step_ = 0;
-	stepCount_ = 0;
 }
 
 void Field::Update() {
@@ -63,64 +59,7 @@ void Field::Draw() {
 
 void Field::BreakBlock(uint32_t blockIndexX, uint32_t blockIndexY) {
 	assert(IsInField(blockIndexX, blockIndexY));
-	if (stepCount_ == kCombo) {
-		for (size_t x = 0; x < kNumHorizontalBlocks; x++) {
-			blocks_[static_cast<uint32_t>(x)][blockIndexY] = BlockType::None;
-			//// このブロックより上を一段おろす
-			//for (size_t y = blockIndexY; y < kNumVerticalBlocks-1; y++) {
-			//	blocks_[static_cast<uint32_t>(x)][static_cast<uint32_t>(y)] = blocks_[static_cast<uint32_t>(x)][static_cast<uint32_t>(y) + 1];
-			//}
-			// パーティクル
-			particleManager_->GetSplash()->Create(
-				Vector2(
-					static_cast<float>(x * kBlockSize),
-					static_cast<float>(blockIndexY * kBlockSize)
-				),
-				Vector4(1.0f, 1.0f, 1.0f, 1.0f),
-				static_cast<uint32_t>(Pop::Texture::kWhite1x1),
-				20);
-			particleManager_->GetPop()->Create(
-				Vector2(
-					static_cast<float>(x * kBlockSize),
-					static_cast<float>(blockIndexY * kBlockSize)
-				),
-				Vector4(1.0f, 1.0f, 1.0f, 1.0f),
-				static_cast<uint32_t>(Pop::Texture::kBlock),
-				20);
-		}
-		stepCount_ = 0;
-	}
-	else {
-		blocks_[blockIndexX][blockIndexY] = BlockType::None;
-		// パーティクル
-		particleManager_->GetSplash()->Create(
-			Vector2(
-				static_cast<float>(blockIndexX * kBlockSize),
-				static_cast<float>(blockIndexY * kBlockSize)
-			),
-			Vector4(1.0f, 1.0f, 1.0f, 1.0f),
-			static_cast<uint32_t>(Pop::Texture::kWhite1x1),
-			20);
-		particleManager_->GetPop()->Create(
-			Vector2(
-				static_cast<float>(blockIndexX * kBlockSize),
-				static_cast<float>(blockIndexY * kBlockSize)
-			),
-			Vector4(1.0f, 1.0f, 1.0f, 1.0f),
-			static_cast<uint32_t>(Pop::Texture::kBlock),
-			20);
-	}
-
-	step_ = blockIndexY;
-	if (step_ - 1 == preStep_) {
-		stepCount_++;
-	}
-	else {
-		stepCount_ = 0;
-	}
-	preStep_ = step_;
-
-	
+	blocks_[blockIndexX][blockIndexY] = BlockType::None;
 }
 
 uint32_t Field::CalcBlockIndexX(float worldPosX) const {
@@ -181,10 +120,6 @@ void Field::Edit() {
 	int numB = int(numGrowingBlocks_);
 	ImGui::SliderInt("NumGrowingBlocks", &numB, 0, int(kNumHorizontalBlocks - 1));
 	numGrowingBlocks_ = uint32_t(numB);
-
-	ImGui::Text("preStep:%d", preStep_);
-	ImGui::Text("step:%d", step_);
-	ImGui::Text("stepCount:%d", stepCount_);
 	ImGui::End();
 }
 

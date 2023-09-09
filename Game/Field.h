@@ -66,11 +66,4 @@ private:
     ParticleManager* particleManager_;
     // テクスチャハンドル
     TextureHandle textureHandle_;
-    // 階段
-    const uint32_t kCombo = 2;
-    uint32_t preStep_;
-    uint32_t step_;
-    uint32_t stepCount_;
-    // 平行
-
 };
