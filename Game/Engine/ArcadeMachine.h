@@ -1,6 +1,7 @@
 #pragma once
 
 #include <memory>
+#include <vector>
 
 #include "Graphics/RootSignature.h"
 #include "Graphics/PipelineState.h"
@@ -18,6 +19,15 @@ public:
     void Draw(CommandContext& commandContext, const Matrix4x4& camera);
 
 private:
+    enum Parts {
+        Body,
+        Button1,
+        Button2,
+        ButtonRim1,
+        ButtonRim2,
+        Stick,
+        StickRim
+    };
     struct Material {
         Vector4 color;
         std::unique_ptr<Texture> texture;
@@ -26,11 +36,22 @@ private:
         uint32_t vertexOffset;
         uint32_t indexOffset;
         uint32_t indexCount;
+        uint32_t materialIndex;
     };
-    
+    struct Transform {
+        Vector3 translate;
+        Quaternion quaternion;
+        Matrix4x4 matrix;
+    };
+
+    void CreatePipeline();
+    void LoadModels();
+        
     RootSignature rootSignature_;
     PipelineState pipelineState_;
 
     UploadBuffer vertexBuffer_;
     UploadBuffer indexBuffer_;
+    std::vector<Mesh> meshes_;
+    std::vector<Material> materials_;
 };

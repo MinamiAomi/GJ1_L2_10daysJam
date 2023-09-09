@@ -34,6 +34,7 @@ public:
 
     void Draw(CommandContext& commandContext, const Vertex* vertices, uint32_t numTriangles, D3D12_GPU_DESCRIPTOR_HANDLE srv);
 
+    void SetBlendMode(BlendMode mode) { blendMode_ = mode; }
 
 private:
     SpriteRenderer() = default;

@@ -103,6 +103,32 @@ namespace TOMATOsEngine {
         return textureManager->Load(name);
     }
 
+    void SetBlendMode(BlendMode blendMode) {
+        switch (blendMode)
+        {
+        case kBlendModeDisable:
+            triangleRenderer->SetBlendMode(TriangleRenderer::kBlendDisable);
+            spriteRenderer->SetBlendMode(SpriteRenderer::kBlendDisable);
+            break;
+        case kBlendModeNormal:
+            triangleRenderer->SetBlendMode(TriangleRenderer::kBlendNormal);
+            spriteRenderer->SetBlendMode(SpriteRenderer::kBlendNormal);
+            break;
+        case kBlendModeAdditive:
+            triangleRenderer->SetBlendMode(TriangleRenderer::kBlendAdditive);
+            spriteRenderer->SetBlendMode(SpriteRenderer::kBlendAdditive);
+            break;
+        case kBlendModeSubtract:
+            triangleRenderer->SetBlendMode(TriangleRenderer::kBlendSubtract);
+            spriteRenderer->SetBlendMode(SpriteRenderer::kBlendSubtract);
+            break;
+        default:
+            assert(false);
+            break;
+        }
+
+    }
+
     void DrawTriangle(const Vector2& pos0, const Vector2& pos1, const Vector2& pos2, uint32_t color) {
         color = RGBAtoABGR(color);
 

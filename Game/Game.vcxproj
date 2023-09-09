@@ -97,6 +97,7 @@
       <Optimization Condition="'$(Configuration)|$(Platform)'=='Release|x64'">MinSpace</Optimization>
     </ClCompile>
     <ClCompile Include="BackGround.cpp" />
+    <ClCompile Include="Engine\ArcadeMachine.cpp" />
     <ClCompile Include="Engine\Graphics\DepthBuffer.cpp" />
     <ClCompile Include="Engine\Graphics\LinearAllocator.cpp" />
     <ClCompile Include="Engine\Input.cpp" />
