@@ -15,9 +15,14 @@ PSOutput main(PSInput input) {
 
     float2 texcoord = input.texcoord;
     texcoord -= 0.5f;
-    float power = pow(length(texcoord), 0.2f);
-    texcoord *= power;
-    texcoord *= 1.25f;
+    
+    float distort = 0.1f;
+    
+   // texcoord /= 1.0f - length(texcoord) * distort;
+    
+    //float power = pow(length(texcoord), distort);
+    //texcoord *= power;
+    //texcoord *= 2.25f;
     texcoord += 0.5f;
 
     output.color = texture_.Sample(sampler_, texcoord);
