@@ -1,5 +1,7 @@
 #include "ArcadeMachine.h"
 
-//void ArcadeMachine::Initialize(DXGI_FORMAT rtvFormat, DXGI_FORMAT dsvFormat)
-//{
-//}
+#include "Graphics/Helper.h"
+#include "Graphics/ShaderManager.h"
+
+
+
