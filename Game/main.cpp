@@ -13,6 +13,8 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 
     TOMATOsEngine::Initialize();
 
+    //TOMATOsEngine::SetBlendMode(kBlendModeNormal);
+
     auto tex = TOMATOsEngine::LoadTexture("Resources/playgame.png");
 
     ParticleManager particleManager;

@@ -27,9 +27,10 @@ public:
 		kBlock,
 		kCount,
 	};
+
 public:
 	void Initialize();
-	void Create(const Vector2 emitter, uint32_t textureHandle, uint32_t MaxParticle = 1);
+	void Create(const Vector2 emitter, Vector4 color,uint32_t textureHandle, uint32_t MaxParticle = 1);
 	void Update();
 	void Draw();
 

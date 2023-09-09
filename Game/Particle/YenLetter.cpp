@@ -5,7 +5,7 @@
 #include "Math/Random.h"
 void YenLetter::Initialize() {
 	emitter_ = { 0.0f, 0.0f };
-	textureHandle_ = TOMATOsEngine::LoadTexture("Resources/Particle/white_particle.png");
+	textureHandle_.at(static_cast<uint32_t>(Texture::kWhite1x1)) = TOMATOsEngine::LoadTexture("Resources/Particle/white_particle.png");
 	for (auto& particle : particles_) {
 		particle = std::make_unique<Particle>();
 		particle->isAlive_ = false;
@@ -14,7 +14,7 @@ void YenLetter::Initialize() {
 	angle_Y_ = 0.0f;
 }
 
-void YenLetter::Create(const Vector2 emitter, bool right) {
+void YenLetter::Create(const Vector2 emitter, Vector4 color, uint32_t textureHandle,bool right) {
 	Random::RandomNumberGenerator rnd{};
 
 	const float radius = 32.0f;
@@ -46,10 +46,12 @@ void YenLetter::Create(const Vector2 emitter, bool right) {
 			// 座標
 			particle->position_ = emitter_;
 			// 色
-			particle->color_ = Vector4(0.5f, 0.5f, 0.5f, 0.5f);
+			particle->color_ = color;
 			// サイズ
 			particle->size_Origin_ = { kSize,kSize };
 			particle->size_ = particle->size_Origin_;
+			// テクスチャ
+			particle->textureHandle_ = textureHandle_.at(textureHandle);
 			// 寿命
 			particle->time_ = kDeath_Time;
 			particle->count_ = 0;
@@ -89,7 +91,7 @@ void YenLetter::Update() {
 void YenLetter::Draw() {
 	for (auto& particle : particles_) {
 		if (particle->isAlive_) {
-			TOMATOsEngine::DrawSpriteRectAngle(particle->position_, particle->size_, Vector2(0.5f, 0.5f), 0.0f, {}, Vector2(32.0f, 32.0f), textureHandle_, Color(particle->color_));
+			TOMATOsEngine::DrawSpriteRectAngle(particle->position_, particle->size_, Vector2(0.5f, 0.5f), 0.0f, {}, Vector2(32.0f, 32.0f), particle->textureHandle_, Color(particle->color_));
 		}
 	}
 }
