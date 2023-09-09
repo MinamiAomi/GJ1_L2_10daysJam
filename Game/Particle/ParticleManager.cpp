@@ -1,5 +1,7 @@
 #include "ParticleManager.h"
 
+#include "TOMATOsEngine.h"
+
 void ParticleManager::Initialize() { 
 	// 円
 	circle_ = new Circle();
@@ -27,9 +29,11 @@ void ParticleManager::Update() {
 }
 
 void ParticleManager::Draw() { 
+	TOMATOsEngine::SetBlendMode(kBlendModeAdditive);
 	circle_->Draw();
 	follow_->Draw();
 	splash_->Draw();
 	pop_->Draw();
 	yenLetter_->Draw();
+	TOMATOsEngine::SetBlendMode(kBlendModeNormal);
 }

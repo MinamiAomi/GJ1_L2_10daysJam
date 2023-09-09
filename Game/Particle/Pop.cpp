@@ -13,7 +13,7 @@ void Pop::Initialize() {
 	}
 }
 
-void Pop::Create(const Vector2 emitter, uint32_t textureHandle, uint32_t MaxParticle) {
+void Pop::Create(const Vector2 emitter, Vector4 color,uint32_t textureHandle, uint32_t MaxParticle) {
 	Random::RandomNumberGenerator rnd{};
 	const uint32_t deathtime_Min = 5;
 	const uint32_t deathtime_Max = 10;
@@ -27,7 +27,7 @@ void Pop::Create(const Vector2 emitter, uint32_t textureHandle, uint32_t MaxPart
 			// 座標
 			particle->position_ = emitter_;
 			// 色
-			particle->color_ = Vector4(1.0f, 1.0f, 1.0f, 1.0f);
+			particle->color_ = color;
 			// 速度
 			float velocity_X = rnd.NextFloatRange(-100.0f, 100.0f);
 			float velocity_Y = rnd.NextFloatRange(-100.0f, 100.0f);
@@ -41,6 +41,7 @@ void Pop::Create(const Vector2 emitter, uint32_t textureHandle, uint32_t MaxPart
 			float size = rnd.NextFloatRange(size_Min, size_Max);
 			particle->size_Origin_ = {size, size};
 			particle->size_ = particle->size_Origin_;
+			// テクスチャ
 			particle->textureHandle_ = textureHandle_.at(textureHandle);
 			// 寿命
 			particle->time_ = rnd.NextUIntRange(deathtime_Min, deathtime_Max);

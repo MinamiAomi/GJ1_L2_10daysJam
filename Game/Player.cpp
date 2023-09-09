@@ -90,9 +90,9 @@ void Player::Update() {
     }
 
     position_ = tempPosition;
-    particleManager_->GetFollow()->Create(position_);
-    particleManager_->GetYenLetter()->Create(position_);
-    particleManager_->GetYenLetter()->Create(position_,false);
+    particleManager_->GetFollow()->Create(position_,Vector4(1.0f,1.0f,1.0f,1.0f), static_cast<uint32_t>(Follow::Texture::kStar));
+    //particleManager_->GetYenLetter()->Create(position_,Vector4(1.0f,1.0f,1.0f,1.0f),static_cast<uint32_t>(YenLetter::Texture::kWhite1x1));
+    //particleManager_->GetYenLetter()->Create(position_,Vector4(1.0f,1.0f,1.0f,1.0f), static_cast<uint32_t>(YenLetter::Texture::kWhite1x1),false);
 }
 
 void Player::Draw() {
@@ -103,3 +103,4 @@ void Player::Draw() {
 
 void Player::Bounce() {
 }
+

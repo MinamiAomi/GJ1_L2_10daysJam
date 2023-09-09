@@ -18,16 +18,23 @@ private:
 		Vector2 size_Origin_;
 		uint32_t time_;
 		uint32_t count_;
+		TextureHandle textureHandle_;
 		bool isAlive_;
 	};
-
+public:
+	enum class Texture {
+		kWhite1x1,
+		kBlock,
+		kCount,
+	};
 public:
 	void Initialize();
-	void Create(const Vector2 emitter,uint32_t MaxParticle = 1);
+	void Create(const Vector2 emitter, Vector4 color, uint32_t textureHandle, uint32_t MaxParticle = 1);
 	void Update();
 	void Draw();
 private:
 	Vector2 emitter_;
-	TextureHandle textureHandle_;
+	static const size_t kTextureMax = static_cast<size_t>(Texture::kCount);
+	std::array<TextureHandle, kTextureMax > textureHandle_;
 	std::array<std::unique_ptr<Particle>,100> particles_;
 };
