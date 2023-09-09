@@ -63,6 +63,7 @@ void Player::move()
     uint32_t preBlockRight = field_->CalcBlockIndexX(preRight);*/
 
     // 壁ぞり処理
+
     // 左のポイントふたつがブロックだった場合
     if (field_->GetBlock(blockLeft, blockTop) == Field::Normal &&
         field_->GetBlock(blockLeft, blockBottom) == Field::Normal) {
@@ -85,17 +86,22 @@ void Player::move()
     blockLeft = field_->CalcBlockIndexX(left);
     blockRight = field_->CalcBlockIndexX(right);
 
-    //左下だけ当たった時
-    if (field_->GetBlock(blockLeft, blockBottom) == Field::Normal) {
-        if (preBlockBottom <= blockBottom) {
-            tempPosition.x = (blockLeft + 1) * Field::kBlockSize + size_.x * 0.5f + 0.1f;
-        }
-    }
 
-    //右下だけ当たった時
-    if (field_->GetBlock(blockRight, blockBottom) == Field::Normal) {
-        if (preBlockBottom <= blockBottom) {
-            tempPosition.x = blockRight * Field::kBlockSize - size_.x * 0.5f - 0.1f;
+    // 下のポイントふたつがブロックじゃなかった場合
+    if (!(field_->GetBlock(blockLeft, blockBottom) == Field::Normal &&
+        field_->GetBlock(blockRight, blockBottom) == Field::Normal)) {
+        //左下だけ当たった時
+        if (field_->GetBlock(blockLeft, blockBottom) == Field::Normal) {
+            if (preBlockBottom <= blockBottom) {
+                tempPosition.x = (blockLeft + 1) * Field::kBlockSize + size_.x * 0.5f + 0.1f;
+            }
+        }
+
+        //右下だけ当たった時
+        if (field_->GetBlock(blockRight, blockBottom) == Field::Normal) {
+            if (preBlockBottom <= blockBottom) {
+                tempPosition.x = blockRight * Field::kBlockSize - size_.x * 0.5f - 0.1f;
+            }
         }
     }
 
