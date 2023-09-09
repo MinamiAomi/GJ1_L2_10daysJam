@@ -31,6 +31,8 @@ namespace TOMATOsEngine {
 
     TextureHandle LoadTexture(const std::string& name);
 
+
+    void SetBlendMode(BlendMode blendMode);
     void DrawTriangle(const Vector2& pos0, const Vector2& pos1, const Vector2& pos2, uint32_t color);
     void DrawRect(const Vector2& min, const Vector2& max, uint32_t color);
     void DrawRectAngle(const Vector2& pos, const Vector2& size, const Vector2& anchorPoint, float angle, uint32_t color);

@@ -351,6 +351,7 @@
     <ClCompile Include="Particle\YenLetter.cpp">
       <Filter>Game\Particle</Filter>
     </ClCompile>
+    <ClCompile Include="Engine\ArcadeMachine.cpp" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="..\Externals\ImGui\LICENSE.txt">
