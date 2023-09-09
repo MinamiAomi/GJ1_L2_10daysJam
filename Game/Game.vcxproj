@@ -64,6 +64,12 @@
     <ClInclude Include="Engine\TriangleRenderer.h" />
     <ClInclude Include="Engine\Utility.h" />
     <ClInclude Include="Field.h" />
+    <ClInclude Include="Particle\Circle.h" />
+    <ClInclude Include="Particle\Follow.h" />
+    <ClInclude Include="Particle\ParticleManager.h" />
+    <ClInclude Include="Particle\Pop.h" />
+    <ClInclude Include="Particle\Splash.h" />
+    <ClInclude Include="Particle\YenLetter.h" />
     <ClInclude Include="Player.h" />
   </ItemGroup>
   <ItemGroup>
@@ -122,7 +128,13 @@
     <ClCompile Include="Engine\TriangleRenderer.cpp" />
     <ClCompile Include="Engine\Utility.cpp" />
     <ClCompile Include="Field.cpp" />
+    <ClCompile Include="Follow.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="Particle\Circle.cpp" />
+    <ClCompile Include="Particle\ParticleManager.cpp" />
+    <ClCompile Include="Particle\Pop.cpp" />
+    <ClCompile Include="Particle\Splash.cpp" />
+    <ClCompile Include="Particle\YenLetter.cpp" />
     <ClCompile Include="Player.cpp" />
   </ItemGroup>
   <ItemGroup>

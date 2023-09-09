@@ -5,6 +5,8 @@
 #include "Math/MathUtils.h"
 #include "Math/Random.h"
 
+class ParticleManager;
+
 class Field {
 public:
     static const uint32_t kBlockSize = 40;
@@ -43,6 +45,7 @@ public:
 
     void Edit();
 
+    void SetParticleManager(ParticleManager* particleManager) {particleManager_ = particleManager;}
 private:
     void GrowField(uint32_t numBlocks);
     void Grow(uint32_t horizontalIndex);
@@ -58,4 +61,6 @@ private:
     uint32_t numGrowingBlocks_ = 4;
     // 乱数生成器
     Random::RandomNumberGenerator randomNumberGenerator_;
+    // パーティクルマネージャー
+    ParticleManager* particleManager_;
 };

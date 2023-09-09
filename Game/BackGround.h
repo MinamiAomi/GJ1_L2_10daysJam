@@ -11,6 +11,8 @@ private:
 	// 粒粒
 	struct Grain {
 		Vector2 position_;
+		Vector2 vector_;
+		Vector2 velocity_;
 		Vector2 size_;
 		Vector2 size_Original_;
 		Vector4 color_;
@@ -23,6 +25,18 @@ private:
 		Vector2 position_;
 		Vector2 velocity_;
 		Vector2 size_;
+		Vector4 color_;
+		uint32_t death_Time_;
+		uint32_t death_Count_;
+		bool isAlive_;
+	};
+	// 四角
+	struct Square {
+		Vector2 position_;
+		Vector2 size_;
+		Vector2 size_Original_;
+		float angle_;
+		float angle_Original_;
 		Vector4 color_;
 		uint32_t death_Time_;
 		uint32_t death_Count_;
@@ -43,6 +57,10 @@ private:
 	void CircleInitialize();
 	void CircleUpdate();
 	void CircleDraw();
+	// 四角
+	void SquareInitialize();
+	void SquareUpdate();
+	void SquareDraw();
 private:
 	TextureHandle white_particle_TextureHandle_;
 	// 粒粒
@@ -60,5 +78,16 @@ private:
 	TextureHandle circle_TextureHandle_;
 	const uint32_t circle_CoolTime_ = 2;
 	uint32_t circle_Count_;
+
+	// 四角
+	static const uint32_t kSquare_Max = 30;
+	std::array<std::unique_ptr<Square>, kSquare_Max> squares_;
+	TextureHandle square_TextureHandle_;
+	const uint32_t square_CoolTime_ = 120;
+	uint32_t square_Count_;
+
+	Vector4 square_Color_;
+	float duration_;
+	float currentTime_;
 };
 

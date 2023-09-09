@@ -3,6 +3,7 @@
 #include "Math/MathUtils.h"
 
 class Field;
+class ParticleManager;
 
 class Player {
 public:
@@ -13,7 +14,8 @@ public:
 
     void SetPosition(const Vector2& position) { position_ = position; }
     void SetField(Field* field) { field_ = field; }
-
+    void SetParticleManager(ParticleManager* particleManager) { particleManager_ = particleManager; }
+    
 private:
     void Bounce();
 
@@ -24,4 +26,5 @@ private:
     Vector2 velocity_;
 
     Field* field_;
+    ParticleManager* particleManager_;
 };

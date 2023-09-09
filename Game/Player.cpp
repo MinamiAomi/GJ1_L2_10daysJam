@@ -3,7 +3,7 @@
 #include "TOMATOsEngine.h"
 
 #include "Field.h"
-
+#include "Particle/ParticleManager.h"
 void Player::Initialize() {
     size_ = { 30.0f, 60.0f };
     velocity_ = Vector2::zero;
@@ -90,6 +90,9 @@ void Player::Update() {
     }
 
     position_ = tempPosition;
+    particleManager_->GetFollow()->Create(position_);
+    particleManager_->GetYenLetter()->Create(position_);
+    particleManager_->GetYenLetter()->Create(position_,false);
 }
 
 void Player::Draw() {
