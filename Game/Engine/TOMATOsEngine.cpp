@@ -8,6 +8,8 @@
 #include "TriangleRenderer.h"
 #include "SpriteRenderer.h"
 #include "TextureManager.h"
+#include "Model.h"
+#include "RealWorld.h"
 #include "Monitor.h"
 
 namespace {
@@ -20,8 +22,8 @@ namespace {
 
     Matrix4x4 screenMatrix;
 
-    std::unique_ptr<Monitor> monitor;
-
+    Monitor* monitor = nullptr;
+    std::unique_ptr<RealWorld> realWorld;
 
     inline uint32_t RGBAtoABGR(uint32_t argb) {
         uint8_t R = (argb >> 24) & 0xFFu;
@@ -41,6 +43,7 @@ namespace TOMATOsEngine {
         assert(!spriteRenderer);
         assert(!textureManager);
         assert(!input);
+        assert(!monitor);
 
         gameWindow = GameWindow::GetInstance();
         gameWindow->Initialize(L"Title", 1280, 720);
@@ -51,8 +54,13 @@ namespace TOMATOsEngine {
         renderManager = RenderManager::GetInstance();
         renderManager->Initialize();
 
-        monitor = std::make_unique<Monitor>();
+        Model::CreatePipeline(renderManager->GetMainBufferRTVFormat(), renderManager->GetMainDepthDSVFormat());
+
+        monitor = Monitor::GetInstance();
         monitor->Initilaize(kMonitorWidth, kMonitorHeight, renderManager->GetMainBufferRTVFormat(), renderManager->GetMainDepthDSVFormat());
+
+        realWorld = std::make_unique<RealWorld>();
+        realWorld->Initialize();
 
         triangleRenderer = TriangleRenderer::GetInstance();
         triangleRenderer->Initialize(monitor->GetColorBuffer().GetFormat());
@@ -72,14 +80,17 @@ namespace TOMATOsEngine {
     }
 
     void Shutdown() {
-        monitor.reset();
+        realWorld.reset();
+        Model::DestroyPipeline();
         renderManager->Shutdown();
         gameWindow->Shutdown();
     }
 
     bool BeginFrame() {
+        realWorld->Update();
+
         renderManager->BeginRender();
-        monitor->Draw(renderManager->GetCommandContext(), Matrix4x4::identity);
+        realWorld->Draw(renderManager->GetCommandContext());
         renderManager->EndRender();
 
         if (!gameWindow->ProcessMessage()) {
@@ -91,6 +102,7 @@ namespace TOMATOsEngine {
         renderManager->Reset();
         triangleRenderer->Reset();
         spriteRenderer->Reset();
+
 
 
         monitor->BeginRender(renderManager->GetCommandContext());
@@ -299,12 +311,12 @@ namespace TOMATOsEngine {
         }
 
         SpriteRenderer::Vertex vertices[] = {
-            { {tmp[0], 0.0f}, color, {ul, ut} },
-            { {tmp[1], 0.0f}, color, {ul, ub} },
-            { {tmp[2], 0.0f}, color, {ur, ub} },
-            { {tmp[0], 0.0f}, color, {ul, ut} },
-            { {tmp[2], 0.0f}, color, {ur, ub} },
-            { {tmp[3], 0.0f}, color, {ur, ut} },
+            { {tmp[0], 0.0f}, color, {ul, ub} },
+            { {tmp[1], 0.0f}, color, {ul, ut} },
+            { {tmp[2], 0.0f}, color, {ur, ut} },
+            { {tmp[0], 0.0f}, color, {ul, ub} },
+            { {tmp[2], 0.0f}, color, {ur, ut} },
+            { {tmp[3], 0.0f}, color, {ur, ub} },
         };
         spriteRenderer->Draw(renderManager->GetCommandContext(), vertices, 2, texture.GetSRV());
     }

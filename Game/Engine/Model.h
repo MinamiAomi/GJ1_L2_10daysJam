@@ -13,7 +13,6 @@
 class CommandContext;
 
 class Model {
-    friend class Model;
 public:
     struct Vertex {
         Vector3 position;
@@ -22,8 +21,9 @@ public:
     };
 
     static void CreatePipeline(DXGI_FORMAT rtvFormat, DXGI_FORMAT dsvFormat);
+    static void DestroyPipeline();
 
-    void LoadFromObjFile(const std::filesystem::path& path);
+    void CreateFromObj(const std::filesystem::path& path);
     void Draw(CommandContext& commandContext, const Matrix4x4& world, const Matrix4x4& camera);
 
 private:
@@ -39,9 +39,10 @@ private:
         std::unique_ptr<Texture> texture;
     };
 
-    static RootSignature rootSignature_;
-    static PipelineState pipelineState_;
+    static std::unique_ptr<RootSignature> rootSignature_;
+    static std::unique_ptr<PipelineState> pipelineState_;
 
+    void LoadMTLFile(const std::filesystem::path& path);
 
     UploadBuffer vertexBuffer_;
     D3D12_VERTEX_BUFFER_VIEW vbView_{};
