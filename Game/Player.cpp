@@ -19,91 +19,8 @@ void Player::Initialize() {
 
 void Player::Update() {
 
-	velocity_.x = 0.0f;
-	if (TOMATOsEngine::IsKeyPressed(DIK_D)) {
-		velocity_.x += 3.0f;
-	}
-	if (TOMATOsEngine::IsKeyPressed(DIK_A)) {
-		velocity_.x -= 3.0f;
-	}
+     move();
 
-	velocity_.y -= 1.0f;
-	velocity_.y = std::clamp(velocity_.y, -20.0f, 20.0f);
-
-	// 仮移動
-	Vector2 tempPosition = position_ + velocity_;
-
-	//float top = tempPosition.y + size_.x * 0.5f;
-	float bottom = tempPosition.y - size_.y * 0.5f;
-	float left = tempPosition.x - size_.x * 0.5f;
-	float right = tempPosition.x + size_.x * 0.5f;
-
-	//uint32_t blockTop = field_->CalcBlockIndexY(top);
-	uint32_t blockBottom = field_->CalcBlockIndexY(bottom);
-	uint32_t blockLeft = field_->CalcBlockIndexX(left);
-	uint32_t blockRight = field_->CalcBlockIndexX(right);
-
-	//// 壁ぞり処理
-	//// 右
-	//// フィールド内
-	//if (right <= field_->GetSize().x) {
-	//    // 縦幅がチップサイズより大きい可能性があるので
-	//    // 下のチップ番号と上のチップ番号から乗っている可能性のある範囲を取得
-	//    uint32_t indexRange = std::abs(int(blockTop) - int(blockBottom));
-	//    for (uint32_t i = 0; i < indexRange; ++i) {
-	//        auto blockRightType = field_->GetBlock(blockRight, blockBottom + i);
-	//        if (blockRightType != Field::None) {
-	//            // 衝突ブロックの左側を取得
-	//            float blockRightPosition = field_->GetBlockLeft(blockRight);
-	//            // ずらす(1.0f)は次でめり込まないように
-	//            tempPosition.x += blockRightPosition - right - 1.0f;
-	//            velocity_.x = 0.0f;
-	//            break;
-	//        }
-
-	//    }
-	//}
-	//else {
-	//    tempPosition.x += field_->GetSize().x - right - 1.0f;
-	//    velocity_.x = 0.0f;
-	//}
-
-	{
-		auto blockLeftBottomType = field_->GetBlock(blockLeft, blockBottom);
-		auto blockRightBottomType = field_->GetBlock(blockRight, blockBottom);
-
-		if (bottom < field_->GetSize().y) {
-			// 跳ねる処理
-			if (blockLeftBottomType != Field::None ||
-				blockRightBottomType != Field::None ||
-				bottom <= 0.0f) {
-				velocity_.y = 20.0f;
-				float blockTopPosition = 0.0f;
-				if (bottom > 0.0f && bottom <= field_->GetSize().y) {
-					blockTopPosition = field_->GetBlockTop(blockBottom);
-				}
-
-				if (blockLeftBottomType != Field::None &&
-					field_->IsInField(blockLeft, blockBottom)) {
-					// ブロック破壊
-					field_->BreakBlock(blockLeft, blockBottom);
-					// パーティクル
-					ParticleUpdate(blockLeft, blockBottom);
-				}
-				if (blockRightBottomType != Field::None &&
-					field_->IsInField(blockRight, blockBottom)) {
-					// ブロック破壊
-					field_->BreakBlock(blockRight, blockBottom);
-					// パーティクル
-					ParticleUpdate(blockRight, blockBottom);
-				}
-				ComboUpdate(bottom, blockLeft, blockBottom);
-				tempPosition.y += blockTopPosition - bottom;
-			}
-		}
-	}
-
-	position_ = tempPosition;
 	particleManager_->GetFollow()->Create(position_, Vector4(1.0f, 1.0f, 1.0f, 1.0f), static_cast<uint32_t>(Follow::Texture::kStar));
 	//particleManager_->GetYenLetter()->Create(position_,Vector4(1.0f,1.0f,1.0f,1.0f),static_cast<uint32_t>(YenLetter::Texture::kWhite1x1));
 	//particleManager_->GetYenLetter()->Create(position_,Vector4(1.0f,1.0f,1.0f,1.0f), static_cast<uint32_t>(YenLetter::Texture::kWhite1x1),false);
@@ -116,6 +33,149 @@ void Player::Update() {
 	ImGui::Text("sameHeight_:%d", sameHeight_);
 	ImGui::Text("sameHeightCount_:%d", sameHeightCount_);
 	ImGui::End();
+   
+    particleManager_->GetFollow()->Create(position_,Vector4(1.0f,1.0f,1.0f,1.0f), static_cast<uint32_t>(Follow::Texture::kStar));
+    //particleManager_->GetYenLetter()->Create(position_,Vector4(1.0f,1.0f,1.0f,1.0f),static_cast<uint32_t>(YenLetter::Texture::kWhite1x1));
+    //particleManager_->GetYenLetter()->Create(position_,Vector4(1.0f,1.0f,1.0f,1.0f), static_cast<uint32_t>(YenLetter::Texture::kWhite1x1),false);
+}
+
+void Player::move()
+{
+
+#pragma region 移動
+    velocity_.x = 0.0f;
+    if (TOMATOsEngine::IsKeyPressed(DIK_D)) {
+        velocity_.x += 3.0f;
+    }
+    if (TOMATOsEngine::IsKeyPressed(DIK_A)) {
+        velocity_.x -= 3.0f;
+    }
+
+    velocity_.y -= 1.0f;
+    velocity_.y = std::clamp(velocity_.y, -20.0f, 20.0f);
+
+    // 仮移動
+    Vector2 tempPosition = position_ + velocity_;
+
+#pragma endregion 
+
+#pragma region 当たり判定
+
+    float top = tempPosition.y + size_.x * 0.5f;
+    float bottom = tempPosition.y - size_.y * 0.5f;
+    float left = tempPosition.x - size_.x * 0.5f;
+    float right = tempPosition.x + size_.x * 0.5f;
+
+    /*float preTop = position_.y + size_.x * 0.5f;*/
+    float preBottom = position_.y - size_.y * 0.5f;
+    /*float preLeft = position_.x - size_.x * 0.5f;
+    float preRight = position_.x + size_.x * 0.5f;*/
+
+    uint32_t blockTop = field_->CalcBlockIndexY(top);
+    uint32_t blockBottom = field_->CalcBlockIndexY(bottom);
+    uint32_t blockLeft = field_->CalcBlockIndexX(left);
+    uint32_t blockRight = field_->CalcBlockIndexX(right);
+
+    /* uint32_t preBlockTop = field_->CalcBlockIndexY(preTop);*/
+    uint32_t preBlockBottom = field_->CalcBlockIndexY(preBottom);
+    /*uint32_t preBlockLeft = field_->CalcBlockIndexX(preLeft);
+    uint32_t preBlockRight = field_->CalcBlockIndexX(preRight);*/
+
+    // 壁ぞり処理
+
+    // 左のポイントふたつがブロックだった場合
+    if (field_->GetBlock(blockLeft, blockTop) == Field::Normal &&
+        field_->GetBlock(blockLeft, blockBottom) == Field::Normal) {
+        tempPosition.x = (blockLeft + 1) * Field::kBlockSize + size_.x * 0.5f + 0.1f;
+    }
+
+    // 右のポイントふたつがブロックだった場合
+    if (field_->GetBlock(blockRight, blockTop) == Field::Normal &&
+        field_->GetBlock(blockRight, blockBottom) == Field::Normal) {
+        tempPosition.x = blockRight * Field::kBlockSize - size_.x * 0.5f - 0.1f;
+    }
+
+    top = tempPosition.y + size_.x * 0.5f;
+    bottom = tempPosition.y - size_.y * 0.5f;
+    left = tempPosition.x - size_.x * 0.5f;
+    right = tempPosition.x + size_.x * 0.5f;
+
+    blockTop = field_->CalcBlockIndexY(top);
+    blockBottom = field_->CalcBlockIndexY(bottom);
+    blockLeft = field_->CalcBlockIndexX(left);
+    blockRight = field_->CalcBlockIndexX(right);
+
+
+    // 下のポイントふたつがブロックじゃなかった場合
+    if (!(field_->GetBlock(blockLeft, blockBottom) == Field::Normal &&
+        field_->GetBlock(blockRight, blockBottom) == Field::Normal)) {
+        //左下だけ当たった時
+        if (field_->GetBlock(blockLeft, blockBottom) == Field::Normal) {
+            if (preBlockBottom <= blockBottom) {
+                tempPosition.x = (blockLeft + 1) * Field::kBlockSize + size_.x * 0.5f + 0.1f;
+            }
+        }
+
+        //右下だけ当たった時
+        if (field_->GetBlock(blockRight, blockBottom) == Field::Normal) {
+            if (preBlockBottom <= blockBottom) {
+                tempPosition.x = blockRight * Field::kBlockSize - size_.x * 0.5f - 0.1f;
+            }
+        }
+    }
+
+    top = tempPosition.y + size_.x * 0.5f;
+    bottom = tempPosition.y - size_.y * 0.5f;
+    left = tempPosition.x - size_.x * 0.5f;
+    right = tempPosition.x + size_.x * 0.5f;
+
+    blockTop = field_->CalcBlockIndexY(top);
+    blockBottom = field_->CalcBlockIndexY(bottom);
+    blockLeft = field_->CalcBlockIndexX(left);
+    blockRight = field_->CalcBlockIndexX(right);
+
+
+    {
+        auto blockLeftBottomType = field_->GetBlock(blockLeft, blockBottom);
+        auto blockRightBottomType = field_->GetBlock(blockRight, blockBottom);
+
+        if (bottom < field_->GetSize().y) {
+            // 跳ねる処理
+            if (blockLeftBottomType != Field::None ||
+                blockRightBottomType != Field::None ||
+                bottom <= 0.0f) {
+                velocity_.y = 20.0f;
+                float blockTopPosition = 0.0f;
+                if (bottom > 0.0f && bottom <= field_->GetSize().y) {
+                    blockTopPosition = field_->GetBlockTop(blockBottom);
+                }
+
+                if (blockLeftBottomType != Field::None &&
+                    field_->IsInField(blockLeft, blockBottom)) {
+                  // ブロック破壊
+                    field_->BreakBlock(blockLeft, blockBottom);
+                  // パーティクル
+					ParticleUpdate(blockLeft, blockBottom);
+                }
+                if (blockRightBottomType != Field::None &&
+                    field_->IsInField(blockRight, blockBottom)) {
+                    	// ブロック破壊
+					field_->BreakBlock(blockRight, blockBottom);
+					// パーティクル
+					ParticleUpdate(blockRight, blockBottom);
+                }
+              ComboUpdate(bottom, blockLeft, blockBottom);
+                tempPosition.y += blockTopPosition - bottom;
+            }
+        }
+    }
+
+  
+  
+#pragma endregion
+
+    //仮ポス代入
+    position_ = tempPosition;
 }
 
 void Player::Draw() {
