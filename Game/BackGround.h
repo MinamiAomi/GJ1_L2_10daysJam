@@ -11,9 +11,35 @@ private:
 	// 粒粒
 	struct Grain {
 		Vector2 position_;
+		Vector2 vector_;
+		Vector2 velocity_;
+		Vector2 size_;
+		Vector2 size_Original_;
+		Vector4 color_;
+		uint32_t death_Time_;
+		uint32_t death_Count_;
+		bool isAlive_;
+	};
+	// 円
+	struct Circle {
+		Vector2 position_;
+		Vector2 velocity_;
 		Vector2 size_;
 		Vector4 color_;
 		uint32_t death_Time_;
+		uint32_t death_Count_;
+		bool isAlive_;
+	};
+	// 四角
+	struct Square {
+		Vector2 position_;
+		Vector2 size_;
+		Vector2 size_Original_;
+		float angle_;
+		float angle_Original_;
+		Vector4 color_;
+		uint32_t death_Time_;
+		uint32_t death_Count_;
 		bool isAlive_;
 	};
 public:
@@ -27,14 +53,41 @@ private:
 	void GrainInitialize();
 	void GrainUpdate();
 	void GrainDraw();
+	// 円
+	void CircleInitialize();
+	void CircleUpdate();
+	void CircleDraw();
+	// 四角
+	void SquareInitialize();
+	void SquareUpdate();
+	void SquareDraw();
 private:
 	TextureHandle white_particle_TextureHandle_;
 	// 粒粒
-	static const uint32_t kGrain_Max = 5;
+	static const uint32_t kGrain_Max = 16;
 	std::array<std::unique_ptr<Grain>, kGrain_Max> grains_;
 	TextureHandle grain_TextureHandle_;
-	const uint32_t coolTime_ = 12;
-	uint32_t count_;
+	const uint32_t grain_CoolTime_ = 120;
+	uint32_t grain_Count_;
 
+	// くるくる
+	Vector2 circle_Emitter_;
+	float angle_;
+	static const uint32_t kCircle_Max = 50;
+	std::array<std::unique_ptr<Circle>, kCircle_Max> circles_;
+	TextureHandle circle_TextureHandle_;
+	const uint32_t circle_CoolTime_ = 2;
+	uint32_t circle_Count_;
+
+	// 四角
+	static const uint32_t kSquare_Max = 30;
+	std::array<std::unique_ptr<Square>, kSquare_Max> squares_;
+	TextureHandle square_TextureHandle_;
+	const uint32_t square_CoolTime_ = 120;
+	uint32_t square_Count_;
+
+	Vector4 square_Color_;
+	float duration_;
+	float currentTime_;
 };
 

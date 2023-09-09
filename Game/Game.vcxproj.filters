@@ -31,6 +31,9 @@
     <Filter Include="Engine\Shader">
       <UniqueIdentifier>{a42b1e84-dc38-4e5b-888f-b8dcb03fe1b4}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Game\Particle">
+      <UniqueIdentifier>{6a90fed0-02ae-4f99-a26e-95e5c0b12ed2}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Externals\ImGui\imconfig.h">
@@ -174,8 +177,27 @@
     <ClInclude Include="Player.h">
       <Filter>Game</Filter>
     </ClInclude>
-    <ClInclude Include="Engine\Math\Color.h">
-      <Filter>Engine\Math</Filter>
+    <ClInclude Include="BackGround.h">
+      <Filter>Game</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\Math\Color.h" />
+    <ClInclude Include="Particle\Circle.h">
+      <Filter>Game\Particle</Filter>
+    </ClInclude>
+    <ClInclude Include="Particle\ParticleManager.h">
+      <Filter>Game\Particle</Filter>
+    </ClInclude>
+    <ClInclude Include="Particle\Pop.h">
+      <Filter>Game\Particle</Filter>
+    </ClInclude>
+    <ClInclude Include="Particle\Splash.h">
+      <Filter>Game\Particle</Filter>
+    </ClInclude>
+    <ClInclude Include="Particle\Follow.h">
+      <Filter>Game\Particle</Filter>
+    </ClInclude>
+    <ClInclude Include="Particle\YenLetter.h">
+      <Filter>Game\Particle</Filter>
     </ClInclude>
     <ClInclude Include="BackGround.h" />
     <ClInclude Include="Engine\ArcadeMachine.h">
@@ -307,10 +329,28 @@
     <ClCompile Include="Player.cpp">
       <Filter>Game</Filter>
     </ClCompile>
-    <ClCompile Include="Engine\Math\Color.cpp">
-      <Filter>Engine\Math</Filter>
+    <ClCompile Include="BackGround.cpp">
+      <Filter>Game</Filter>
     </ClCompile>
-    <ClCompile Include="BackGround.cpp" />
+    <ClCompile Include="Engine\Math\Color.cpp" />
+    <ClCompile Include="Particle\Circle.cpp">
+      <Filter>Game\Particle</Filter>
+    </ClCompile>
+    <ClCompile Include="Particle\ParticleManager.cpp">
+      <Filter>Game\Particle</Filter>
+    </ClCompile>
+    <ClCompile Include="Particle\Pop.cpp">
+      <Filter>Game\Particle</Filter>
+    </ClCompile>
+    <ClCompile Include="Particle\Splash.cpp">
+      <Filter>Game\Particle</Filter>
+    </ClCompile>
+    <ClCompile Include="Follow.cpp">
+      <Filter>Game\Particle</Filter>
+    </ClCompile>
+    <ClCompile Include="Particle\YenLetter.cpp">
+      <Filter>Game\Particle</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Text Include="..\Externals\ImGui\LICENSE.txt">

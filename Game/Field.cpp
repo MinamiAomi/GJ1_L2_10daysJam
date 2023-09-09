@@ -3,6 +3,7 @@
 #include <numeric>
 
 #include "TOMATOsEngine.h"
+#include "Particle/ParticleManager.h"
 
 void Field::Initialize() {
     memset(blocks_, BlockType::None, sizeof(blocks_));
@@ -27,7 +28,7 @@ void Field::Update() {
 
 void Field::Draw() {
 
-    TOMATOsEngine::DrawRect({}, fieldSize_, 0xFFFFFFFF);
+    //TOMATOsEngine::DrawRect({}, fieldSize_, 0xFFFFFFFF);
     if (std::abs(fieldSize_.y - float(kBlockSize * kNumVerticalBlocks)) > 0.0001f) {
         int a = 0;
         a = 0;
@@ -56,6 +57,16 @@ void Field::Draw() {
 void Field::BreakBlock(uint32_t blockIndexX, uint32_t blockIndexY) {
     assert(IsInField(blockIndexX, blockIndexY));
     blocks_[blockIndexX][blockIndexY] = BlockType::None;
+    particleManager_->GetSplash()->Create(
+        Vector2(
+        static_cast<float>(blockIndexX * kBlockSize),
+        static_cast<float>(blockIndexY * kBlockSize)
+        ),20);
+    particleManager_->GetPop()->Create(
+        Vector2(
+            static_cast<float>(blockIndexX * kBlockSize),
+            static_cast<float>(blockIndexY * kBlockSize)
+        ), 20);
 }
 
 uint32_t Field::CalcBlockIndexX(float worldPosX) const {
