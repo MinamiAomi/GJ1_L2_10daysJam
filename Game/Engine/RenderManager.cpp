@@ -30,7 +30,7 @@ void RenderManager::Initialize() {
 
     // メインとなるバッファを初期化
     auto& swapChainBuffer = swapChain_.GetColorBuffer();
-    float clearColor[4] = { 0.0f,0.0f,0.0f,0.0f };
+    float clearColor[4] = { 0.3f,0.1f,0.3f,0.0f };
     mainColorBuffer_.SetClearColor(clearColor);
     mainColorBuffer_.Create(L"SceneColorBuffer", swapChainBuffer.GetWidth(), swapChainBuffer.GetHeight(), DXGI_FORMAT_R32G32B32A32_FLOAT);
 
