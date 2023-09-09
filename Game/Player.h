@@ -1,6 +1,9 @@
 #pragma once
 
+#include <array>
+
 #include "Math/MathUtils.h"
+#include "TextureHandle.h"
 
 class Field;
 class ParticleManager;
@@ -28,7 +31,12 @@ private:
 
     Vector2 velocity_;
     // コンボ
-    const uint32_t kCombo_ = 3;
+    const uint32_t kCombo_ = 2;
+    std::array<TextureHandle, 3> comboTextureHandle_;
+    Vector2 comboPosition_;
+    Vector2 comboSize_;
+    Vector4 comboColor_;
+
     // 階段
     uint32_t preStep_;
     uint32_t step_;

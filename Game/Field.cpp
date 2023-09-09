@@ -30,7 +30,7 @@ void Field::Update() {
 
 void Field::Draw() {
 
-	//TOMATOsEngine::DrawRect({}, fieldSize_, 0xFFFFFFFF);
+	TOMATOsEngine::SetBlendMode(kBlendModeNormal);
 	if (std::abs(fieldSize_.y - float(kBlockSize * kNumVerticalBlocks)) > 0.0001f) {
 		int a = 0;
 		a = 0;
@@ -60,6 +60,17 @@ void Field::Draw() {
 void Field::BreakBlock(uint32_t blockIndexX, uint32_t blockIndexY) {
 	assert(IsInField(blockIndexX, blockIndexY));
 	blocks_[blockIndexX][blockIndexY] = BlockType::None;
+}
+
+void Field::BreakBlockHorizon(uint32_t blockIndexX, uint32_t blockIndexY) {
+	assert(IsInField(blockIndexX, blockIndexY));
+	for (size_t x = 0; x < kNumHorizontalBlocks; x++) {
+		blocks_[static_cast<uint32_t>(x)][blockIndexY] = BlockType::None;
+		// 一列下げる
+		for (size_t y = blockIndexY + 1; y < kNumVerticalBlocks; y++) {
+			blocks_[static_cast<uint32_t>(x)][static_cast<uint32_t>(y - 1)] = blocks_[static_cast<uint32_t>(x)][static_cast<uint32_t>(y)];
+		}
+	}
 }
 
 uint32_t Field::CalcBlockIndexX(float worldPosX) const {

@@ -28,6 +28,7 @@ public:
     void Draw();
 
     void BreakBlock(uint32_t blockIndexX, uint32_t blockIndexY);
+    void BreakBlockHorizon(uint32_t blockIndexX, uint32_t blockIndexY);
 
     uint32_t CalcBlockIndexX(float worldPosX) const;
     uint32_t CalcBlockIndexY(float worldPosY) const;
