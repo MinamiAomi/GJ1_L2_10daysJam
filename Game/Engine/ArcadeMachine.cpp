@@ -3,6 +3,7 @@
 #include "Graphics/Helper.h"
 #include "Graphics/ShaderManager.h"
 #include "Monitor.h"
+#include "Input.h"
 
 void ArcadeMachine::Initialize() {
     stickTransform_.parent = &transform_;
@@ -14,13 +15,27 @@ void ArcadeMachine::Initialize() {
 }
 
 void ArcadeMachine::Update() {
-    
+    auto input = Input::GetInstance();
+
+    if (input->IsKeyPressed(DIK_D) || input->IsKeyPressed(DIK_A)) {
+        Quaternion diff;
+        if (input->IsKeyPressed(DIK_D)) {
+            diff = Quaternion::MakeForZAxis(-30.0f * Math::ToRadian) * diff;
+        }
+        if (input->IsKeyPressed(DIK_A)) {
+            diff = Quaternion::MakeForZAxis(30.0f * Math::ToRadian) * diff;
+        }
+        stickTransform_.rotate = Quaternion::Slerp(0.1f, stickTransform_.rotate, diff);
+    }
+    else {
+        stickTransform_.rotate = Quaternion::Slerp(0.1f, stickTransform_.rotate, Quaternion::identity);
+    }
 }
 
 void ArcadeMachine::Draw(CommandContext& commandContext, const Matrix4x4& camera) {
     transform_.UpdateMatrix();
     stickTransform_.UpdateMatrix();
-    
+
     body_.Draw(commandContext, transform_.worldMatrix, camera);
     stickRim_.Draw(commandContext, transform_.worldMatrix, camera);
     stick_.Draw(commandContext, stickTransform_.worldMatrix, camera);

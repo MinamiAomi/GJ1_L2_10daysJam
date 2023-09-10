@@ -76,7 +76,7 @@ void Monitor::Initilaize(uint32_t bufferWidth, uint32_t bufferHeight, DXGI_FORMA
     colorBuffer_.Create(L"Monitor ColorBuffer", bufferWidth, bufferHeight, DXGI_FORMAT_R8G8B8A8_UNORM);
 
     {
-        std::filesystem::path path = "Engine/Model/Monitor.obj";
+        std::filesystem::path path = "Engine/Model/monitor.obj";
         std::ifstream file(path);
         assert(file.is_open());
 
