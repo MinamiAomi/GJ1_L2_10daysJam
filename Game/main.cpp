@@ -21,7 +21,7 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
         result
     };
 
-    GameScene gameScene = title;
+    GameScene gameScene = inGame;
 
     auto tex = TOMATOsEngine::LoadTexture("Resources/playgame.png");
     TextureHandle titleHandle = TOMATOsEngine::LoadTexture("Resources/BBtitle.png");
