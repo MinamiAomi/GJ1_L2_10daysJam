@@ -1,7 +1,7 @@
 #include "RealWorld.h"
 
 void RealWorld::Initialize() {
-    camera_.SetPosition({ 0.0f, 1.2f, -1.5f });
+    camera_.SetPosition({ 0.0f, 1.2f, -1.3f });
     camera_.SetRotate(Quaternion::identity);
     arcadeMachine_.Initialize();
 

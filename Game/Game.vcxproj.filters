@@ -360,7 +360,9 @@
     <ClCompile Include="Engine\ArcadeMachine.cpp">
       <Filter>Engine</Filter>
     </ClCompile>
-    <ClCompile Include="Engine\RealWorld.cpp" />
+    <ClCompile Include="Engine\RealWorld.cpp">
+      <Filter>Engine</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Text Include="..\Externals\ImGui\LICENSE.txt">
