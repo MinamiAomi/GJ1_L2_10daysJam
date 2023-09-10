@@ -51,4 +51,6 @@ private:
 
     Field* field_;
     ParticleManager* particleManager_;
+    // テクスチャハンドル
+    TextureHandle textureHandle_;
 };

@@ -24,6 +24,7 @@ public:
 	enum class Texture {
 		kWhite1x1,
 		kStar,
+		kPlayer,
 		kCount,
 	};
 public:
