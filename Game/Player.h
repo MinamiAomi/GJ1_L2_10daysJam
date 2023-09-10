@@ -23,7 +23,7 @@ public:
 private:
     void ComboUpdate(float floor, uint32_t x, uint32_t y);
     void ComboDraw();
-    void SetBlockColor(uint32_t x, uint32_t y);
+    void SetBlockColor(int32_t y);
     void CreateUpdate(uint32_t x, uint32_t y);
     // 真ん中
     Vector2 position_;
@@ -48,6 +48,9 @@ private:
     uint32_t sameHeight_;
     int32_t sameHeightCount_;
     Vector4 sameHeightColor_;
+
+    int32_t preHeight_;
+    int32_t nowHeight_;
 
     Field* field_;
     ParticleManager* particleManager_;

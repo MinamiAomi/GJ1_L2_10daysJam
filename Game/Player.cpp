@@ -28,6 +28,9 @@ void Player::Initialize() {
 	textureHandle_ = TOMATOsEngine::LoadTexture("Resources/player.png");
 	sameHeightColor_ = Vector4(0.662f, 0.690f, 0.156f, 1.0f);
 
+	preHeight_ = -1;
+	nowHeight_ = -1;
+
 	break_ = false;
 }
 
@@ -35,17 +38,19 @@ void Player::Update() {
 
 	move();
 
+	SetBlockColor(nowHeight_);
+
 	// コンボ数によってエフェクト変化
-	
 	if (stepCount_ == 1 || sameHeightCount_ == 1) {
 		particleManager_->GetFollow()->Create(position_, Vector4(1.0f, 1.0f, 1.0f, 0.5f), static_cast<uint32_t>(Follow::Texture::kPlayer));
-		particleManager_->GetYenLetter()->Create(position_,Vector4(1.0f,1.0f,1.0f,1.0f),static_cast<uint32_t>(YenLetter::Texture::kWhite1x1));
+		particleManager_->GetYenLetter()->Create(position_, Vector4(1.0f, 1.0f, 1.0f, 1.0f), static_cast<uint32_t>(YenLetter::Texture::kWhite1x1));
 	}
-	else if(stepCount_ == 2 || sameHeightCount_ == 2) {
+	else if (stepCount_ == 2 || sameHeightCount_ == 2) {
 		particleManager_->GetFollow()->Create(position_, Vector4(1.0f, 1.0f, 1.0f, 0.5f), static_cast<uint32_t>(Follow::Texture::kPlayer));
 		particleManager_->GetYenLetter()->Create(position_, Vector4(1.0f, 1.0f, 1.0f, 1.0f), static_cast<uint32_t>(YenLetter::Texture::kWhite1x1));
-		particleManager_->GetYenLetter()->Create(position_,Vector4(1.0f,1.0f,1.0f,1.0f), static_cast<uint32_t>(YenLetter::Texture::kWhite1x1),false);
-	}else if (stepCount_ == 0 || sameHeightCount_ == 0) {
+		particleManager_->GetYenLetter()->Create(position_, Vector4(1.0f, 1.0f, 1.0f, 1.0f), static_cast<uint32_t>(YenLetter::Texture::kWhite1x1), false);
+	}
+	else if (stepCount_ == 0 || sameHeightCount_ == 0) {
 		particleManager_->GetFollow()->Create(position_, Vector4(1.0f, 1.0f, 1.0f, 0.5f), static_cast<uint32_t>(Follow::Texture::kPlayer));
 	}
 
@@ -201,6 +206,8 @@ void Player::move() {
 			if (blockLeftBottomType != Field::None ||
 				blockRightBottomType != Field::None ||
 				bottom <= 0.0f) {
+				// 高さ更新
+				preHeight_ = nowHeight_;
 				velocity_.y = 20.0f;
 				float blockTopPosition = 0.0f;
 				if (bottom > 0.0f && bottom <= field_->GetSize().y) {
@@ -211,7 +218,8 @@ void Player::move() {
 					// ブロック破壊
 					if (stepCount_ >= kCombo_ || sameHeightCount_ >= kCombo_) {
 						field_->BreakBlockHorizon(blockLeft, blockBottom);
-						SetBlockColor(blockLeft, blockBottom);
+						// 高さ更新
+						nowHeight_ = blockBottom;
 						// コンボカウントリセット
 						stepCount_ = -1;
 						sameHeightCount_ = -1;
@@ -225,7 +233,8 @@ void Player::move() {
 					}
 					else {
 						field_->BreakBlock(blockLeft, blockBottom);
-						SetBlockColor(blockLeft, blockBottom);
+						// 高さ更新
+						nowHeight_ = blockBottom;
 						// パーティクル
 						CreateUpdate(blockLeft, blockBottom);
 					}
@@ -235,7 +244,8 @@ void Player::move() {
 					// ブロック破壊
 					if (stepCount_ >= kCombo_ || sameHeightCount_ >= kCombo_) {
 						field_->BreakBlockHorizon(blockRight, blockBottom);
-						SetBlockColor(blockRight, blockBottom);
+						// 高さ更新
+						nowHeight_ = blockBottom;
 						// コンボカウントリセット
 						stepCount_ = -1;
 						sameHeightCount_ = -1;
@@ -249,7 +259,8 @@ void Player::move() {
 					}
 					else {
 						field_->BreakBlock(blockRight, blockBottom);
-						SetBlockColor(blockRight, blockBottom);
+						// 高さ更新
+						nowHeight_ = blockBottom;
 						// パーティクル
 						CreateUpdate(blockRight, blockBottom);
 					}
@@ -257,6 +268,10 @@ void Player::move() {
 				tempPosition.y += blockTopPosition - bottom;
 				// コンボアップデート
 				ComboUpdate(bottom, blockLeft, blockBottom);
+				// 地面に着いたら
+				if (bottom <= 0.0f) {
+					nowHeight_ = -1;
+				}
 			}
 		}
 	}
@@ -303,7 +318,6 @@ void Player::ComboUpdate(float  floor, uint32_t blockIndexX, uint32_t blockIndex
 	x = 0;
 	// 地面に着いたらコンボカウントリセット
 	if (!break_) {
-
 		if (floor > 0) {
 #pragma region 階段
 			step_ = blockIndexY;
@@ -355,23 +369,33 @@ void Player::ComboDraw() {
 		position.x = comboPosition_.x + rnd.NextFloatRange(-distance, distance);
 		position.y = comboPosition_.y + rnd.NextFloatRange(-distance, distance);
 		float angle = rnd.NextFloatRange(-angle_Origin, angle_Origin);
-		TOMATOsEngine::DrawSpriteRectAngle(Vector2(0.0f,0.0f), comboSize_, Vector2(0.5f, 0.5f), angle * Math::ToRadian, {}, Vector2(64.0f, 64.0f), comboTextureHandle_.at(static_cast<uint32_t>(tex)), Color(comboColor_));
+		TOMATOsEngine::DrawSpriteRectAngle(Vector2(0.0f, 0.0f), comboSize_, Vector2(0.5f, 0.5f), angle * Math::ToRadian, {}, Vector2(64.0f, 64.0f), comboTextureHandle_.at(static_cast<uint32_t>(tex)), Color(comboColor_));
 	}
 }
 
-void Player::SetBlockColor(uint32_t blockIndexX, uint32_t blockIndexY) {
-	blockIndexX = 0;
+void Player::SetBlockColor(int32_t blockIndexY) {
 	// 色
 	field_->ColorClearBlock();
+	if (blockIndexY != -1) {
+		for (size_t x = 0; x < Field::kNumHorizontalBlocks; x++) {
+			// 階段
+			if (field_->GetBlock(static_cast<uint32_t>(x), static_cast<uint32_t>(blockIndexY + 2)) == Field::None && field_->GetBlock(static_cast<uint32_t>(x), static_cast<uint32_t>(blockIndexY + 1)) == Field::Normal) {
+				
+				field_->SetColorBlock(static_cast<uint32_t>(x), static_cast<uint32_t>(blockIndexY + 1), stepColor_);
+			}
+			// 平行
+			if (field_->GetBlock(static_cast<uint32_t>(x), static_cast<uint32_t>(blockIndexY + 1)) == Field::None && field_->GetBlock(static_cast<uint32_t>(x), static_cast<uint32_t>(blockIndexY)) == Field::Normal) {
+				if (sameHeightCount_ == 0) {
+					field_->SetColorBlock(static_cast<uint32_t>(x), static_cast<uint32_t>(blockIndexY), Vector4(1.0f,0.0f,0.0f,1.0f));
+				}
+				else if (sameHeightCount_ == 1) {
+					field_->SetColorBlock(static_cast<uint32_t>(x), static_cast<uint32_t>(blockIndexY), Vector4(0.0f, 1.0f, 0.0f, 1.0f));
+				}
+				else {
+					field_->SetColorBlock(static_cast<uint32_t>(x), static_cast<uint32_t>(blockIndexY), Vector4(0.0f,0.0f,1.0f,1.0f));
+				}
 
-	for (size_t x = 0; x < Field::kNumHorizontalBlocks; x++) {
-		// 階段
-		if (field_->GetBlock(static_cast<uint32_t>(x), static_cast<uint32_t>(blockIndexY + 2)) == Field::None) {
-			field_->SetColorBlock(static_cast<uint32_t>(x), static_cast<uint32_t>(blockIndexY + 1), stepColor_);
-		}
-		// 平行
-		if (field_->GetBlock(static_cast<uint32_t>(x), static_cast<uint32_t>(blockIndexY + 1)) == Field::None) {
-			field_->SetColorBlock(static_cast<uint32_t>(x), static_cast<uint32_t>(blockIndexY), sameHeightColor_);
+			}
 		}
 	}
 }
