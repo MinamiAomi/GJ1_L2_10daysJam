@@ -27,6 +27,8 @@ void Field::Initialize() {
 	nextBlockIndices_ = GetGrowField(numGrowingBlocks_);
 	growCoolTime_ = 0;
 
+	growAnimationCount_ = 0;
+
 	textureHandles_.at(Texture::kBlock) = TOMATOsEngine::LoadTexture("Resources/block.png");
 	textureHandles_.at(Texture::kGrow) = TOMATOsEngine::LoadTexture("Resources/grow.png");
 }
@@ -65,12 +67,16 @@ void Field::Draw() {
 			}
 		}
 	}
-	//for (uint32_t i = 0; i < numGrowingBlocks_; i++) {
-	//	// ブロックの矩形座標
-	//	Vector2 position = { nextBlockIndices_.at(i) + (kBlock * 0.5f) ,static_cast<float>(kBlock) * -1.0f};
-	//	Vector2 size = { 32.0f ,32.0f };
-	//	TOMATOsEngine::DrawSpriteRectAngle(position, size, Vector2(0.5f, 0.5f), 0.0f,{}, Vector2(64.0f, 64.0f), textureHandles_.at(Texture::kGrow),0xFFFFFFFF);
-	//}
+	//const uint32_t AnimationTime = 15;
+	for (uint32_t i = 0; i < numGrowingBlocks_; i++) {
+		Vector2 position = {static_cast<float>(nextBlockIndices_.at(i)) + static_cast<float>(kBlockSize) * 0.5f ,0};
+		Vector2 size = { 32.0f ,32.0f };
+		/*if (growAnimationCount_ % AnimationTime == 0) {
+			growAnimationCount_++;
+		}*/
+		Vector2 texBase = {0.0f,0.0f};
+		TOMATOsEngine::DrawSpriteRectAngle(position, size, Vector2(0.5f, 0.5f), 0.0f, texBase, Vector2(64.0f, 64.0f), textureHandles_.at(Texture::kGrow),0xFFFFFFFF);
+	}
 }
 
 void Field::ColorClearBlock() {

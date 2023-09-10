@@ -87,4 +87,7 @@ private:
     // テクスチャハンドル
     static const uint32_t  TextureMax = Texture::Count;
     std::array<TextureHandle, TextureMax> textureHandles_;
+    // 予想テクスチャアニメーション
+    uint32_t growAnimationCount_;
+
 };
