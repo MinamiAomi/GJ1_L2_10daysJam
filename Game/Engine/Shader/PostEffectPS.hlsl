@@ -19,13 +19,12 @@ float3 LinearToSRGB(float3 color) {
     float3 srgb = 0.662002687 * sqrt1 + 0.684122060 * sqrt2 - 0.323583601 * sqrt3 - 0.0225411470 * color;
     return srgb;
 }
-
+    
 PSOutput main(PSInput input) {
     PSOutput output;
     
     output.color = texture_.Sample(sampler_, input.texcoord);
-    //output.color.xyz = LinearToSRGB(output.color.xyz);
-    //output.color.xyz = clamp(output.color.xyz, 0.0f, 1.0f);
+    output.color.xyz = LinearToSRGB(output.color.xyz);
     
     return output;
 }
