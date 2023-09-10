@@ -71,6 +71,8 @@ private:
     // 左から右
     // 下から上
     BlockType blocks_[kNumHorizontalBlocks][kNumVerticalBlocks]{};
+    //
+    BlockType drawBlocks_[kNumHorizontalBlocks][kNumVerticalBlocks]{};
     Vector2 fieldSize_;
     // 色
     Vector4 blocksColor_[kNumHorizontalBlocks][kNumVerticalBlocks]{};

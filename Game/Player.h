@@ -21,8 +21,6 @@ public:
     void SetParticleManager(ParticleManager* particleManager) { particleManager_ = particleManager; }
     
 private:
-    void Bounce();
-
     void ComboUpdate(float floor, uint32_t x, uint32_t y);
     void ComboDraw();
     void SetBlockColor(uint32_t x, uint32_t y);

@@ -36,10 +36,8 @@ void Player::Update() {
 	move();
 
 	// コンボ数によってエフェクト変化
-	if (stepCount_ == 0 || sameHeightCount_ == 0) {
-		particleManager_->GetFollow()->Create(position_, Vector4(1.0f, 1.0f, 1.0f, 0.5f), static_cast<uint32_t>(Follow::Texture::kPlayer));
-	}
-	else if (stepCount_ == 1 || sameHeightCount_ == 1) {
+	
+	if (stepCount_ == 1 || sameHeightCount_ == 1) {
 		particleManager_->GetFollow()->Create(position_, Vector4(1.0f, 1.0f, 1.0f, 0.5f), static_cast<uint32_t>(Follow::Texture::kPlayer));
 		particleManager_->GetYenLetter()->Create(position_,Vector4(1.0f,1.0f,1.0f,1.0f),static_cast<uint32_t>(YenLetter::Texture::kWhite1x1));
 	}
@@ -47,6 +45,8 @@ void Player::Update() {
 		particleManager_->GetFollow()->Create(position_, Vector4(1.0f, 1.0f, 1.0f, 0.5f), static_cast<uint32_t>(Follow::Texture::kPlayer));
 		particleManager_->GetYenLetter()->Create(position_, Vector4(1.0f, 1.0f, 1.0f, 1.0f), static_cast<uint32_t>(YenLetter::Texture::kWhite1x1));
 		particleManager_->GetYenLetter()->Create(position_,Vector4(1.0f,1.0f,1.0f,1.0f), static_cast<uint32_t>(YenLetter::Texture::kWhite1x1),false);
+	}else if (stepCount_ == 0 || sameHeightCount_ == 0) {
+		particleManager_->GetFollow()->Create(position_, Vector4(1.0f, 1.0f, 1.0f, 0.5f), static_cast<uint32_t>(Follow::Texture::kPlayer));
 	}
 
 	ImGui::Begin("Player");
@@ -278,8 +278,6 @@ void Player::Draw() {
 	ComboDraw();
 }
 
-void Player::Bounce() {}
-
 void Player::CreateUpdate(uint32_t x, uint32_t y) {
 	// パーティクル
 	particleManager_->GetSplash()->Create(
@@ -357,7 +355,7 @@ void Player::ComboDraw() {
 		position.x = comboPosition_.x + rnd.NextFloatRange(-distance, distance);
 		position.y = comboPosition_.y + rnd.NextFloatRange(-distance, distance);
 		float angle = rnd.NextFloatRange(-angle_Origin, angle_Origin);
-		TOMATOsEngine::DrawSpriteRectAngle(position, comboSize_, Vector2(0.5f, 0.5f), angle * Math::ToRadian, {}, Vector2(64.0f, 64.0f), comboTextureHandle_.at(static_cast<uint32_t>(tex)), Color(comboColor_));
+		TOMATOsEngine::DrawSpriteRectAngle(Vector2(0.0f,0.0f), comboSize_, Vector2(0.5f, 0.5f), angle * Math::ToRadian, {}, Vector2(64.0f, 64.0f), comboTextureHandle_.at(static_cast<uint32_t>(tex)), Color(comboColor_));
 	}
 }
 
