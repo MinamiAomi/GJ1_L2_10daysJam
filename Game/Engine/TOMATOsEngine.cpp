@@ -71,7 +71,7 @@ namespace TOMATOsEngine {
         textureManager = TextureManager::GetInstance();
 
         screenMatrix = Matrix4x4::MakeTranslation({ 0.0f, 40.0f, 0.0f });
-        screenMatrix *= Matrix4x4::MakeOrthographicProjection(float(kWindowWidth), float(kWindowHeight), 0.0f, 1.0f);
+        screenMatrix *= Matrix4x4::MakeOrthographicProjection(float(kMonitorWidth), float(kMonitorHeight), 0.0f, 1.0f);
         screenMatrix *= Matrix4x4::MakeScaling({ 1.0f, 1.0f,1.0f });
         screenMatrix *= Matrix4x4::MakeTranslation({ -1.0f, -1.0f, 0.0f });
 
@@ -388,6 +388,14 @@ namespace TOMATOsEngine {
 
     float GetMouseWheel() {
         return float(input->GetMouseWheel());
+    }
+
+    const XINPUT_STATE& GetGamePadState() {
+        return input->GetXInputState();
+    }
+
+    const XINPUT_STATE& GetGamePadPreState() {
+        return input->GetPreXInputState();
     }
 
 }

@@ -51,5 +51,7 @@ namespace TOMATOsEngine {
     Vector2 GetMousePosition();
     Vector2 GetMouseMove();
     float GetMouseWheel();
+    const XINPUT_STATE& GetGamePadState();
+    const XINPUT_STATE& GetGamePadPreState();
 
 }
