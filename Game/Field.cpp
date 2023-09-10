@@ -81,10 +81,9 @@ void Field::DrawBlock() {
 	for (uint32_t x = 0; x < kNumHorizontalBlocks; ++x) {
 		// ブロックの矩形座標
 		Vector2 blockMinPos{}, blockMaxPos{};
-		blockMinPos.x = float(x * kBlockSize);
-		blockMaxPos.x = blockMinPos.x + float(kBlockSize);
-
 		for (uint32_t y = 0; y < kNumVerticalBlocks; ++y) {
+			blockMinPos.x = float(x * kBlockSize);
+			blockMaxPos.x = blockMinPos.x + float(kBlockSize);
 			blockMinPos.y = float(y * kBlockSize);
 			blockMaxPos.y = blockMaxPos.y + float(kBlockSize);
 			// 通常ブロック
@@ -93,10 +92,10 @@ void Field::DrawBlock() {
 			}
 			// フラッシュブロック
 			if (blocks_[x][y] == BlockType::Frash) {
-				blockMinPos.x -= (kFrashTime - breakTime_) * 2;
-				blockMaxPos.x += (kFrashTime - breakTime_) * 2;
-				blockMinPos.y += (kFrashTime - breakTime_) * 2;
-				blockMaxPos.y -= (kFrashTime - breakTime_) * 2;
+				blockMinPos.x -= (kFrashTime - breakTime_) * 2.0f;
+				blockMaxPos.x += (kFrashTime - breakTime_) * 2.0f;
+				blockMinPos.y += (kFrashTime - breakTime_) * 2.0f;
+				blockMaxPos.y -= (kFrashTime - breakTime_) * 2.0f;
 				TOMATOsEngine::DrawRect(blockMinPos, blockMaxPos,0xFFFFFFFF);
 			}
 		}

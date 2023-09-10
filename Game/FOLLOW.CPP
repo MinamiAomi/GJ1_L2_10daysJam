@@ -63,7 +63,7 @@ void Follow::Update() {
 				// 色
 				particle->color_ = Vector4(
 					1.0f, 1.0f, 1.0f,
-					Math::Lerp(t,0.5f,0.0f));
+					Math::Lerp(t,0.1f,0.0f));
 
 				// サイズ
 				/*float size = Math::Lerp(t, particle->size_Origin_.x, 0.0f);

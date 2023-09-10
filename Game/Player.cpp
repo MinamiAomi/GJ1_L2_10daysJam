@@ -34,6 +34,8 @@ void Player::Initialize() {
 	h_ = 0.0f;
 	bonusColor_ = { 0.0f,0.0f,0.0f,0.0f };
 
+	animationFrame = 0;
+	continueTextureNum = 3;
 	break_ = false;
 }
 
@@ -79,10 +81,10 @@ void Player::move() {
 #pragma region 移動
 	velocity_.x = 0.0f;
 	if (TOMATOsEngine::IsKeyPressed(DIK_D)) {
-		velocity_.x += 3.0f;
+		velocity_.x += 3.5f;
 	}
 	if (TOMATOsEngine::IsKeyPressed(DIK_A)) {
-		velocity_.x -= 3.0f;
+		velocity_.x -= 3.5f;
 	}
 
 	velocity_.y -= 1.0f;
@@ -213,6 +215,7 @@ void Player::move() {
 				// 高さ更新
 				preHeight_ = nowHeight_;
 				velocity_.y = 20.0f;
+				animationFrame = (continueTextureNum - 1) * kAnimationSwitchNum;
 				float blockTopPosition = 0.0f;
 				if (bottom > 0.0f && bottom <= field_->GetSize().y) {
 					blockTopPosition = field_->GetBlockTop(blockBottom);
@@ -292,8 +295,17 @@ void Player::move() {
 void Player::Draw() {
 	Vector2 rectMinPos = position_ - size_ * 0.5f;
 	Vector2 rectMaxPos = position_ + size_ * 0.5f;
-
-	TOMATOsEngine::DrawSpriteRect(rectMinPos, rectMaxPos, {}, Vector2(30.0f, 60.0f), textureHandle_, 0xFFFFFFFF);
+	animationFrame--;
+	
+	if (animationFrame > 0) {
+		Vector2 texBase = {0.0f,0.0f};
+		texBase.x = (continueTextureNum - 1 - (animationFrame / kAnimationSwitchNum)) * 30.0f;
+		TOMATOsEngine::DrawSpriteRect(rectMinPos, rectMaxPos, texBase, Vector2(30.0f, 60.0f), textureHandle_, 0xFFFFFFFF);
+	}
+	else {
+		TOMATOsEngine::DrawSpriteRect(rectMinPos, rectMaxPos, {}, Vector2(30.0f, 60.0f), textureHandle_, 0xFFFFFFFF);
+	}
+	
 	//TOMATOsEngine::DrawRect(rectMinPos, rectMaxPos, 0x883333FF);
 
 	// コンボ数描画
