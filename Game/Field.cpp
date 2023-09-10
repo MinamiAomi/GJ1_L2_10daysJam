@@ -33,18 +33,41 @@ void Field::Initialize() {
 	growAnimationFrame_ = 0;
 	growAnimationFrameSize_=4;
 
+	breakTime_ = 0;
+	downBlockIndex_ = 0;
+	isFlash_ = false;
+
 	textureHandles_.at(Texture::kBlock) = TOMATOsEngine::LoadTexture("Resources/block.png");
 	textureHandles_.at(Texture::kGrow) = TOMATOsEngine::LoadTexture("Resources/grow.png");
 }
 
 void Field::Update() {
 	++growCoolTime_;
-	if (growCoolTime_ >= growInterval_) {
+	breakTime_--;
+	if (growCoolTime_ >= growInterval_ && isFlash_ == false) {
 		// 成長
 		SetGrow(nextBlockIndices_, numGrowingBlocks_);
 		// 次成長するところをセット
 		nextBlockIndices_ = GetGrowField(numGrowingBlocks_);
 		growCoolTime_ = 0;
+	}
+
+
+	if (breakTime_ > 0) {
+		
+	}
+	else {
+		if (isFlash_ == true) {
+			isFlash_ = false;
+			for (uint32_t x = 0; x < kNumVerticalBlocks; x++) {
+				for (uint32_t y = 0; y < kNumHorizontalBlocks; y++) {
+					if (blocks_[x][y] == BlockType::Frash) {
+						blocks_[x][y] = BlockType::None;
+					}
+				}
+			}
+			DownBlockHorizon();
+		}
 	}
 }
 
@@ -67,6 +90,14 @@ void Field::DrawBlock() {
 			// 通常ブロック
 			if (blocks_[x][y] == BlockType::Normal) {
 				TOMATOsEngine::DrawSpriteRect(blockMinPos, blockMaxPos, {}, Vector2(32.0f, 32.0f), textureHandles_.at(Texture::kBlock), Color(blocksColor_[x][y]));
+			}
+			// フラッシュブロック
+			if (blocks_[x][y] == BlockType::Frash) {
+				blockMinPos.x -= (kFrashTime - breakTime_) * 2;
+				blockMaxPos.x += (kFrashTime - breakTime_) * 2;
+				blockMinPos.y += (kFrashTime - breakTime_) * 2;
+				blockMaxPos.y -= (kFrashTime - breakTime_) * 2;
+				TOMATOsEngine::DrawRect(blockMinPos, blockMaxPos,0xFFFFFFFF);
 			}
 		}
 	}
@@ -115,9 +146,19 @@ void Field::BreakBlock(uint32_t blockIndexX, uint32_t blockIndexY) {
 void Field::BreakBlockHorizon(uint32_t blockIndexX, uint32_t blockIndexY) {
 	assert(IsInField(blockIndexX, blockIndexY));
 	for (size_t x = 0; x < kNumHorizontalBlocks; x++) {
-		blocks_[static_cast<uint32_t>(x)][blockIndexY] = BlockType::None;
-		// 一列下げる
-		for (size_t y = blockIndexY + 1; y < kNumVerticalBlocks; y++) {
+		breakTime_ = kFrashTime;
+		if (blocks_[static_cast<uint32_t>(x)][blockIndexY] == BlockType::Normal) {
+			blocks_[static_cast<uint32_t>(x)][blockIndexY] = BlockType::Frash;
+		}
+	}
+	downBlockIndex_ = blockIndexY + 1;
+	isFlash_ = true;
+}
+
+void Field::DownBlockHorizon() {
+	// 一列下げる
+	for (size_t x = 0; x < kNumHorizontalBlocks; x++) {
+		for (size_t y = downBlockIndex_; y < kNumVerticalBlocks; y++) {
 			blocks_[static_cast<uint32_t>(x)][static_cast<uint32_t>(y - 1)] = blocks_[static_cast<uint32_t>(x)][static_cast<uint32_t>(y)];
 		}
 	}

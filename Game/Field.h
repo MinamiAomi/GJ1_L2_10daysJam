@@ -16,10 +16,12 @@ public:
     static const uint32_t kNumVerticalBlocks = 24;
     static const uint32_t kGrowInterval = 120;
     static const uint32_t kNumGrowingBlocks = 4;
+    static const uint32_t kFrashTime = 10;
 
     enum BlockType {
         None,
         Normal,
+        Frash,
 
         NumTypes
     };
@@ -58,6 +60,7 @@ public:
     void Edit();
 
     void SetParticleManager(ParticleManager* particleManager) {particleManager_ = particleManager;}
+    void DownBlockHorizon();
 private:
     void GrowField(uint32_t numBlocks);
     void Grow(uint32_t horizontalIndex);
@@ -94,5 +97,9 @@ private:
     uint32_t growAnimationCount_;
     uint32_t growAnimationFrame_;
     uint32_t growAnimationFrameSize_;
+    //時止める変数
+    uint32_t breakTime_;
+    uint32_t downBlockIndex_;
+    bool isFlash_;
 
 };
