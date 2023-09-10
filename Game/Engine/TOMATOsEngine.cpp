@@ -100,10 +100,6 @@ namespace TOMATOsEngine {
         input->Update();
 
         renderManager->Reset();
-        triangleRenderer->Reset();
-        spriteRenderer->Reset();
-
-
 
         monitor->BeginRender(renderManager->GetCommandContext());
 

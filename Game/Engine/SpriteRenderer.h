@@ -25,12 +25,10 @@ public:
         Vector2 texcoord;
         float pad[2];
     };
-    static const uint32_t kMaxNumTriangles = 1024;
 
     static SpriteRenderer* GetInstance();
 
     void Initialize(DXGI_FORMAT rtvFormat);
-    void Reset();
 
     void Draw(CommandContext& commandContext, const Vertex* vertices, uint32_t numTriangles, D3D12_GPU_DESCRIPTOR_HANDLE srv);
 
@@ -45,9 +43,6 @@ private:
     RootSignature rootSignature_;
     PipelineState pipelineStates_[kNumBlendModes];
 
-    UploadBuffer vertexBuffer_;
-    D3D12_VERTEX_BUFFER_VIEW vbv_{};
-    uint32_t triangleCount_ = 0;
     BlendMode blendMode_ = kBlendNormal;
 
 };
