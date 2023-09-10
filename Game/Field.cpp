@@ -28,6 +28,8 @@ void Field::Initialize() {
 	growCoolTime_ = 0;
 
 	growAnimationCount_ = 0;
+	growAnimationFrame_ = 0;
+	growAnimationFrameSize_=4;
 
 	textureHandles_.at(Texture::kBlock) = TOMATOsEngine::LoadTexture("Resources/block.png");
 	textureHandles_.at(Texture::kGrow) = TOMATOsEngine::LoadTexture("Resources/grow.png");
@@ -45,13 +47,12 @@ void Field::Update() {
 }
 
 void Field::Draw() {
-
 	TOMATOsEngine::SetBlendMode(kBlendModeNormal);
-	if (std::abs(fieldSize_.y - float(kBlockSize * kNumVerticalBlocks)) > 0.0001f) {
-		int a = 0;
-		a = 0;
-	}
+	DrawBlock();
+	DrawGrow();
+}
 
+void Field::DrawBlock() {
 	for (uint32_t x = 0; x < kNumHorizontalBlocks; ++x) {
 		// ブロックの矩形座標
 		Vector2 blockMinPos{}, blockMaxPos{};
@@ -67,17 +68,28 @@ void Field::Draw() {
 			}
 		}
 	}
-	//const uint32_t AnimationTime = 15;
+}
+
+void Field::DrawGrow() {
+	const uint32_t AnimationTime = 30;
 	for (uint32_t i = 0; i < numGrowingBlocks_; i++) {
-		Vector2 position = { static_cast<float>(nextBlockIndices_.at(i)) * static_cast<float>(kBlockSize) ,0.0f };
+		Vector2 position = { static_cast<float>(nextBlockIndices_.at(i)) * static_cast<float>(kBlockSize) + 5.0f, static_cast<float>(kBlockSize)*-1.0f };
 		Vector2 size = { 32.0f ,32.0f };
-		/*if (growAnimationCount_ % AnimationTime == 0) {
-			growAnimationCount_++;
-		}*/
-		Vector2 texBase = { 0.0f,0.0f };
+		// アニメーション
+		growAnimationCount_++;
+		if (growAnimationCount_ % AnimationTime == 0) {
+			growAnimationCount_ = 0;
+			growAnimationFrame_++;
+			if (growAnimationFrame_ > growAnimationFrameSize_) {
+				growAnimationFrame_ = 0;
+			}
+		}
+
+		Vector2 texBase = { static_cast<float>(growAnimationFrame_) * 64.0f,0.0f };
 		TOMATOsEngine::DrawSpriteRectAngle(position, size, Vector2(0.0f, 0.0f), 0.0f, texBase, Vector2(64.0f, 64.0f), textureHandles_.at(Texture::kGrow), 0xFFFFFFFF);
 	}
 }
+
 
 void Field::ColorClearBlock() {
 	for (uint32_t x = 0; x < kNumVerticalBlocks; x++) {
@@ -227,6 +239,7 @@ void Field::Grow(uint32_t horizontalIndex) {
 		}
 	}
 	block[0] = BlockType::Normal;
+	blocksColor_[horizontalIndex][0] = initializeColor_;
 }
 
 void Field::SetGrow(std::vector<uint32_t> blockIndices, uint32_t numBlocks) {

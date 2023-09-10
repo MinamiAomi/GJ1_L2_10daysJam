@@ -66,8 +66,8 @@ void Follow::Update() {
 					Math::Lerp(t,1.0f,0.0f));
 
 				// サイズ
-				/*float size = Math::Lerp(t, particle->size_Origin_.x, 0.0f);
-				particle->size_ = { size, size };*/
+				float size = Math::Lerp(t, particle->size_Origin_.x, 0.0f);
+				particle->size_ = { size, size };
 			}
 			particle->count_++;
 		}

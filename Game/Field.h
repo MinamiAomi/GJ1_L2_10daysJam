@@ -64,7 +64,8 @@ private:
     // nextBlockIndices_を使って制御
     std::vector<uint32_t> GetGrowField(uint32_t numBlocks);
     void SetGrow(std::vector<uint32_t> horizontalIndex, uint32_t numBlocks);
-
+    void DrawBlock();
+    void DrawGrow();
 
     // 縦に伸びるので横縦配置
     // 左から右
@@ -89,5 +90,7 @@ private:
     std::array<TextureHandle, TextureMax> textureHandles_;
     // 予想テクスチャアニメーション
     uint32_t growAnimationCount_;
+    uint32_t growAnimationFrame_;
+    uint32_t growAnimationFrameSize_;
 
 };

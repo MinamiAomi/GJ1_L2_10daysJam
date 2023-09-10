@@ -31,7 +31,9 @@ void ParticleManager::Update() {
 void ParticleManager::Draw() { 
 	TOMATOsEngine::SetBlendMode(kBlendModeAdditive);
 	circle_->Draw();
+	TOMATOsEngine::SetBlendMode(kBlendModeNormal);
 	follow_->Draw();
+	TOMATOsEngine::SetBlendMode(kBlendModeAdditive);
 	splash_->Draw();
 	pop_->Draw();
 	yenLetter_->Draw();
