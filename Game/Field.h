@@ -1,5 +1,6 @@
 #pragma once
 
+#include <array>
 #include <cstdint>
 
 #include "TextureHandle.h"
@@ -21,6 +22,13 @@ public:
         Normal,
 
         NumTypes
+    };
+
+    enum Texture {
+        kBlock,
+        kGrow,
+
+        Count,
     };
 
     void Initialize();
@@ -53,6 +61,10 @@ public:
 private:
     void GrowField(uint32_t numBlocks);
     void Grow(uint32_t horizontalIndex);
+    // nextBlockIndices_を使って制御
+    std::vector<uint32_t> GetGrowField(uint32_t numBlocks);
+    void SetGrow(std::vector<uint32_t> horizontalIndex, uint32_t numBlocks);
+
 
     // 縦に伸びるので横縦配置
     // 左から右
@@ -66,10 +78,13 @@ private:
     uint32_t growCoolTime_ = 0;
     uint32_t growInterval_ = 120;
     uint32_t numGrowingBlocks_ = 4;
+    // 次の成長を保持
+    std::vector<uint32_t> nextBlockIndices_;
     // 乱数生成器
     Random::RandomNumberGenerator randomNumberGenerator_;
     // パーティクルマネージャー
     ParticleManager* particleManager_;
     // テクスチャハンドル
-    TextureHandle textureHandle_;
+    static const uint32_t  TextureMax = Texture::Count;
+    std::array<TextureHandle, TextureMax> textureHandles_;
 };

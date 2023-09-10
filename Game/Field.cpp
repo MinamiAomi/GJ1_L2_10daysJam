@@ -23,16 +23,21 @@ void Field::Initialize() {
 	GrowField(5);
 	GrowField(5);
 	GrowField(5);
-
+	// 次成長するところをセット
+	nextBlockIndices_ = GetGrowField(numGrowingBlocks_);
 	growCoolTime_ = 0;
 
-	textureHandle_ = TOMATOsEngine::LoadTexture("Resources/block.png");
+	textureHandles_.at(Texture::kBlock) = TOMATOsEngine::LoadTexture("Resources/block.png");
+	textureHandles_.at(Texture::kGrow) = TOMATOsEngine::LoadTexture("Resources/grow.png");
 }
 
 void Field::Update() {
 	++growCoolTime_;
 	if (growCoolTime_ >= growInterval_) {
-		GrowField(numGrowingBlocks_);
+		// 成長
+		SetGrow(nextBlockIndices_, numGrowingBlocks_);
+		// 次成長するところをセット
+		nextBlockIndices_ = GetGrowField(numGrowingBlocks_);
 		growCoolTime_ = 0;
 	}
 }
@@ -56,14 +61,16 @@ void Field::Draw() {
 			blockMaxPos.y = blockMaxPos.y + float(kBlockSize);
 			// 通常ブロック
 			if (blocks_[x][y] == BlockType::Normal) {
-
-				//TOMATOsEngine::DrawRect(blockMinPos, blockMaxPos, 0x666666FF);
-				TOMATOsEngine::DrawSpriteRect(blockMinPos, blockMaxPos, {}, Vector2(32.0f, 32.0f), textureHandle_, Color(blocksColor_[x][y]));
+				TOMATOsEngine::DrawSpriteRect(blockMinPos, blockMaxPos, {}, Vector2(32.0f, 32.0f), textureHandles_.at(Texture::kBlock), Color(blocksColor_[x][y]));
 			}
 		}
-
 	}
-
+	//for (uint32_t i = 0; i < numGrowingBlocks_; i++) {
+	//	// ブロックの矩形座標
+	//	Vector2 position = { nextBlockIndices_.at(i) + (kBlock * 0.5f) ,static_cast<float>(kBlock) * -1.0f};
+	//	Vector2 size = { 32.0f ,32.0f };
+	//	TOMATOsEngine::DrawSpriteRectAngle(position, size, Vector2(0.5f, 0.5f), 0.0f,{}, Vector2(64.0f, 64.0f), textureHandles_.at(Texture::kGrow),0xFFFFFFFF);
+	//}
 }
 
 void Field::ColorClearBlock() {
@@ -183,6 +190,28 @@ void Field::GrowField(uint32_t numBlocks) {
 	}
 }
 
+std::vector<uint32_t> Field::GetGrowField(uint32_t numBlocks) {
+	assert(numBlocks > 0 && numBlocks < kNumHorizontalBlocks);
+
+	// 0~横幅分の数字配列をシャッフルして
+	// numBlocks以下の配列要素のインデックスを成長させる
+	std::vector<uint32_t> blockIndices(kNumHorizontalBlocks);
+	std::iota(blockIndices.begin(), blockIndices.end(), 0);
+
+	// シャッフルする
+	{
+		uint32_t i = uint32_t(blockIndices.size() - 1);
+		while (i > 0) {
+			uint32_t j = randomNumberGenerator_.NextUIntRange(0, i);
+
+			std::swap(blockIndices[i], blockIndices[j]);
+
+			i--;
+		}
+	}
+	return blockIndices;
+}
+
 void Field::Grow(uint32_t horizontalIndex) {
 	auto block = blocks_[horizontalIndex];
 	for (uint32_t i = kNumVerticalBlocks - 1; i > 0; --i) {
@@ -192,4 +221,11 @@ void Field::Grow(uint32_t horizontalIndex) {
 		}
 	}
 	block[0] = BlockType::Normal;
+}
+
+void Field::SetGrow(std::vector<uint32_t> blockIndices, uint32_t numBlocks) {
+	for (uint32_t i = 0; i < numBlocks; ++i) {
+		// 成長
+		Grow(blockIndices[i]);
+	}
 }
