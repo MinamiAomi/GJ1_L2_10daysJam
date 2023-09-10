@@ -37,4 +37,5 @@ private:
 	static const size_t kTextureMax = static_cast<size_t>(Texture::kCount);
 	std::array<TextureHandle, kTextureMax > textureHandle_;
 	std::array<std::unique_ptr<Particle>, 60> particles_;
+	int appearCoolTime;
 };
