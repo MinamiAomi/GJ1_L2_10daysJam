@@ -25,7 +25,7 @@ void YenLetter::Create(const Vector2 emitter, Vector4 color, uint32_t textureHan
 			angle_X_ = 0.0f;
 		}
 		emitter_.x = emitter.x + radius * std::cos(angle_X_);
-		emitter_.y = emitter.y /*+ radius * std::sin(angle_)*/;
+		emitter_.y = emitter.y;
 	}
 	else {
 		angle_Y_ -= addAngle;
@@ -33,10 +33,10 @@ void YenLetter::Create(const Vector2 emitter, Vector4 color, uint32_t textureHan
 			angle_Y_ = 0.0f;
 		}
 		emitter_.x = emitter.x + radius * std::sin(angle_Y_);
-		emitter_.y = emitter.y /*+ radius * std::sin(angle_Y_)*/;
+		emitter_.y = emitter.y;
 	}
 	
-	const float kSize = 5.0f;
+	const float kSize = 15.0f;
 	const uint32_t kDeath_Time = 30;
 	const uint32_t count_Max = 1;
 	uint32_t count = 0;

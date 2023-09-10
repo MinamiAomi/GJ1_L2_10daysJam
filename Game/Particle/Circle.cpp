@@ -7,7 +7,8 @@
 
 void Circle::Initialize() {
 	emitter_ = {0.0f, 0.0f};
-	textureHandle_.at(static_cast<uint32_t>(Texture::kWhite1x1)) = TOMATOsEngine::LoadTexture("Resources/Particle/circle.png");
+	textureHandle_.at(static_cast<uint32_t>(Texture::kCircle)) = TOMATOsEngine::LoadTexture("Resources/Particle/circle.png");
+	textureHandle_.at(static_cast<uint32_t>(Texture::kSquare)) = TOMATOsEngine::LoadTexture("Resources/Particle/square.png");
 	for (auto& particle : particles_) {
 		particle = std::make_unique<Particle>();
 	}
@@ -16,10 +17,8 @@ void Circle::Initialize() {
 void Circle::Create(const Vector2 emitter, Vector4 color, uint32_t textureHandle, uint32_t MaxParticle) {
 	Random::RandomNumberGenerator rnd{};
 	emitter_ = emitter;
-	const uint32_t deathtime_Min = 15;
-	const uint32_t deathtime_Max = 30;
-	const float size_Min = 10.0f;
-	const float size_Max = 50.0f;
+	const uint32_t deathtime = 15;
+	const float size = 60.0f;
 	const uint32_t count_Max = MaxParticle;
 	uint32_t count = 0;
 
@@ -34,13 +33,12 @@ void Circle::Create(const Vector2 emitter, Vector4 color, uint32_t textureHandle
 			// 加速度
 			particle->acceleration_ = {0.0f, 0.0f};
 			// サイズ
-			float size = rnd.NextFloatRange(size_Min, size_Max);
 			particle->size_Origin_ = {size, size};
 			particle->size_ = {0.0f,0.0f};
 			// テクスチャ
 			particle->textureHandle_ = textureHandle_.at(textureHandle);
 			// 寿命
-			particle->time_ = rnd.NextUIntRange(deathtime_Min, deathtime_Max);
+			particle->time_ = deathtime;
 			particle->count_ = 0;
 
 			particle->isAlive_ = true;
@@ -61,10 +59,10 @@ void Circle::Update() {
 					static_cast<float>(particle->count_) /
 					static_cast<float>(particle->time_),
 					0.0f, 1.0f);
-				// 色
-				particle->color_ = Vector4(
-				    1.0f, 1.0f, 1.0f,
-					Math::Lerp(t,1.0f, 0.0f));
+				//// 色
+				//particle->color_ = Vector4(
+				//    1.0f, 1.0f, 1.0f,
+				//	Math::Lerp(t,1.0f, 0.0f));
 
 				// サイズ
 				float size = Math::Lerp(t, 0.0f, particle->size_Origin_.x);
