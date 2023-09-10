@@ -54,6 +54,8 @@ private:
     int32_t sameHeightCount_;
     float sameHeightColorH_;
 
+    bool isComboed_=false;
+
     int32_t preHeight_;
     int32_t nowHeight_;
 
