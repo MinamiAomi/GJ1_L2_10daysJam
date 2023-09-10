@@ -8,6 +8,23 @@
 
 void Field::Initialize() {
 	memset(blocks_, BlockType::None, sizeof(blocks_));
+
+	fieldSize_ = { float(kBlockSize * kNumHorizontalBlocks), float(kBlockSize * kNumVerticalBlocks) };
+
+	GrowField(5);
+	GrowField(5);
+	GrowField(5);
+	GrowField(5);
+	GrowField(5);
+	GrowField(5);
+	GrowField(5);
+	GrowField(5);
+	GrowField(5);
+	GrowField(5);
+	GrowField(5);
+	// 次成長するところをセット
+	nextBlockIndices_ = GetGrowField(numGrowingBlocks_);
+	// 色
 	initializeColor_ = Vector4(1.0f, 1.0f, 1.0f, 1.0f);
 	for (uint32_t x = 0; x < kNumVerticalBlocks; x++) {
 		for (uint32_t y = 0; y < kNumHorizontalBlocks; y++) {
@@ -16,15 +33,6 @@ void Field::Initialize() {
 			}
 		}
 	}
-
-	fieldSize_ = { float(kBlockSize * kNumHorizontalBlocks), float(kBlockSize * kNumVerticalBlocks) };
-
-	GrowField(5);
-	GrowField(5);
-	GrowField(5);
-	GrowField(5);
-	// 次成長するところをセット
-	nextBlockIndices_ = GetGrowField(numGrowingBlocks_);
 	growCoolTime_ = 0;
 
 	growAnimationCount_ = 0;

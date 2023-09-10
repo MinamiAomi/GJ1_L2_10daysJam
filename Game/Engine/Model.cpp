@@ -26,7 +26,7 @@ void Model::CreatePipeline(DXGI_FORMAT rtvFormat, DXGI_FORMAT dsvFormat) {
 
         CD3DX12_STATIC_SAMPLER_DESC staticSampler(
             0,
-            D3D12_FILTER_MIN_MAG_MIP_LINEAR);
+            D3D12_FILTER_MIN_MAG_MIP_POINT);
 
         D3D12_ROOT_SIGNATURE_DESC desc{};
         desc.pParameters = rootParameters;

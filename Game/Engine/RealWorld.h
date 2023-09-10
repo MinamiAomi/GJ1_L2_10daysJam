@@ -2,7 +2,7 @@
 
 #include "Math/Camera.h"
 #include "Math/MathUtils.h"
-
+#include "Model.h"
 #include "ArcadeMachine.h"
 
 class CommandContext;
@@ -16,6 +16,7 @@ public:
 
 private:
     Camera camera_;
+    Model room_;
     ArcadeMachine arcadeMachine_;
 
 };

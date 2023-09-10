@@ -33,10 +33,10 @@ PSOutput main(PSInput input) {
     
     output.color = textureColor;
     
-    float3 direction = normalize(float3(0.0f, -1.0f, 1.0f));
+    float3 direction = normalize(float3(0.0f, -0.1f, 1.0f));
     //output.color *= ShadeColor(input.normal, direction) * 1.0f;
-    direction = normalize(float3(0.0f, -0.1f, 1.0f));
-    output.color *= ShadeColor(input.normal, direction) * 1.4f;
+    //direction = normalize(float3(0.0f, -0.1f, 1.0f));
+    output.color *= ShadeColor(input.normal, direction);
    //output.color.xyz += float3(0.1f, 0.1f, 0.1f);
     
     return output;
