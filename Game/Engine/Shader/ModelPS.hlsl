@@ -1,6 +1,7 @@
 struct Material {
     float4 color;
     uint useTexture;
+    uint isLighting;
 };
 
 ConstantBuffer<Material> material_ : register(b1);
@@ -33,11 +34,13 @@ PSOutput main(PSInput input) {
     
     output.color = textureColor;
     
-    float3 direction = normalize(float3(0.0f, -0.1f, 1.0f));
+    if (material_.isLighting != 0) {
+        float3 direction = normalize(float3(0.0f, -0.1f, 1.0f));
+        output.color *= ShadeColor(input.normal, direction);
+    }
     //output.color *= ShadeColor(input.normal, direction) * 1.0f;
     //direction = normalize(float3(0.0f, -0.1f, 1.0f));
-    output.color *= ShadeColor(input.normal, direction);
-   //output.color.xyz += float3(0.1f, 0.1f, 0.1f);
+    //output.color.xyz += float3(0.1f, 0.1f, 0.1f);
     
     return output;
 }

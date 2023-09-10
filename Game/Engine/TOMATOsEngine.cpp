@@ -181,7 +181,7 @@ namespace TOMATOsEngine {
             { 1.0f, 1.0f },
         };
 
-        Matrix3x3 matrix = Matrix3x3::MakeTranslation(anchorPoint) * Matrix3x3::MakeAffineTransform(size, angle, pos);
+        Matrix3x3 matrix = Matrix3x3::MakeTranslation(-anchorPoint) * Matrix3x3::MakeAffineTransform(size, angle, pos);
 
         for (auto& vertex : tmp) {
             vertex = vertex * matrix;
@@ -300,7 +300,7 @@ namespace TOMATOsEngine {
            { 1.0f, 0.0f },
         };
 
-        Matrix3x3 matrix = Matrix3x3::MakeTranslation(anchorPoint) * Matrix3x3::MakeAffineTransform(size, angle, pos);
+        Matrix3x3 matrix = Matrix3x3::MakeTranslation(-anchorPoint) * Matrix3x3::MakeAffineTransform(size, angle, pos);
 
         for (auto& vertex : tmp) {
             vertex = vertex * matrix;
