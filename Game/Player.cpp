@@ -19,14 +19,16 @@ void Player::Initialize() {
 	// 階段;
 	preStep_ = 0;
 	step_ = 0;
-	stepCount_ = 0;
+	stepCount_ = -1;
 	stepColor_ = Vector4(0.627f, 0.152f, 0.690f, 1.0f);
 	// 平行
 	preSameHeight_ = 0;
 	sameHeight_ = 0;
-	sameHeightCount_ = 0;
-  textureHandle_ = TOMATOsEngine::LoadTexture("Resources/player.png");
+	sameHeightCount_ = -1;
+	textureHandle_ = TOMATOsEngine::LoadTexture("Resources/player.png");
 	sameHeightColor_ = Vector4(0.662f, 0.690f, 0.156f, 1.0f);
+
+	break_ = false;
 }
 
 void Player::Update() {
@@ -194,42 +196,57 @@ void Player::move() {
 				if (bottom > 0.0f && bottom <= field_->GetSize().y) {
 					blockTopPosition = field_->GetBlockTop(blockBottom);
 				}
-				// コンボアップデート
-				ComboUpdate(bottom, blockLeft, blockBottom);
 				if (blockLeftBottomType != Field::None &&
 					field_->IsInField(blockLeft, blockBottom)) {
 					// ブロック破壊
 					if (stepCount_ >= kCombo_ || sameHeightCount_ >= kCombo_) {
 						field_->BreakBlockHorizon(blockLeft, blockBottom);
+						SetBlockColor(blockLeft, blockBottom);
+						// コンボカウントリセット
 						stepCount_ = 0;
 						sameHeightCount_ = 0;
-						SetBlockColor(blockLeft, blockBottom);
+						// リセットした後にすぐComboUpdateに入らないように
+						break_ = true;
+						// パーティクル
+						for (size_t x = 0; x < Field::kNumHorizontalBlocks; x++) {
+							if (field_->GetBlock(static_cast<uint32_t>(x), blockBottom) == Field::Normal)
+								CreateUpdate(static_cast<uint32_t>(x), blockBottom);
+						}
 					}
 					else {
 						field_->BreakBlock(blockLeft, blockBottom);
 						SetBlockColor(blockLeft, blockBottom);
-
+						// パーティクル
+						CreateUpdate(blockLeft, blockBottom);
 					}
-					// パーティクル
-					ParticleUpdate(blockLeft, blockBottom);
 				}
 				if (blockRightBottomType != Field::None &&
 					field_->IsInField(blockRight, blockBottom)) {
 					// ブロック破壊
 					if (stepCount_ >= kCombo_ || sameHeightCount_ >= kCombo_) {
 						field_->BreakBlockHorizon(blockRight, blockBottom);
+						SetBlockColor(blockRight, blockBottom);
+						// コンボカウントリセット
 						stepCount_ = 0;
 						sameHeightCount_ = 0;
-						SetBlockColor(blockRight, blockBottom);
+						// リセットした後にすぐComboUpdateに入らないように
+						break_ = true;
+						// パーティクル
+						for (size_t x = 0; x < Field::kNumHorizontalBlocks; x++) {
+							if (field_->GetBlock(static_cast<uint32_t>(x), blockBottom) == Field::Normal)
+								CreateUpdate(static_cast<uint32_t>(x), blockBottom);
+						}
 					}
 					else {
 						field_->BreakBlock(blockRight, blockBottom);
 						SetBlockColor(blockRight, blockBottom);
+						// パーティクル
+						CreateUpdate(blockRight, blockBottom);
 					}
-					// パーティクル
-					ParticleUpdate(blockRight, blockBottom);
 				}
 				tempPosition.y += blockTopPosition - bottom;
+				// コンボアップデート
+				ComboUpdate(bottom, blockLeft, blockBottom);
 			}
 		}
 	}
@@ -244,14 +261,77 @@ void Player::Draw() {
 	Vector2 rectMinPos = position_ - size_ * 0.5f;
 	Vector2 rectMaxPos = position_ + size_ * 0.5f;
 
-    TOMATOsEngine::DrawSpriteRect(rectMinPos, rectMaxPos, {}, Vector2(30.0f, 60.0f), textureHandle_, 0xFFFFFFFF);
+	TOMATOsEngine::DrawSpriteRect(rectMinPos, rectMaxPos, {}, Vector2(30.0f, 60.0f), textureHandle_, 0xFFFFFFFF);
 	//TOMATOsEngine::DrawRect(rectMinPos, rectMaxPos, 0x883333FF);
 
-  // コンボ数描画
-  float tex1 = std::clamp(static_cast<float>(sameHeightCount_), 0.0f, 2.0f);
-	float tex2 = std::clamp(static_cast<float>(stepCount_), 0.0f, 2.0f);
+	// コンボ数描画
+	ComboDraw();
+}
+
+void Player::Bounce() {}
+
+void Player::CreateUpdate(uint32_t x, uint32_t y) {
+	// パーティクル
+	particleManager_->GetSplash()->Create(
+		Vector2(
+			static_cast<float>(x * Field::kBlockSize),
+			static_cast<float>(y * Field::kBlockSize)
+		),
+		Vector4(1.0f, 1.0f, 1.0f, 1.0f),
+		static_cast<uint32_t>(Pop::Texture::kWhite1x1),
+		10);
+	particleManager_->GetPop()->Create(
+		Vector2(
+			static_cast<float>(x * Field::kBlockSize),
+			static_cast<float>(y * Field::kBlockSize)
+		),
+		Vector4(1.0f, 1.0f, 1.0f, 1.0f),
+		static_cast<uint32_t>(Pop::Texture::kBlock),
+		10);
+}
+
+void Player::ComboUpdate(float  floor, uint32_t blockIndexX, uint32_t blockIndexY) {
+	uint32_t x = blockIndexX;
+	x = 0;
+	// 地面に着いたらコンボカウントリセット
+	if (!break_) {
+
+		if (floor > 0) {
+#pragma region 階段
+			step_ = blockIndexY;
+			if (step_ - 1 == preStep_) {
+				stepCount_++;
+			}
+			else {
+				stepCount_ = -1;
+			}
+			preStep_ = step_;
+#pragma endregion
+#pragma region 平行
+			sameHeight_ = blockIndexY;
+			if (sameHeight_ == preSameHeight_) {
+				sameHeightCount_++;
+			}
+			else {
+				sameHeightCount_ = -1;
+			}
+			preSameHeight_ = sameHeight_;
+		}
+		else {
+			stepCount_ = -1;
+			sameHeightCount_ = -1;
+		}
+	}
+	else {
+		break_ = false;
+	}
+}
+
+void Player::ComboDraw() {
+	float tex1 = std::clamp(static_cast<float>(sameHeightCount_), -1.0f, 2.0f);
+	float tex2 = std::clamp(static_cast<float>(stepCount_), -1.0f, 2.0f);
 	float tex = std::max(tex1, tex2);
-	if (tex >= 1) {
+	if (tex >= 0) {
 		float distance = 0.0f;
 		float angle_Origin = 0.0f;
 		if (tex == 1) {
@@ -269,67 +349,13 @@ void Player::Draw() {
 		float angle = rnd.NextFloatRange(-angle_Origin, angle_Origin);
 		TOMATOsEngine::DrawSpriteRectAngle(position, comboSize_, Vector2(0.5f, 0.5f), angle * Math::ToRadian, {}, Vector2(64.0f, 64.0f), comboTextureHandle_.at(static_cast<uint32_t>(tex)), Color(comboColor_));
 	}
-
-}
-
-void Player::Bounce() {}
-
-void Player::ParticleUpdate(uint32_t x, uint32_t y) {
-	// パーティクル
-	particleManager_->GetSplash()->Create(
-		Vector2(
-			static_cast<float>(x * Field::kBlockSize),
-			static_cast<float>(y * Field::kBlockSize)
-		),
-		Vector4(1.0f, 1.0f, 1.0f, 1.0f),
-		static_cast<uint32_t>(Pop::Texture::kWhite1x1),
-		20);
-	particleManager_->GetPop()->Create(
-		Vector2(
-			static_cast<float>(x * Field::kBlockSize),
-			static_cast<float>(y * Field::kBlockSize)
-		),
-		Vector4(1.0f, 1.0f, 1.0f, 1.0f),
-		static_cast<uint32_t>(Pop::Texture::kBlock),
-		20);
-}
-
-void Player::ComboUpdate(float  floor, uint32_t blockIndexX, uint32_t blockIndexY) {
-	uint32_t x = blockIndexX;
-	x = 0;
-	// 地面に着いたらコンボカウントリセット
-	if (floor > 0) {
-#pragma region 階段
-		step_ = blockIndexY;
-		if (step_ - 1 == preStep_) {
-			stepCount_++;
-		}
-		else {
-			stepCount_ = 0;
-		}
-		preStep_ = step_;
-#pragma endregion
-#pragma region 平行
-		sameHeight_ = blockIndexY;
-		if (sameHeight_ == preSameHeight_) {
-			sameHeightCount_++;
-		}
-		else {
-			sameHeightCount_ = 0;
-		}
-		preSameHeight_ = sameHeight_;
-	}
-	else {
-		stepCount_ = 0;
-		sameHeightCount_ = 0;
-	}
 }
 
 void Player::SetBlockColor(uint32_t blockIndexX, uint32_t blockIndexY) {
 	blockIndexX = 0;
 	// 色
 	field_->ColorClearBlock();
-	
+
 	for (size_t x = 0; x < Field::kNumHorizontalBlocks; x++) {
 		// 階段
 		if (field_->GetBlock(static_cast<uint32_t>(x), static_cast<uint32_t>(blockIndexY + 2)) == Field::None) {

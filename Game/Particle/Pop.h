@@ -38,5 +38,5 @@ private:
 	Vector2 emitter_;
 	static const size_t kTextureMax = static_cast<size_t>(Texture::kCount);
 	std::array<TextureHandle , kTextureMax > textureHandle_;
-	std::array<std::unique_ptr<Particle>, 60> particles_;
+	std::array<std::unique_ptr<Particle>, 200> particles_;
 };
