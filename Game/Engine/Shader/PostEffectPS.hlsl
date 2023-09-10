@@ -24,7 +24,7 @@ PSOutput main(PSInput input) {
     PSOutput output;
     
     output.color = texture_.Sample(sampler_, input.texcoord);
-    output.color.xyz = LinearToSRGB(output.color.xyz);
+   //output.color.xyz = LinearToSRGB(output.color.xyz);
     
     return output;
 }

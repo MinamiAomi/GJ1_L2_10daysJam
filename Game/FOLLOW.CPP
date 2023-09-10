@@ -21,7 +21,7 @@ void Follow::Create(const Vector2 emitter, Vector4 color, uint32_t textureHandle
 	Random::RandomNumberGenerator rnd{};
 	emitter_ = emitter;
 	const Vector2 kSize = {30.0f,60.0f};
-	const uint32_t kDeath_Time = 30;
+	const uint32_t kDeath_Time = 15;
 	const uint32_t count_Max = MaxParticle;
 	uint32_t count = 0;
 	if (appearCoolTime < 0) {
@@ -63,11 +63,11 @@ void Follow::Update() {
 				// 色
 				particle->color_ = Vector4(
 					1.0f, 1.0f, 1.0f,
-					Math::Lerp(t,1.0f,0.0f));
+					Math::Lerp(t,0.5f,0.0f));
 
 				// サイズ
-				float size = Math::Lerp(t, particle->size_Origin_.x, 0.0f);
-				particle->size_ = { size, size };
+				/*float size = Math::Lerp(t, particle->size_Origin_.x, 0.0f);
+				particle->size_ = { size, size };*/
 			}
 			particle->count_++;
 		}
