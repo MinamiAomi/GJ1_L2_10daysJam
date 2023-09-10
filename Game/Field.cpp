@@ -98,10 +98,10 @@ void Field::DrawBlock() {
 			}
 			// フラッシュブロック
 			if (blocks_[x][y] == BlockType::Frash) {
-				blockMinPos.x -= (kFrashTime - breakTime_) * 1.5f;
-				blockMaxPos.x += (kFrashTime - breakTime_) * 1.5f;
-				blockMinPos.y += (kFrashTime - breakTime_) * 1.5f;
-				blockMaxPos.y -= (kFrashTime - breakTime_) * 1.5f;
+				blockMinPos.x -= (kFrashTime - breakTime_) * 2.0f;
+				blockMaxPos.x += (kFrashTime - breakTime_) * 2.0f;
+				blockMinPos.y += (kFrashTime - breakTime_) * 2.0f;
+				blockMaxPos.y -= (kFrashTime - breakTime_) * 2.0f;
 				TOMATOsEngine::DrawRect(blockMinPos, blockMaxPos,0xFFFFFFFF);
 			}
 		}
