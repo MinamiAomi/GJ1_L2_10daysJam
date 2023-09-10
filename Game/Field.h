@@ -27,7 +27,10 @@ public:
     void Update();
     void Draw();
 
+    void ColorClearBlock();
+    void SetColorBlock(uint32_t blockIndexX, uint32_t blockIndexY, const Vector4& color);
     void BreakBlock(uint32_t blockIndexX, uint32_t blockIndexY);
+    void BreakBlockHorizon(uint32_t blockIndexX, uint32_t blockIndexY);
 
     uint32_t CalcBlockIndexX(float worldPosX) const;
     uint32_t CalcBlockIndexY(float worldPosY) const;
@@ -56,6 +59,9 @@ private:
     // 下から上
     BlockType blocks_[kNumHorizontalBlocks][kNumVerticalBlocks]{};
     Vector2 fieldSize_;
+    // 色
+    Vector4 blocksColor_[kNumHorizontalBlocks][kNumVerticalBlocks]{};
+    Vector4 initializeColor_;
     // 伸びるまでの時間
     uint32_t growCoolTime_ = 0;
     uint32_t growInterval_ = 120;

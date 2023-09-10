@@ -59,33 +59,22 @@ void TriangleRenderer::Initialize(DXGI_FORMAT rtvFormat) {
         pipelineStates_[kBlendSubtract].Create(L"TriangleRenderer BlendSubtractPSO", desc);
     }
 
-    vertexBuffer_.Create(L"TriangleRenderer VertexBuffer", kMaxNumTriangles * 3ull, sizeof(Vertex));
-    vbv_.BufferLocation = vertexBuffer_.GetGPUVirtualAddress();
-    vbv_.SizeInBytes = UINT(vertexBuffer_.GetBufferSize());
-    vbv_.StrideInBytes = sizeof(Vertex);
-    triangleCount_ = 0;
-
 }
 
 void TriangleRenderer::Draw(CommandContext& commandContext, const Vertex* vertices, uint32_t numTriangles) {
-    assert(triangleCount_ + numTriangles <= kMaxNumTriangles);
 
 
-    Vertex* dest = reinterpret_cast<Vertex*>(vertexBuffer_.GetCPUData());
+   /* Vertex* dest = reinterpret_cast<Vertex*>(vertexBuffer_.GetCPUData());
     dest += triangleCount_ * 3;
+    memcpy(dest, vertices, sizeof(Vertex) * numTriangles * 3);*/
 
-    memcpy(dest, vertices, sizeof(Vertex) * numTriangles * 3);
 
     commandContext.SetRootSignature(rootSignature_);
     commandContext.SetPipelineState(pipelineStates_[blendMode_]);
     commandContext.SetPrimitiveTopology(D3D10_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-    commandContext.SetVertexBuffer(0, vbv_);
-    commandContext.Draw(numTriangles * 3, triangleCount_ * 3);
-
-    triangleCount_ += numTriangles;
+    //commandContext.SetVertexBuffer(0, vbv_);
+    commandContext.SetDynamicVertexBuffer(0, numTriangles * 3ull, sizeof(vertices[0]), vertices);
+    commandContext.Draw(numTriangles * 3);
 }
 
-void TriangleRenderer::Reset() {
-    triangleCount_ = 0;
-}
 

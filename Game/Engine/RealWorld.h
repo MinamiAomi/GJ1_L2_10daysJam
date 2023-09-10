@@ -2,7 +2,8 @@
 
 #include "Math/Camera.h"
 #include "Math/MathUtils.h"
-#include "Monitor.h"
+
+#include "ArcadeMachine.h"
 
 class CommandContext;
 
@@ -13,11 +14,8 @@ public:
     void Update();
     void Draw(CommandContext& commandContext);
 
-    Monitor& GetMonitor() { return monitor_; }
-
 private:
     Camera camera_;
-    Monitor monitor_;
-
+    ArcadeMachine arcadeMachine_;
 
 };

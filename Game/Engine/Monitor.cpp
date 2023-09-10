@@ -1,11 +1,20 @@
 #include "Monitor.h"
 
+#include <filesystem>
+#include <cassert>
+#include <fstream>
+#include <sstream>
+
 #include "Graphics/Helper.h"
 #include "Graphics/ShaderManager.h"
 #include "Graphics/CommandContext.h"
 
-void Monitor::Initilaize(uint32_t width, uint32_t height, DXGI_FORMAT rtvFormat, DXGI_FORMAT dsvFormat) {
+Monitor* Monitor::GetInstance() {
+    static Monitor instance;
+    return &instance;
+}
 
+void Monitor::Initilaize(uint32_t bufferWidth, uint32_t bufferHeight, DXGI_FORMAT rtvFormat, DXGI_FORMAT dsvFormat) {
     {
         CD3DX12_DESCRIPTOR_RANGE ranges[1]{};
         ranges[0].Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, 0);
@@ -64,9 +73,67 @@ void Monitor::Initilaize(uint32_t width, uint32_t height, DXGI_FORMAT rtvFormat,
         desc.SampleDesc.Count = 1;
         pipelineState_.Create(L"Monitor PSO", desc);
     }
+    colorBuffer_.Create(L"Monitor ColorBuffer", bufferWidth, bufferHeight, DXGI_FORMAT_R8G8B8A8_UNORM);
 
-    colorBuffer_.Create(L"Monitor ColorBuffer", width, height, DXGI_FORMAT_R8G8B8A8_UNORM);
+    {
+        std::filesystem::path path = "Engine/Model/Monitor.obj";
+        std::ifstream file(path);
+        assert(file.is_open());
 
+        std::vector<Vector3> positions;
+        std::vector<Vector2> texcoords;
+
+        std::vector<Vertex> vertices;
+
+        std::string line;
+        while (std::getline(file, line)) {
+            std::string identifier;
+            std::istringstream iss(line);
+            iss >> identifier;
+
+            if (identifier == "#") {
+                continue;
+            }
+            else if (identifier == "v") {
+                Vector3& position = positions.emplace_back();
+                iss >> position.x >> position.y >> position.z;
+                // position.z = -position.z;
+            }
+            else if (identifier == "vt") {
+                Vector2& texcoord = texcoords.emplace_back();
+                iss >> texcoord.x >> texcoord.y;
+                texcoord.y = 1.0f - texcoord.y;
+            }
+            else if (identifier == "f") {
+                std::string vertexDefinitions[3];
+                iss >> vertexDefinitions[0] >> vertexDefinitions[1] >> vertexDefinitions[2];
+
+                for (uint32_t i = 0; i < 3; ++i) {
+                    std::istringstream viss(vertexDefinitions[i]);
+                    uint32_t elementIndices[2]{};
+                    for (uint32_t j = 0; j < 2; ++j) {
+                        std::string index;
+                        std::getline(viss, index, '/');
+                        if (!index.empty()) {
+                            elementIndices[j] = static_cast<uint32_t>(std::stoi(index)) - 1;
+                        }
+                    }
+                    auto& vertex = vertices.emplace_back();
+                    vertex.position = positions[elementIndices[0]];
+                    vertex.texcoord = texcoords[elementIndices[1]];
+                }
+            }
+        }
+
+        file.close();
+
+        vertexBuffer_.Create(L"Monitor VertexBuffer", vertices.size(), sizeof(vertices[0]));
+        vertexBuffer_.Copy(vertices.data(), vertices.size() * sizeof(vertices[0]));
+        vbView_.BufferLocation = vertexBuffer_.GetGPUVirtualAddress();
+        vbView_.SizeInBytes = UINT(vertexBuffer_.GetBufferSize());
+        vbView_.StrideInBytes = UINT(sizeof(vertices[0]));
+        vertexCount_ = uint32_t(vertices.size());
+    }
 }
 
 void Monitor::BeginRender(CommandContext& commandContext) {
@@ -76,33 +143,14 @@ void Monitor::BeginRender(CommandContext& commandContext) {
     commandContext.SetViewportAndScissorRect(0, 0, colorBuffer_.GetWidth(), colorBuffer_.GetHeight());
 }
 
-void Monitor::Draw(CommandContext& commandContext, const Matrix4x4& camera) {
+void Monitor::Draw(CommandContext& commandContext, const Matrix4x4& world, const Matrix4x4& camera) {
     commandContext.TransitionResource(colorBuffer_, D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE);
     commandContext.SetRootSignature(rootSignature_);
     commandContext.SetPipelineState(pipelineState_);
-    commandContext.SetPrimitiveTopology(D3D10_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+    commandContext.SetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
     commandContext.SetDescriptorTable(0, colorBuffer_.GetSRV());
-    commandContext.SetDynamicConstantBufferView(1, sizeof(camera), &camera);
-
-    //D3D12_VERTEX_BUFFER_VIEW vbv{};
-    //commandContext.SetVertexBuffer(0, vbv);
-    //commandContext.SetIndexBuffer();
-
-
-    struct Vertex {
-        Vector3 pos;
-        Vector2 tex;
-    };
-
-    Vertex vertices[6] = {
-        {{ -1.0f, -1.0f, 0.0f }, {0.0f, 1.0f}},
-        {{ -1.0f,  1.0f, 0.0f }, {0.0f, 0.0f}},
-        {{  1.0f,  1.0f, 0.0f }, {1.0f, 0.0f}},
-        
-        {{ -1.0f, -1.0f, 0.0f }, {0.0f, 1.0f}},
-        {{  1.0f,  1.0f, 0.0f }, {1.0f, 0.0f}},
-        {{  1.0f, -1.0f, 0.0f }, {1.0f, 1.0f}},
-    };
-    commandContext.SetDynamicVertexBuffer(0, 6, sizeof(Vertex), vertices);
-    commandContext.Draw(6, 0);
+    Matrix4x4 worldViewProj = world * camera;
+    commandContext.SetDynamicConstantBufferView(1, sizeof(worldViewProj), &worldViewProj);
+    commandContext.SetVertexBuffer(0, vbView_);
+    commandContext.Draw(vertexCount_, 0);
 }
