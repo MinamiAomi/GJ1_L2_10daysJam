@@ -73,7 +73,7 @@ void Field::DrawBlock() {
 void Field::DrawGrow() {
 	const uint32_t AnimationTime = 30;
 	for (uint32_t i = 0; i < numGrowingBlocks_; i++) {
-		Vector2 position = { static_cast<float>(nextBlockIndices_.at(i)) * static_cast<float>(kBlockSize) + 5.0f, -static_cast<float>(kBlockSize) *0.5f };
+		Vector2 position = { static_cast<float>(nextBlockIndices_.at(i)) * static_cast<float>(kBlockSize) + 5.0f, static_cast<float>(kBlockSize)*-1.0f };
 		Vector2 size = { 32.0f ,32.0f };
 		// アニメーション
 		growAnimationCount_++;
