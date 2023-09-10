@@ -23,8 +23,8 @@ private:
 	};
 public:
 	enum class Texture {
-		kWhite1x1,
-		kBlock,
+		kCircle,
+		kSquare,
 		kCount,
 	};
 public:
@@ -37,5 +37,5 @@ private:
 	Vector2 emitter_;
 	static const size_t kTextureMax = static_cast<size_t>(Texture::kCount);
 	std::array<TextureHandle, kTextureMax > textureHandle_;
-	std::array<std::unique_ptr<Particle>, 10> particles_;
+	std::array<std::unique_ptr<Particle>, 100> particles_;
 };

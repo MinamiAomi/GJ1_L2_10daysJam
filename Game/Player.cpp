@@ -20,13 +20,19 @@ void Player::Initialize() {
 	preStep_ = 0;
 	step_ = 0;
 	stepCount_ = -1;
-	stepColor_ = Vector4(0.627f, 0.152f, 0.690f, 1.0f);
+	stepColorH_ = 307.0f / 360.0f;
 	// 平行
 	preSameHeight_ = 0;
 	sameHeight_ = 0;
 	sameHeightCount_ = -1;
 	textureHandle_ = TOMATOsEngine::LoadTexture("Resources/player.png");
-	sameHeightColor_ = Vector4(0.662f, 0.690f, 0.156f, 1.0f);
+	sameHeightColorH_ = 63.0f / 360.0f;
+
+	preHeight_ = -1;
+	nowHeight_ = -1;
+
+	h_ = 0.0f;
+	bonusColor_ = { 0.0f,0.0f,0.0f,0.0f };
 
 	animationFrame = 0;
 	continueTextureNum = 3;
@@ -37,9 +43,22 @@ void Player::Update() {
 
 	move();
 
-	particleManager_->GetFollow()->Create(position_, Vector4(1.0f, 1.0f, 1.0f, 0.5f), static_cast<uint32_t>(Follow::Texture::kPlayer));
-	//particleManager_->GetYenLetter()->Create(position_,Vector4(1.0f,1.0f,1.0f,1.0f),static_cast<uint32_t>(YenLetter::Texture::kWhite1x1));
-	//particleManager_->GetYenLetter()->Create(position_,Vector4(1.0f,1.0f,1.0f,1.0f), static_cast<uint32_t>(YenLetter::Texture::kWhite1x1),false);
+	SetBlockColor(nowHeight_);
+
+	// コンボ数によってエフェクト変化
+	if (stepCount_ == 1 || sameHeightCount_ == 1) {
+		particleManager_->GetFollow()->Create(position_, Vector4(1.0f, 1.0f, 1.0f, 0.5f), static_cast<uint32_t>(Follow::Texture::kPlayer));
+		particleManager_->GetYenLetter()->Create(position_, Vector4(1.0f, 1.0f, 1.0f, 1.0f), static_cast<uint32_t>(YenLetter::Texture::kWhite1x1));
+		particleManager_->GetYenLetter()->Create(position_, Vector4(1.0f, 1.0f, 1.0f, 1.0f), static_cast<uint32_t>(YenLetter::Texture::kWhite1x1), false);
+	}
+	else if (stepCount_ == 2 || sameHeightCount_ == 2) {
+		particleManager_->GetFollow()->Create(position_, Vector4(1.0f, 1.0f, 1.0f, 0.5f), static_cast<uint32_t>(Follow::Texture::kPlayer));
+		particleManager_->GetYenLetter()->Create(position_, Vector4(1.0f, 1.0f, 1.0f, 1.0f), static_cast<uint32_t>(YenLetter::Texture::kWhite1x1));
+		particleManager_->GetYenLetter()->Create(position_, Vector4(1.0f, 1.0f, 1.0f, 1.0f), static_cast<uint32_t>(YenLetter::Texture::kWhite1x1), false);
+	}
+	else if (stepCount_ == 0 || sameHeightCount_ == 0) {
+		particleManager_->GetFollow()->Create(position_, Vector4(1.0f, 1.0f, 1.0f, 0.5f), static_cast<uint32_t>(Follow::Texture::kPlayer));
+	}
 
 	ImGui::Begin("Player");
 	ImGui::Text("preStep_:%d", preStep_);
@@ -193,6 +212,8 @@ void Player::move() {
 			if (blockLeftBottomType != Field::None ||
 				blockRightBottomType != Field::None ||
 				bottom <= 0.0f) {
+				// 高さ更新
+				preHeight_ = nowHeight_;
 				velocity_.y = 20.0f;
 				animationFrame = (continueTextureNum - 1) * kAnimationSwitchNum;
 				float blockTopPosition = 0.0f;
@@ -204,7 +225,8 @@ void Player::move() {
 					// ブロック破壊
 					if (stepCount_ >= kCombo_ || sameHeightCount_ >= kCombo_) {
 						field_->BreakBlockHorizon(blockLeft, blockBottom);
-						SetBlockColor(blockLeft, blockBottom);
+						// 高さ更新
+						nowHeight_ = blockBottom;
 						// コンボカウントリセット
 						stepCount_ = -1;
 						sameHeightCount_ = -1;
@@ -212,13 +234,15 @@ void Player::move() {
 						break_ = true;
 						// パーティクル
 						for (size_t x = 0; x < Field::kNumHorizontalBlocks; x++) {
-							if (field_->GetBlock(static_cast<uint32_t>(x), blockBottom) == Field::Normal)
+							if (field_->GetBlock(static_cast<uint32_t>(x), blockBottom) == Field::Frash) {
 								CreateUpdate(static_cast<uint32_t>(x), blockBottom);
+							}
 						}
 					}
 					else {
 						field_->BreakBlock(blockLeft, blockBottom);
-						SetBlockColor(blockLeft, blockBottom);
+						// 高さ更新
+						nowHeight_ = blockBottom;
 						// パーティクル
 						CreateUpdate(blockLeft, blockBottom);
 					}
@@ -228,7 +252,8 @@ void Player::move() {
 					// ブロック破壊
 					if (stepCount_ >= kCombo_ || sameHeightCount_ >= kCombo_) {
 						field_->BreakBlockHorizon(blockRight, blockBottom);
-						SetBlockColor(blockRight, blockBottom);
+						// 高さ更新
+						nowHeight_ = blockBottom;
 						// コンボカウントリセット
 						stepCount_ = -1;
 						sameHeightCount_ = -1;
@@ -236,13 +261,15 @@ void Player::move() {
 						break_ = true;
 						// パーティクル
 						for (size_t x = 0; x < Field::kNumHorizontalBlocks; x++) {
-							if (field_->GetBlock(static_cast<uint32_t>(x), blockBottom) == Field::Normal)
+							if (field_->GetBlock(static_cast<uint32_t>(x), blockBottom) == Field::Frash) {
 								CreateUpdate(static_cast<uint32_t>(x), blockBottom);
+							}
 						}
 					}
 					else {
 						field_->BreakBlock(blockRight, blockBottom);
-						SetBlockColor(blockRight, blockBottom);
+						// 高さ更新
+						nowHeight_ = blockBottom;
 						// パーティクル
 						CreateUpdate(blockRight, blockBottom);
 					}
@@ -250,6 +277,11 @@ void Player::move() {
 				tempPosition.y += blockTopPosition - bottom;
 				// コンボアップデート
 				ComboUpdate(bottom, blockLeft, blockBottom);
+				// 地面に着いたら
+				if (bottom <= 0.0f) {
+					nowHeight_ = -1;
+				}
+				SetBlockParticleColor(nowHeight_);
 			}
 		}
 	}
@@ -280,8 +312,6 @@ void Player::Draw() {
 	ComboDraw();
 }
 
-void Player::Bounce() {}
-
 void Player::CreateUpdate(uint32_t x, uint32_t y) {
 	// パーティクル
 	particleManager_->GetSplash()->Create(
@@ -307,7 +337,6 @@ void Player::ComboUpdate(float  floor, uint32_t blockIndexX, uint32_t blockIndex
 	x = 0;
 	// 地面に着いたらコンボカウントリセット
 	if (!break_) {
-
 		if (floor > 0) {
 #pragma region 階段
 			step_ = blockIndexY;
@@ -359,26 +388,105 @@ void Player::ComboDraw() {
 		position.x = comboPosition_.x + rnd.NextFloatRange(-distance, distance);
 		position.y = comboPosition_.y + rnd.NextFloatRange(-distance, distance);
 		float angle = rnd.NextFloatRange(-angle_Origin, angle_Origin);
-		TOMATOsEngine::DrawSpriteRectAngle(position, comboSize_, Vector2(0.5f, 0.5f), angle * Math::ToRadian, {}, Vector2(64.0f, 64.0f), comboTextureHandle_.at(static_cast<uint32_t>(tex)), Color(comboColor_));
+		TOMATOsEngine::DrawSpriteRectAngle(Vector2(0.0f, 0.0f), comboSize_, Vector2(0.5f, 0.5f), angle * Math::ToRadian, {}, Vector2(64.0f, 64.0f), comboTextureHandle_.at(static_cast<uint32_t>(tex)), Color(comboColor_));
 	}
 }
 
-void Player::SetBlockColor(uint32_t blockIndexX, uint32_t blockIndexY) {
-	blockIndexX = 0;
+void Player::SetBlockColor(int32_t blockIndexY) {
 	// 色
 	field_->ColorClearBlock();
+	if (blockIndexY != -1) {
+		for (uint32_t x = 0; x < Field::kNumHorizontalBlocks; x++) {
+			// コンボ達成しているか
+			if (stepCount_ < kCombo_ && sameHeightCount_ < kCombo_) {
+				// 階段
+				if (field_->GetBlock(x, static_cast<uint32_t>(blockIndexY + 2)) == Field::None && field_->GetBlock(static_cast<uint32_t>(x), static_cast<uint32_t>(blockIndexY + 1)) == Field::Normal) {
+					if (stepCount_ == 0) {
+						// 色
+						const float kS = 1.0f;
+						const float kV = 0.3f;
+						field_->SetColorBlock(x, static_cast<uint32_t>(blockIndexY + 1), Color::HSVA(stepColorH_, kS, kV));
+					}
+					else {
+						// 色
+						const float kS = 1.0f;
+						const float kV = 1.0f;
+						field_->SetColorBlock(x, static_cast<uint32_t>(blockIndexY + 1), Color::HSVA(stepColorH_, kS, kV));
+					}
+				}
+				// 平行
+				if (field_->GetBlock(x, static_cast<uint32_t>(blockIndexY + 1)) == Field::None && field_->GetBlock(static_cast<uint32_t>(x), static_cast<uint32_t>(blockIndexY)) == Field::Normal) {
+					if (sameHeightCount_ == 0) {
+						// 色
+						const float kS = 1.0f;
+						const float kV = 0.3f;
+						field_->SetColorBlock(x, static_cast<uint32_t>(blockIndexY), Color::HSVA(sameHeightColorH_, kS, kV));
+					}
+					else {
+						// 色
+						const float kS = 1.0f;
+						const float kV = 1.0f;
+						field_->SetColorBlock(x, static_cast<uint32_t>(blockIndexY), Color::HSVA(sameHeightColorH_, kS, kV));
+					}
+				}
+			}
+			else {
+				for (uint32_t y = 0; y < Field::kNumVerticalBlocks; y++) {
+					if (field_->GetBlock(x, y) == Field::Normal) {
+						// 色
+						const float kAddH = 0.0008f;
+						const float kS = 1.0f;
+						const float kV = 1.0f;
+						h_ += kAddH;
+						if (h_ >= 1.0f) {
+							h_ = 0.0f;
+						}
 
-	for (size_t x = 0; x < Field::kNumHorizontalBlocks; x++) {
-		// 階段
-		if (field_->GetBlock(static_cast<uint32_t>(x), static_cast<uint32_t>(blockIndexY + 2)) == Field::None) {
-			field_->SetColorBlock(static_cast<uint32_t>(x), static_cast<uint32_t>(blockIndexY + 1), stepColor_);
-		}
-		// 平行
-		if (field_->GetBlock(static_cast<uint32_t>(x), static_cast<uint32_t>(blockIndexY + 1)) == Field::None) {
-			field_->SetColorBlock(static_cast<uint32_t>(x), static_cast<uint32_t>(blockIndexY), sameHeightColor_);
+						field_->SetColorBlock(x, y, Color::HSVA(h_, kS, kV));
+					}
+				}
+			}
 		}
 	}
 }
 
-
+void Player::SetBlockParticleColor(int32_t blockIndexY) {
+	if (blockIndexY != -1) {
+		for (uint32_t x = 0; x < Field::kNumHorizontalBlocks; x++) {
+			// コンボ達成しているか
+			if (stepCount_ < kCombo_ && sameHeightCount_ < kCombo_) {
+				// 階段
+				if (field_->GetBlock(x, static_cast<uint32_t>(blockIndexY + 2)) == Field::None && field_->GetBlock(static_cast<uint32_t>(x), static_cast<uint32_t>(blockIndexY + 1)) == Field::Normal) {
+					if (stepCount_ == 0) {
+						// 色
+						const float kS = 1.0f;
+						const float kV = 0.3f;
+						particleManager_->GetCircle()->Create(Vector2(float(x * Field::kBlockSize) + (Field::kBlockSize / 2), float(blockIndexY * Field::kBlockSize) + (Field::kBlockSize / 2)), Color::HSVA(stepColorH_, kS, kV), static_cast<uint32_t>(Circle::Texture::kSquare));
+					}
+					else {
+						// 色
+						const float kS = 1.0f;
+						const float kV = 1.0f;
+						particleManager_->GetCircle()->Create(Vector2(float(x * Field::kBlockSize) + (Field::kBlockSize / 2), float(blockIndexY * Field::kBlockSize) + (Field::kBlockSize / 2)), Color::HSVA(stepColorH_, kS, kV), static_cast<uint32_t>(Circle::Texture::kSquare));
+					}
+				}
+				// 平行
+				if (field_->GetBlock(x, static_cast<uint32_t>(blockIndexY + 1)) == Field::None && field_->GetBlock(static_cast<uint32_t>(x), static_cast<uint32_t>(blockIndexY)) == Field::Normal) {
+					if (sameHeightCount_ == 0) {
+						// 色
+						const float kS = 1.0f;
+						const float kV = 0.3f;
+						particleManager_->GetCircle()->Create(Vector2(float(x * Field::kBlockSize) + (Field::kBlockSize / 2), float(blockIndexY * Field::kBlockSize) + (Field::kBlockSize / 2)), Color::HSVA(sameHeightColorH_, kS, kV), static_cast<uint32_t>(Circle::Texture::kSquare));
+					}
+					else {
+						// 色
+						const float kS = 1.0f;
+						const float kV = 1.0f;
+						particleManager_->GetCircle()->Create(Vector2(float(x * Field::kBlockSize) + (Field::kBlockSize / 2), float(blockIndexY * Field::kBlockSize) + (Field::kBlockSize / 2)), Color::HSVA(sameHeightColorH_, kS, kV), static_cast<uint32_t>(Circle::Texture::kSquare));
+					}
+				}
+			}
+		}
+	}
+}
 

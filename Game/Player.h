@@ -21,14 +21,12 @@ public:
     void SetParticleManager(ParticleManager* particleManager) { particleManager_ = particleManager; }
     
 private:
-    const int kAnimationSwitchNum = 10;
-
-
-    void Bounce();
+    static const int32_t kAnimationSwitchNum = 10;
 
     void ComboUpdate(float floor, uint32_t x, uint32_t y);
     void ComboDraw();
-    void SetBlockColor(uint32_t x, uint32_t y);
+    void SetBlockColor(int32_t y);
+    void SetBlockParticleColor(int32_t y);
     void CreateUpdate(uint32_t x, uint32_t y);
     // 真ん中
     Vector2 position_;
@@ -42,17 +40,22 @@ private:
     Vector2 comboSize_;
     Vector4 comboColor_;
     bool break_;
-
+    // 虹色
+    float h_;
+    Vector4 bonusColor_;
     // 階段
     uint32_t preStep_;
     uint32_t step_;
     int32_t stepCount_;
-    Vector4 stepColor_;
+    float stepColorH_;
     // 平行
     uint32_t preSameHeight_;
     uint32_t sameHeight_;
     int32_t sameHeightCount_;
-    Vector4 sameHeightColor_;
+    float sameHeightColorH_;
+
+    int32_t preHeight_;
+    int32_t nowHeight_;
 
     Field* field_;
     ParticleManager* particleManager_;
