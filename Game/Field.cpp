@@ -69,13 +69,13 @@ void Field::Draw() {
 	}
 	//const uint32_t AnimationTime = 15;
 	for (uint32_t i = 0; i < numGrowingBlocks_; i++) {
-		Vector2 position = {static_cast<float>(nextBlockIndices_.at(i)) + static_cast<float>(kBlockSize) * 0.5f ,0};
+		Vector2 position = { static_cast<float>(nextBlockIndices_.at(i)) * static_cast<float>(kBlockSize) ,0.0f };
 		Vector2 size = { 32.0f ,32.0f };
 		/*if (growAnimationCount_ % AnimationTime == 0) {
 			growAnimationCount_++;
 		}*/
-		Vector2 texBase = {0.0f,0.0f};
-		TOMATOsEngine::DrawSpriteRectAngle(position, size, Vector2(0.5f, 0.5f), 0.0f, texBase, Vector2(64.0f, 64.0f), textureHandles_.at(Texture::kGrow),0xFFFFFFFF);
+		Vector2 texBase = { 0.0f,0.0f };
+		TOMATOsEngine::DrawSpriteRectAngle(position, size, Vector2(0.0f, 0.0f), 0.0f, texBase, Vector2(64.0f, 64.0f), textureHandles_.at(Texture::kGrow), 0xFFFFFFFF);
 	}
 }
 
@@ -89,7 +89,7 @@ void Field::ColorClearBlock() {
 	}
 }
 
-void Field::SetColorBlock(uint32_t blockIndexX, uint32_t blockIndexY,const Vector4& color) {
+void Field::SetColorBlock(uint32_t blockIndexX, uint32_t blockIndexY, const Vector4& color) {
 	assert(IsInField(blockIndexX, blockIndexY));
 	blocksColor_[blockIndexX][blockIndexY] = color;
 }
