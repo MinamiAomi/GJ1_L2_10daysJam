@@ -25,6 +25,7 @@ void Player::Initialize() {
 	preSameHeight_ = 0;
 	sameHeight_ = 0;
 	sameHeightCount_ = 0;
+  textureHandle_ = TOMATOsEngine::LoadTexture("Resources/player.png");
 	sameHeightColor_ = Vector4(0.662f, 0.690f, 0.156f, 1.0f);
 }
 
@@ -32,7 +33,7 @@ void Player::Update() {
 
 	move();
 
-	particleManager_->GetFollow()->Create(position_, Vector4(1.0f, 1.0f, 1.0f, 1.0f), static_cast<uint32_t>(Follow::Texture::kStar));
+	particleManager_->GetFollow()->Create(position_, Vector4(1.0f, 1.0f, 1.0f, 1.0f), static_cast<uint32_t>(Follow::Texture::kPlayer));
 	//particleManager_->GetYenLetter()->Create(position_,Vector4(1.0f,1.0f,1.0f,1.0f),static_cast<uint32_t>(YenLetter::Texture::kWhite1x1));
 	//particleManager_->GetYenLetter()->Create(position_,Vector4(1.0f,1.0f,1.0f,1.0f), static_cast<uint32_t>(YenLetter::Texture::kWhite1x1),false);
 
@@ -49,6 +50,7 @@ void Player::Update() {
 	ImGui::SliderFloat("size", &size, 0.0f, 300.0f);
 	comboSize_ = { size,size };
 	ImGui::End();
+
 }
 
 void Player::move() {
@@ -210,8 +212,12 @@ void Player::move() {
 void Player::Draw() {
 	Vector2 rectMinPos = position_ - size_ * 0.5f;
 	Vector2 rectMaxPos = position_ + size_ * 0.5f;
-	TOMATOsEngine::DrawRect(rectMinPos, rectMaxPos, 0x883333FF);
-	float tex1 = std::clamp(static_cast<float>(sameHeightCount_), 0.0f, 2.0f);
+
+    TOMATOsEngine::DrawSpriteRect(rectMinPos, rectMaxPos, {}, Vector2(30.0f, 60.0f), textureHandle_, 0xFFFFFFFF);
+	//TOMATOsEngine::DrawRect(rectMinPos, rectMaxPos, 0x883333FF);
+
+  // コンボ数描画
+  float tex1 = std::clamp(static_cast<float>(sameHeightCount_), 0.0f, 2.0f);
 	float tex2 = std::clamp(static_cast<float>(stepCount_), 0.0f, 2.0f);
 	float tex = std::max(tex1, tex2);
 	if (tex >= 1) {
@@ -232,6 +238,7 @@ void Player::Draw() {
 		float angle = rnd.NextFloatRange(-angle_Origin, angle_Origin);
 		TOMATOsEngine::DrawSpriteRectAngle(position, comboSize_, Vector2(0.5f, 0.5f), angle * Math::ToRadian, {}, Vector2(64.0f, 64.0f), comboTextureHandle_.at(static_cast<uint32_t>(tex)), Color(comboColor_));
 	}
+
 }
 
 void Player::Bounce() {}
