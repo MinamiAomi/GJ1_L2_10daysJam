@@ -14,16 +14,18 @@ void Player::Initialize() {
 	comboTextureHandle_.at(1) = TOMATOsEngine::LoadTexture("Resources/x2.png");
 	comboTextureHandle_.at(2) = TOMATOsEngine::LoadTexture("Resources/x3.png");
 	comboPosition_ = { 487.0f,367.0f };
-	comboSize_ = {150.0f,150.0f };
+	comboSize_ = { 150.0f,150.0f };
 	comboColor_ = { 1.0f,1.0f,1.0f,1.0f };
 	// 階段;
 	preStep_ = 0;
 	step_ = 0;
 	stepCount_ = 0;
+	stepColor_ = Vector4(0.627f, 0.152f, 0.690f, 1.0f);
 	// 平行
 	preSameHeight_ = 0;
 	sameHeight_ = 0;
 	sameHeightCount_ = 0;
+	sameHeightColor_ = Vector4(0.662f, 0.690f, 0.156f, 1.0f);
 }
 
 void Player::Update() {
@@ -41,10 +43,10 @@ void Player::Update() {
 	ImGui::Text("preSameHeight_:%d", preSameHeight_);
 	ImGui::Text("sameHeight_:%d", sameHeight_);
 	ImGui::Text("sameHeightCount_:%d", sameHeightCount_);
-	ImGui::SliderFloat("position_X",&comboPosition_.x,0.0f,640.0f);
-	ImGui::SliderFloat("position_Y",&comboPosition_.y,0.0f, 480.0f);
+	ImGui::SliderFloat("position_X", &comboPosition_.x, 0.0f, 640.0f);
+	ImGui::SliderFloat("position_Y", &comboPosition_.y, 0.0f, 480.0f);
 	float size = comboSize_.x;
-	ImGui::SliderFloat("size",&size,0.0f,300.0f);
+	ImGui::SliderFloat("size", &size, 0.0f, 300.0f);
 	comboSize_ = { size,size };
 	ImGui::End();
 }
@@ -159,7 +161,8 @@ void Player::move() {
 				if (bottom > 0.0f && bottom <= field_->GetSize().y) {
 					blockTopPosition = field_->GetBlockTop(blockBottom);
 				}
-
+				// コンボアップデート
+				ComboUpdate(bottom, blockLeft, blockBottom);
 				if (blockLeftBottomType != Field::None &&
 					field_->IsInField(blockLeft, blockBottom)) {
 					// ブロック破壊
@@ -167,9 +170,12 @@ void Player::move() {
 						field_->BreakBlockHorizon(blockLeft, blockBottom);
 						stepCount_ = 0;
 						sameHeightCount_ = 0;
+						SetBlockColor(blockLeft, blockBottom);
 					}
 					else {
 						field_->BreakBlock(blockLeft, blockBottom);
+						SetBlockColor(blockLeft, blockBottom);
+
 					}
 					// パーティクル
 					ParticleUpdate(blockLeft, blockBottom);
@@ -181,14 +187,15 @@ void Player::move() {
 						field_->BreakBlockHorizon(blockRight, blockBottom);
 						stepCount_ = 0;
 						sameHeightCount_ = 0;
+						SetBlockColor(blockRight, blockBottom);
 					}
 					else {
 						field_->BreakBlock(blockRight, blockBottom);
+						SetBlockColor(blockRight, blockBottom);
 					}
 					// パーティクル
 					ParticleUpdate(blockRight, blockBottom);
 				}
-				ComboUpdate(bottom, blockLeft, blockBottom);
 				tempPosition.y += blockTopPosition - bottom;
 			}
 		}
@@ -206,8 +213,8 @@ void Player::Draw() {
 	TOMATOsEngine::DrawRect(rectMinPos, rectMaxPos, 0x883333FF);
 	float tex1 = std::clamp(static_cast<float>(sameHeightCount_), 0.0f, 2.0f);
 	float tex2 = std::clamp(static_cast<float>(stepCount_), 0.0f, 2.0f);
-	float tex = std::max(tex1,tex2);
-	if (tex >= 1) {	
+	float tex = std::max(tex1, tex2);
+	if (tex >= 1) {
 		float distance = 0.0f;
 		float angle_Origin = 0.0f;
 		if (tex == 1) {
@@ -223,7 +230,7 @@ void Player::Draw() {
 		position.x = comboPosition_.x + rnd.NextFloatRange(-distance, distance);
 		position.y = comboPosition_.y + rnd.NextFloatRange(-distance, distance);
 		float angle = rnd.NextFloatRange(-angle_Origin, angle_Origin);
-		TOMATOsEngine::DrawSpriteRectAngle(position, comboSize_, Vector2(0.5f, 0.5f), angle * Math::ToRadian, {},Vector2(64.0f,64.0f), comboTextureHandle_.at(static_cast<uint32_t>(tex)), Color(comboColor_));
+		TOMATOsEngine::DrawSpriteRectAngle(position, comboSize_, Vector2(0.5f, 0.5f), angle * Math::ToRadian, {}, Vector2(64.0f, 64.0f), comboTextureHandle_.at(static_cast<uint32_t>(tex)), Color(comboColor_));
 	}
 }
 
@@ -277,6 +284,23 @@ void Player::ComboUpdate(float  floor, uint32_t blockIndexX, uint32_t blockIndex
 	else {
 		stepCount_ = 0;
 		sameHeightCount_ = 0;
+	}
+}
+
+void Player::SetBlockColor(uint32_t blockIndexX, uint32_t blockIndexY) {
+	blockIndexX = 0;
+	// 色
+	field_->ColorClearBlock();
+	
+	for (size_t x = 0; x < Field::kNumHorizontalBlocks; x++) {
+		// 階段
+		if (field_->GetBlock(static_cast<uint32_t>(x), static_cast<uint32_t>(blockIndexY + 2)) == Field::None) {
+			field_->SetColorBlock(static_cast<uint32_t>(x), static_cast<uint32_t>(blockIndexY + 1), stepColor_);
+		}
+		// 平行
+		if (field_->GetBlock(static_cast<uint32_t>(x), static_cast<uint32_t>(blockIndexY + 1)) == Field::None) {
+			field_->SetColorBlock(static_cast<uint32_t>(x), static_cast<uint32_t>(blockIndexY), sameHeightColor_);
+		}
 	}
 }
 

@@ -4,9 +4,18 @@
 
 #include "TOMATOsEngine.h"
 #include "Particle/ParticleManager.h"
+#include "Math/Color.h"
 
 void Field::Initialize() {
 	memset(blocks_, BlockType::None, sizeof(blocks_));
+	initializeColor_ = Vector4(1.0f, 1.0f, 1.0f, 1.0f);
+	for (uint32_t x = 0; x < kNumVerticalBlocks; x++) {
+		for (uint32_t y = 0; y < kNumHorizontalBlocks; y++) {
+			if (blocks_[x][y] == BlockType::Normal) {
+				blocksColor_[x][y] = initializeColor_;
+			}
+		}
+	}
 
 	fieldSize_ = { float(kBlockSize * kNumHorizontalBlocks), float(kBlockSize * kNumVerticalBlocks) };
 
@@ -49,7 +58,7 @@ void Field::Draw() {
 			if (blocks_[x][y] == BlockType::Normal) {
 
 				//TOMATOsEngine::DrawRect(blockMinPos, blockMaxPos, 0x666666FF);
-				TOMATOsEngine::DrawSpriteRect(blockMinPos, blockMaxPos, {}, Vector2(32.0f, 32.0f), textureHandle_, 0xFFFFFFFF);
+				TOMATOsEngine::DrawSpriteRect(blockMinPos, blockMaxPos, {}, Vector2(32.0f, 32.0f), textureHandle_, Color(blocksColor_[x][y]));
 			}
 		}
 
@@ -57,6 +66,20 @@ void Field::Draw() {
 
 }
 
+void Field::ColorClearBlock() {
+	for (uint32_t x = 0; x < kNumVerticalBlocks; x++) {
+		for (uint32_t y = 0; y < kNumHorizontalBlocks; y++) {
+			if (blocks_[x][y] == BlockType::Normal) {
+				blocksColor_[x][y] = initializeColor_;
+			}
+		}
+	}
+}
+
+void Field::SetColorBlock(uint32_t blockIndexX, uint32_t blockIndexY,const Vector4& color) {
+	assert(IsInField(blockIndexX, blockIndexY));
+	blocksColor_[blockIndexX][blockIndexY] = color;
+}
 void Field::BreakBlock(uint32_t blockIndexX, uint32_t blockIndexY) {
 	assert(IsInField(blockIndexX, blockIndexY));
 	blocks_[blockIndexX][blockIndexY] = BlockType::None;
