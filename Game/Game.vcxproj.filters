@@ -177,10 +177,6 @@
     <ClInclude Include="Player.h">
       <Filter>Game</Filter>
     </ClInclude>
-    <ClInclude Include="BackGround.h">
-      <Filter>Game</Filter>
-    </ClInclude>
-    <ClInclude Include="Engine\Math\Color.h" />
     <ClInclude Include="Particle\Circle.h">
       <Filter>Game\Particle</Filter>
     </ClInclude>
@@ -208,6 +204,12 @@
     </ClInclude>
     <ClInclude Include="Engine\Model.h">
       <Filter>Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\Math\Color.h">
+      <Filter>Engine\Math</Filter>
+    </ClInclude>
+    <ClInclude Include="BackGround.h">
+      <Filter>Game</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -335,7 +337,6 @@
     <ClCompile Include="BackGround.cpp">
       <Filter>Game</Filter>
     </ClCompile>
-    <ClCompile Include="Engine\Math\Color.cpp" />
     <ClCompile Include="Particle\Circle.cpp">
       <Filter>Game\Particle</Filter>
     </ClCompile>
@@ -362,6 +363,9 @@
     </ClCompile>
     <ClCompile Include="Engine\RealWorld.cpp">
       <Filter>Engine</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\Math\Color.cpp">
+      <Filter>Engine\Math</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
