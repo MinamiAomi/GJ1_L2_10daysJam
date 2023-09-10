@@ -9,6 +9,8 @@
 
 #include "RenderManager.h"
 
+#include "Audio/Audio.h"
+
 int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 
     TOMATOsEngine::Initialize();
@@ -42,8 +44,20 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
     player.SetParticleManager(&particleManager);
     player.SetPosition({ field.GetSize().x * 0.5f, field.GetSize().y - 100.0f });
 
+    Audio* audio = Audio::GetInstance();
+    size_t alarm = audio->SoundLoadWave("Resources/Audio/Alarm01.wav");
 
     while (TOMATOsEngine::BeginFrame()) {
+
+        ImGui::Begin("Audio");
+        ImGui::Text("Z button");
+        static float pitch = 1.0f;
+        ImGui::DragFloat("Pitch", &pitch, 0.01f);
+        ImGui::End();
+        if (TOMATOsEngine::IsKeyTrigger(DIK_Z)) {
+            size_t playHandle = audio->SoundPlayLoopStart(alarm);
+            audio->SetPitch(playHandle, pitch);
+        }
 
         switch (gameScene)
         {

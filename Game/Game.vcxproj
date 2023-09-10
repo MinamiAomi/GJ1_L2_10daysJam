@@ -26,6 +26,7 @@
     <ClInclude Include="..\Externals\ImGui\imstb_truetype.h" />
     <ClInclude Include="BackGround.h" />
     <ClInclude Include="Engine\ArcadeMachine.h" />
+    <ClInclude Include="Engine\Audio\Audio.h" />
     <ClInclude Include="Engine\Graphics\DepthBuffer.h" />
     <ClInclude Include="Engine\Graphics\LinearAllocator.h" />
     <ClInclude Include="Engine\Input.h" />
@@ -36,6 +37,7 @@
     <ClInclude Include="Engine\RealWorld.h" />
     <ClInclude Include="Engine\SpriteRenderer.h" />
     <ClInclude Include="Engine\TextureHandle.h" />
+    <ClInclude Include="Engine\TextureManager.h" />
     <ClInclude Include="Engine\TOMATOsEngine.h" />
     <ClInclude Include="Engine\GameWindow.h" />
     <ClInclude Include="Engine\Graphics\Bloom.h" />
@@ -63,7 +65,6 @@
     <ClInclude Include="Engine\Math\MathUtils.h" />
     <ClInclude Include="Engine\Math\Transform.h" />
     <ClInclude Include="Engine\RenderManager.h" />
-    <ClInclude Include="Engine\TextureManager.h" />
     <ClInclude Include="Engine\TriangleRenderer.h" />
     <ClInclude Include="Engine\Utility.h" />
     <ClInclude Include="Field.h" />
@@ -99,6 +100,7 @@
     </ClCompile>
     <ClCompile Include="BackGround.cpp" />
     <ClCompile Include="Engine\ArcadeMachine.cpp" />
+    <ClCompile Include="Engine\Audio\Audio.cpp" />
     <ClCompile Include="Engine\Graphics\DepthBuffer.cpp" />
     <ClCompile Include="Engine\Graphics\LinearAllocator.cpp" />
     <ClCompile Include="Engine\Input.cpp" />
@@ -107,6 +109,7 @@
     <ClCompile Include="Engine\Monitor.cpp" />
     <ClCompile Include="Engine\RealWorld.cpp" />
     <ClCompile Include="Engine\SpriteRenderer.cpp" />
+    <ClCompile Include="Engine\TextureManager.cpp" />
     <ClCompile Include="Engine\TOMATOsEngine.cpp" />
     <ClCompile Include="Engine\GameWindow.cpp" />
     <ClCompile Include="Engine\Graphics\Bloom.cpp" />
@@ -130,7 +133,6 @@
     <ClCompile Include="Engine\Math\Geometry.cpp" />
     <ClCompile Include="Engine\Math\MathUtils.cpp" />
     <ClCompile Include="Engine\RenderManager.cpp" />
-    <ClCompile Include="Engine\TextureManager.cpp" />
     <ClCompile Include="Engine\TriangleRenderer.cpp" />
     <ClCompile Include="Engine\Utility.cpp" />
     <ClCompile Include="Field.cpp" />
