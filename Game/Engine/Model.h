@@ -24,7 +24,7 @@ public:
     static void DestroyPipeline();
 
     void CreateFromObj(const std::filesystem::path& path);
-    void Draw(CommandContext& commandContext, const Matrix4x4& world, const Matrix4x4& camera);
+    void Draw(CommandContext& commandContext, const Matrix4x4& world, const Matrix4x4& camera, bool isLighting = true);
 
 private:
     struct Mesh {

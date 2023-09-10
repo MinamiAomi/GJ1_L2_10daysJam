@@ -76,7 +76,7 @@ void Model::DestroyPipeline() {
     pipelineState_.reset();
 }
 
-void Model::Draw(CommandContext& commandContext, const Matrix4x4& world, const Matrix4x4& camera) {
+void Model::Draw(CommandContext& commandContext, const Matrix4x4& world, const Matrix4x4& camera, bool isLighting) {
     assert(rootSignature_ && pipelineState_);
 
     struct TransformationConstantData {
@@ -86,6 +86,7 @@ void Model::Draw(CommandContext& commandContext, const Matrix4x4& world, const M
     struct MaterialConstantData {
         Vector4 color;
         uint32_t useTexture;
+        uint32_t isLighting;
     };
 
     TransformationConstantData transformationData;
@@ -106,9 +107,13 @@ void Model::Draw(CommandContext& commandContext, const Matrix4x4& world, const M
         MaterialConstantData materialData;
         materialData.color = material.color;
         materialData.useTexture = 0;
+        materialData.isLighting = 0;
         if (material.texture) {
             materialData.useTexture = 1;
             commandContext.SetDescriptorTable(2, material.texture->GetSRV());
+        }
+        if (isLighting) {
+            materialData.isLighting = 1;
         }
         commandContext.SetDynamicConstantBufferView(1, sizeof(materialData), &materialData);
         commandContext.DrawIndexed(mesh.indexCount, mesh.indexOffset, mesh.vertexOffset);
