@@ -24,7 +24,7 @@ PSOutput main(PSInput input) {
     //texcoord *= power;
     //texcoord *= 2.25f;
     texcoord *= 1.25f;
-    texcoord.y *= 0.95f;
+    texcoord.y *= 0.97f;
     texcoord += 0.5f;
 
     output.color = texture_.Sample(sampler_, texcoord);
