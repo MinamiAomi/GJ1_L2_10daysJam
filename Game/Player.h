@@ -21,6 +21,9 @@ public:
     void SetParticleManager(ParticleManager* particleManager) { particleManager_ = particleManager; }
     
 private:
+    const int kAnimationSwitchNum = 10;
+
+
     void Bounce();
 
     void ComboUpdate(float floor, uint32_t x, uint32_t y);
@@ -55,4 +58,7 @@ private:
     ParticleManager* particleManager_;
     // テクスチャハンドル
     TextureHandle textureHandle_;
+    //animation
+    int32_t animationFrame;
+    uint32_t continueTextureNum;
 };
