@@ -8,6 +8,10 @@ namespace SamplerManager {
     DescriptorHandle LinearClamp;
     DescriptorHandle LinearBorder;
 
+    DescriptorHandle PointWrap;
+    DescriptorHandle PointClamp;
+    DescriptorHandle PointBorder;
+
     void Initialize() {
 
         auto graphics = Graphics::GetInstance();
@@ -42,6 +46,28 @@ namespace SamplerManager {
 
         LinearBorder = graphics->AllocateDescriptor(D3D12_DESCRIPTOR_HEAP_TYPE_SAMPLER);
         device->CreateSampler(&desc, LinearBorder);
+
+        desc.Filter = D3D12_FILTER_MIN_MAG_MIP_POINT;
+        desc.AddressU = D3D12_TEXTURE_ADDRESS_MODE_WRAP;
+        desc.AddressV = D3D12_TEXTURE_ADDRESS_MODE_WRAP;
+        desc.AddressW = D3D12_TEXTURE_ADDRESS_MODE_WRAP;
+
+        PointWrap = graphics->AllocateDescriptor(D3D12_DESCRIPTOR_HEAP_TYPE_SAMPLER);
+        device->CreateSampler(&desc, PointWrap);
+
+        desc.AddressU = D3D12_TEXTURE_ADDRESS_MODE_CLAMP;
+        desc.AddressV = D3D12_TEXTURE_ADDRESS_MODE_CLAMP;
+        desc.AddressW = D3D12_TEXTURE_ADDRESS_MODE_CLAMP;
+
+        PointClamp = graphics->AllocateDescriptor(D3D12_DESCRIPTOR_HEAP_TYPE_SAMPLER);
+        device->CreateSampler(&desc, PointClamp);
+    
+        desc.AddressU = D3D12_TEXTURE_ADDRESS_MODE_BORDER;
+        desc.AddressV = D3D12_TEXTURE_ADDRESS_MODE_BORDER;
+        desc.AddressW = D3D12_TEXTURE_ADDRESS_MODE_BORDER;
+
+        PointBorder = graphics->AllocateDescriptor(D3D12_DESCRIPTOR_HEAP_TYPE_SAMPLER);
+        device->CreateSampler(&desc, PointBorder);
     }
 
 }
