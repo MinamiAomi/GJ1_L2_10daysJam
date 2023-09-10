@@ -16,6 +16,9 @@ Monitor* Monitor::GetInstance() {
 
 void Monitor::Initilaize(uint32_t bufferWidth, uint32_t bufferHeight, DXGI_FORMAT rtvFormat, DXGI_FORMAT dsvFormat) {
     {
+        bufferWidth *= 2;
+        bufferHeight *= 2;
+
         CD3DX12_DESCRIPTOR_RANGE ranges[1]{};
         ranges[0].Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, 0);
 
