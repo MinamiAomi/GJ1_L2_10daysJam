@@ -203,8 +203,8 @@ void Player::move() {
 						field_->BreakBlockHorizon(blockLeft, blockBottom);
 						SetBlockColor(blockLeft, blockBottom);
 						// コンボカウントリセット
-						stepCount_ = 0;
-						sameHeightCount_ = 0;
+						stepCount_ = -1;
+						sameHeightCount_ = -1;
 						// リセットした後にすぐComboUpdateに入らないように
 						break_ = true;
 						// パーティクル
@@ -227,8 +227,8 @@ void Player::move() {
 						field_->BreakBlockHorizon(blockRight, blockBottom);
 						SetBlockColor(blockRight, blockBottom);
 						// コンボカウントリセット
-						stepCount_ = 0;
-						sameHeightCount_ = 0;
+						stepCount_ = -1;
+						sameHeightCount_ = -1;
 						// リセットした後にすぐComboUpdateに入らないように
 						break_ = true;
 						// パーティクル
@@ -303,7 +303,7 @@ void Player::ComboUpdate(float  floor, uint32_t blockIndexX, uint32_t blockIndex
 				stepCount_++;
 			}
 			else {
-				stepCount_ = -1;
+				stepCount_ = 0;
 			}
 			preStep_ = step_;
 #pragma endregion
@@ -313,7 +313,7 @@ void Player::ComboUpdate(float  floor, uint32_t blockIndexX, uint32_t blockIndex
 				sameHeightCount_++;
 			}
 			else {
-				sameHeightCount_ = -1;
+				sameHeightCount_ = 0;
 			}
 			preSameHeight_ = sameHeight_;
 		}

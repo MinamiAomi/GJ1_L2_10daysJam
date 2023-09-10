@@ -15,6 +15,13 @@ void Field::Initialize() {
 	GrowField(5);
 	GrowField(5);
 	GrowField(5);
+	GrowField(5);
+	GrowField(5);
+	GrowField(5);
+	GrowField(5);
+	GrowField(5);
+	GrowField(5);
+	GrowField(5);
 	// 次成長するところをセット
 	nextBlockIndices_ = GetGrowField(numGrowingBlocks_);
 	// 色
