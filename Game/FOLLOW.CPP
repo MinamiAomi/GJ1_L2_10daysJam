@@ -8,6 +8,7 @@ void Follow::Initialize() {
 	emitter_ = { 0.0f, 0.0f };
 	textureHandle_.at(static_cast<uint32_t>(Texture::kWhite1x1)) = TOMATOsEngine::LoadTexture("Resources/Particle/white_particle.png");
 	textureHandle_.at(static_cast<uint32_t>(Texture::kStar)) = TOMATOsEngine::LoadTexture("Resources/Particle/star.png");
+	textureHandle_.at(static_cast<uint32_t>(Texture::kPlayer)) = TOMATOsEngine::LoadTexture("Resources/player.png");
 	for (auto& particle : particles_) {
 		particle = std::make_unique<Particle>();
 		particle->isAlive_ = false;
@@ -17,12 +18,12 @@ void Follow::Initialize() {
 void Follow::Create(const Vector2 emitter, Vector4 color, uint32_t textureHandle, uint32_t MaxParticle) {
 	Random::RandomNumberGenerator rnd{};
 	emitter_ = emitter;
-	const float kSize = 16.0f;
+	const Vector2 kSize = {30.0f,60.0f};
 	const uint32_t kDeath_Time = 30;
 	const uint32_t count_Max = MaxParticle;
 	uint32_t count = 0;
-	emitter_.x -= kSize;
-	emitter_.y -= kSize;
+	emitter_.x -= kSize.x;
+	emitter_.y -= kSize.y / 2.0f;
 	for (auto& particle : particles_) {
 		if (count < count_Max && !particle->isAlive_) {
 			// 座標
@@ -30,7 +31,7 @@ void Follow::Create(const Vector2 emitter, Vector4 color, uint32_t textureHandle
 			// 色
 			particle->color_ = color;
 			// サイズ
-			particle->size_Origin_ = { kSize,kSize };
+			particle->size_Origin_ = kSize;
 			particle->size_ = particle->size_Origin_;
 			// テクスチャ
 			particle->textureHandle_ = textureHandle_.at(textureHandle);

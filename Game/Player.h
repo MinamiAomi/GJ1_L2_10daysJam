@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Math/MathUtils.h"
+#include "TextureHandle.h"
 
 class Field;
 class ParticleManager;
@@ -41,4 +42,6 @@ private:
 
     Field* field_;
     ParticleManager* particleManager_;
+    // テクスチャハンドル
+    TextureHandle textureHandle_;
 };

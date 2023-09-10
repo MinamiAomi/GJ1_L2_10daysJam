@@ -15,13 +15,14 @@ void Player::Initialize() {
 	preSameHeight_ = 0;
 	sameHeight_ = 0;
 	sameHeightCount_ = 0;
+    textureHandle_ = TOMATOsEngine::LoadTexture("Resources/player.png");
 }
 
 void Player::Update() {
 
      move();
 
-	particleManager_->GetFollow()->Create(position_, Vector4(1.0f, 1.0f, 1.0f, 1.0f), static_cast<uint32_t>(Follow::Texture::kStar));
+	particleManager_->GetFollow()->Create(position_, Vector4(1.0f, 1.0f, 1.0f, 1.0f), static_cast<uint32_t>(Follow::Texture::kPlayer));
 	//particleManager_->GetYenLetter()->Create(position_,Vector4(1.0f,1.0f,1.0f,1.0f),static_cast<uint32_t>(YenLetter::Texture::kWhite1x1));
 	//particleManager_->GetYenLetter()->Create(position_,Vector4(1.0f,1.0f,1.0f,1.0f), static_cast<uint32_t>(YenLetter::Texture::kWhite1x1),false);
 
@@ -34,9 +35,6 @@ void Player::Update() {
 	ImGui::Text("sameHeightCount_:%d", sameHeightCount_);
 	ImGui::End();
    
-    particleManager_->GetFollow()->Create(position_,Vector4(1.0f,1.0f,1.0f,1.0f), static_cast<uint32_t>(Follow::Texture::kStar));
-    //particleManager_->GetYenLetter()->Create(position_,Vector4(1.0f,1.0f,1.0f,1.0f),static_cast<uint32_t>(YenLetter::Texture::kWhite1x1));
-    //particleManager_->GetYenLetter()->Create(position_,Vector4(1.0f,1.0f,1.0f,1.0f), static_cast<uint32_t>(YenLetter::Texture::kWhite1x1),false);
 }
 
 void Player::move()
@@ -180,7 +178,7 @@ void Player::move()
 void Player::Draw() {
 	Vector2 rectMinPos = position_ - size_ * 0.5f;
 	Vector2 rectMaxPos = position_ + size_ * 0.5f;
-	TOMATOsEngine::DrawRect(rectMinPos, rectMaxPos, 0x883333FF);
+    TOMATOsEngine::DrawSpriteRect(rectMinPos, rectMaxPos, {}, Vector2(30.0f, 60.0f), textureHandle_, 0xFFFFFFFF);
 }
 
 void Player::Bounce() {}
