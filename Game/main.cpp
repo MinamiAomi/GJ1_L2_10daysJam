@@ -15,7 +15,16 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 
     //TOMATOsEngine::SetBlendMode(kBlendModeNormal);
 
+    enum GameScene {
+        title,
+        inGame,
+        result
+    };
+
+    GameScene gameScene = inGame;
+
     auto tex = TOMATOsEngine::LoadTexture("Resources/playgame.png");
+    TextureHandle titleHandle = TOMATOsEngine::LoadTexture("Resources/BBtitle.png");
 
     ParticleManager particleManager;
     particleManager.Initialize();
@@ -36,33 +45,44 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 
     while (TOMATOsEngine::BeginFrame()) {
 
-        if (TOMATOsEngine::IsKeyTrigger(DIK_SPACE)) {
-            field.Initialize();
-            player.Initialize();
-            player.SetPosition({ field.GetSize().x * 0.5f, field.GetSize().y - 100.0f });
+        switch (gameScene)
+        {
+        case title:
+
+            if (TOMATOsEngine::IsKeyTrigger(DIK_SPACE)) {
+                gameScene = inGame;
+            }
+
+            TOMATOsEngine::DrawSpriteRect({ 0.0f,0.0f }, { static_cast<float>(TOMATOsEngine::kMonitorWidth) ,static_cast<float>(TOMATOsEngine::kMonitorHeight) }, { 0.0f,0.0f }, { 640.0f,480.0f }, titleHandle, 0xFFFFFFFF);
+
+            break;
+        case inGame:
+            if (TOMATOsEngine::IsKeyTrigger(DIK_SPACE)) {
+                field.Initialize();
+                player.Initialize();
+                player.SetPosition({ field.GetSize().x * 0.5f, field.GetSize().y - 100.0f });
+            }
+
+            field.Update();
+            backGround.Update();
+            player.Update();
+            particleManager.Update();
+
+            backGround.Draw();
+            field.Draw();
+            particleManager.Draw();
+            player.Draw();
+
+            
+
+            field.Edit();
+            break;
+        case result:
+            break;
+        default:
+            break;
         }
-
-        field.Update();
-        backGround.Update();
-        player.Update();
-        particleManager.Update();
-
-        backGround.Draw();
-        field.Draw();
-        particleManager.Draw();
-        player.Draw();
-
-        auto r = RenderManager::GetInstance();
-        ImGui::Begin("Bloom");
-        static float t = 0.0f;
-        ImGui::DragFloat("Threshold", &t, 0.01f, 0.0f, 1.0f);
-        r->GetBloom().SetThreshold(t);
-        static float k = 0.0f;
-        ImGui::DragFloat("Knee", &k, 0.01f, 0.0f, 1.0f);
-        r->GetBloom().SetKnee(k);
-        ImGui::End();
-
-        field.Edit();
+   
     }
 
     TOMATOsEngine::Shutdown();
