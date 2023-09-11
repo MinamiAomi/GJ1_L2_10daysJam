@@ -9,119 +9,120 @@
 #include "GameTime.h"
 
 void Field::Initialize() {
-	memset(blocks_, BlockType::None, sizeof(blocks_));
+    memset(blocks_, BlockType::None, sizeof(blocks_));
 
-	fieldSize_ = { float(kBlockSize * kNumHorizontalBlocks), float(kBlockSize * kNumVerticalBlocks) };
+    fieldSize_ = { float(kBlockSize * kNumHorizontalBlocks), float(kBlockSize * kNumVerticalBlocks) };
 
-	GrowField(5);
-	GrowField(5);
-	GrowField(5);
-	GrowField(5);
-	GrowField(5);
-	GrowField(5);
-	GrowField(5);
-	GrowField(5);
-	GrowField(5);
-	GrowField(5);
-	GrowField(5);
-	// 次成長するところをセット
-	nextBlockIndices_ = GetGrowField(numGrowingBlocks_);
-	// 色
-	initializeColor_ = Vector4(1.0f, 1.0f, 1.0f, 1.0f);
-	ColorClearBlock();
-	growCoolTime_ = 0;
+    GrowField(5);
+    GrowField(5);
+    GrowField(5);
+    GrowField(5);
+    GrowField(5);
+    GrowField(5);
+    GrowField(5);
+    GrowField(5);
+    GrowField(5);
+    GrowField(5);
+    GrowField(5);
+    // 次成長するところをセット
+    nextBlockIndices_ = GetGrowField(numGrowingBlocks_);
+    // 色
+    initializeColor_ = Vector4(1.0f, 1.0f, 1.0f, 1.0f);
+    ColorClearBlock();
+    growCoolTime_ = 0;
 
-	growAnimationCount_ = 0;
-	growAnimationFrame_ = 0;
-	growAnimationFrameSize_ = 4;
+    growAnimationCount_ = 0;
+    growAnimationFrame_ = 0;
+    growAnimationFrameSize_ = 4;
 
-	breakTime_ = 0;
-	downBlockIndex_ = 0;
-	isFlash_ = false;
+    breakTime_ = 0;
+    downBlockIndex_ = 0;
+    isFlash_ = false;
 
-	textureHandles_.at(Texture::kBlock) = TOMATOsEngine::LoadTexture("Resources/block.png");
-	textureHandles_.at(Texture::kGrow) = TOMATOsEngine::LoadTexture("Resources/grow.png");
-	textureHandles_.at(Texture::kGameOverBlock) = TOMATOsEngine::LoadTexture("Resources/gameOverBlock.png");
-	textureHandles_.at(Texture::kGameOver) = TOMATOsEngine::LoadTexture("Resources/gameOver.png");
+    textureHandles_.at(Texture::kBlock) = TOMATOsEngine::LoadTexture("Resources/block.png");
+    textureHandles_.at(Texture::kGrow) = TOMATOsEngine::LoadTexture("Resources/grow.png");
+    textureHandles_.at(Texture::kGameOverBlock) = TOMATOsEngine::LoadTexture("Resources/gameOverBlock.png");
+    textureHandles_.at(Texture::kGameOver) = TOMATOsEngine::LoadTexture("Resources/gameOver.png");
 
-	heightCount_ = kDeathLine_;
-	blockBleakAnimationCount_ = 0;
-	gameOverBlocks_.clear();
+    heightCount_ = kDeathLine_;
+    blockBleakAnimationCount_ = 0;
+    gameOverBlocks_.clear();
 
-	gameOverPosition_ = { float(TOMATOsEngine::kMonitorWidth) * 0.5f,float(TOMATOsEngine::kMonitorHeight) + float(TOMATOsEngine::kMonitorHeight) * 0.5f };
-	gameOverPositionStart_ = gameOverPosition_;
-	gameOverPositionEnd_ = { gameOverPosition_ .x,float(TOMATOsEngine::kMonitorHeight) * 0.5f };
-	dropTextCount_ = 0;
-	gameOverBlockCount_ = 0;
+    gameOverPosition_ = { float(TOMATOsEngine::kMonitorWidth) * 0.5f,float(TOMATOsEngine::kMonitorHeight) + float(TOMATOsEngine::kMonitorHeight) * 0.5f };
+    gameOverPositionStart_ = gameOverPosition_;
+    gameOverPositionEnd_ = { gameOverPosition_.x,float(TOMATOsEngine::kMonitorHeight) * 0.5f };
+    dropTextCount_ = 0;
+    gameOverBlockCount_ = 0;
 
-	isBlockBreaking_ = false;
-	isTextDropping_ = false;
-	isGameOver_ = false;
-	isInGameOver_ = false;
-	isVanish_ = false;
- 
-  
+    isBlockBreaking_ = false;
+    isTextDropping_ = false;
+    isGameOver_ = false;
+    isInGameOver_ = false;
+    isVanish_ = false;
+
+
     breakSoundHandle_ = TOMATOsEngine::LoadAudio("Resources/Audio/break1.wav");
     lineBreakSoundHandle_ = TOMATOsEngine::LoadAudio("Resources/Audio/lineBreak.wav");
 }
 
 void Field::Update() {
 
-	GameTime* gameTime = GameTime::GetInstance();
+    GameTime* gameTime = GameTime::GetInstance();
 
-	if (gameTime->GetIsFinish() && isFlash_ == false) {
-		breakTime_--;
-		ClearBreakBlockHorizon();
-		if (breakTime_ > 0) {
+    if (gameTime->GetIsFinish() && isFlash_ == false) {
+        breakTime_--;
+        ClearBreakBlockHorizon();
+        if (breakTime_ > 0) {
 
-		}
-		else {
-			if (isClearFlash_ == true) {
-				isClearFlash_ = false;
-				for (uint32_t x = 0; x < kNumVerticalBlocks; x++) {
-					for (uint32_t y = 0; y < kNumHorizontalBlocks; y++) {
-						if (blocks_[x][y] == BlockType::Frash) {
-							blocks_[x][y] = BlockType::None;
-						}
-					}
-				}
-			}
-		}
-	}
-	else
-	if (!isInGameOver_) {
-		ChackBlock();
-		++growCoolTime_;
-		breakTime_--;
-		if (growCoolTime_ >= growInterval_ && isFlash_ == false) {
-			// 成長
-			SetGrow(nextBlockIndices_, numGrowingBlocks_);
-			// 次成長するところをセット
-			nextBlockIndices_ = GetGrowField(numGrowingBlocks_);
-			growCoolTime_ = 0;
-		}
+        }
+        else {
+            if (isClearFlash_ == true) {
+                isClearFlash_ = false;
+                for (uint32_t x = 0; x < kNumVerticalBlocks; x++) {
+                    for (uint32_t y = 0; y < kNumHorizontalBlocks; y++) {
+                        if (blocks_[x][y] == BlockType::Frash) {
+                            blocks_[x][y] = BlockType::None;
+                        }
+                    }
+                }
+            }
+        }
+    }
+    else
+        if (!isInGameOver_) {
+            ChackBlock();
+            ++growCoolTime_;
+            breakTime_--;
+            if (growCoolTime_ >= growInterval_ && isFlash_ == false) {
+                // 成長
+                SetGrow(nextBlockIndices_, numGrowingBlocks_);
+                // 次成長するところをセット
+                nextBlockIndices_ = GetGrowField(numGrowingBlocks_);
+                growCoolTime_ = 0;
+            }
 
 
-		if (breakTime_ > 0) {
+            if (breakTime_ > 0) {
 
-		}
-		else {
-			if (isFlash_ == true) {
-				isFlash_ = false;
-				for (uint32_t x = 0; x < kNumVerticalBlocks; x++) {
-					for (uint32_t y = 0; y < kNumHorizontalBlocks; y++) {
-						if (blocks_[x][y] == BlockType::Frash) {
-							blocks_[x][y] = BlockType::None;
-						}
-					}
-				}
-				DownBlockHorizon();
-			}
-		}
-	}
-	else {
-		GameOverUpdate();
-	}
+            }
+            else {
+                if (isFlash_ == true) {
+                    isFlash_ = false;
+                    for (uint32_t x = 0; x < kNumVerticalBlocks; x++) {
+                        for (uint32_t y = 0; y < kNumHorizontalBlocks; y++) {
+                            if (blocks_[x][y] == BlockType::Frash) {
+                                blocks_[x][y] = BlockType::None;
+                            }
+                        }
+                    }
+                    DownBlockHorizon();
+                }
+            }
+            HarryEffect();
+        }
+        else {
+            GameOverUpdate();
+        }
 }
 
 void Field::Draw() {
@@ -131,159 +132,159 @@ void Field::Draw() {
 }
 
 void Field::DrawBlock() {
-	for (uint32_t x = 0; x < kNumHorizontalBlocks; ++x) {
-		// ブロックの矩形座標
-		Vector2 blockMinPos{}, blockMaxPos{};
-		for (uint32_t y = 0; y < kNumVerticalBlocks; ++y) {
-			blockMinPos.x = float(x * kBlockSize);
-			blockMaxPos.x = blockMinPos.x + float(kBlockSize);
-			blockMinPos.y = float(y * kBlockSize);
-			blockMaxPos.y = blockMaxPos.y + float(kBlockSize);
-			// 通常ブロック
-			if (blocks_[x][y] == BlockType::Normal) {
-				TOMATOsEngine::DrawSpriteRect(blockMinPos, blockMaxPos, {}, Vector2(32.0f, 32.0f), textureHandles_.at(Texture::kBlock), Color(blocksColor_[x][y]));
-			}
-			// フラッシュブロック
-			else if (blocks_[x][y] == BlockType::Frash) {
-				blockMinPos.x -= (kFrashTime - breakTime_) * 2.0f;
-				blockMaxPos.x += (kFrashTime - breakTime_) * 2.0f;
-				blockMinPos.y += (kFrashTime - breakTime_) * 2.0f;
-				blockMaxPos.y -= (kFrashTime - breakTime_) * 2.0f;
-				TOMATOsEngine::DrawRect(blockMinPos, blockMaxPos, 0xFFFFFFFF);
-			}
-		}
-	}
-	for (auto& block : gameOverBlocks_) {
-		Random::RandomNumberGenerator rnd{};
-		float distance = 2.0f;
-		Vector2 blockPos{};
-		blockPos.x += block->position_.x + rnd.NextFloatRange(-distance, distance);
-		blockPos.y += block->position_.y + rnd.NextFloatRange(-distance, distance);
-		TOMATOsEngine::DrawSpriteRectAngle(blockPos, Vector2(32.0f, 32.0f), Vector2(0.5f, 0.5f), block->angle_, {}, Vector2(32.0f, 32.0f), textureHandles_.at(Texture::kGameOverBlock), Color(0.5f,0.5f,0.5f,0.5f));
-	}
-	if (isTextDropping_) {
-		TOMATOsEngine::DrawSpriteRectAngle(gameOverPosition_, Vector2(320.0f, 240.0f), Vector2(0.5f, 0.5f),0.0f, {}, Vector2(320.0f, 240.0f), textureHandles_.at(Texture::kGameOver), Color(0.5f,0.5f,0.5f,0.5f));
+    for (uint32_t x = 0; x < kNumHorizontalBlocks; ++x) {
+        // ブロックの矩形座標
+        Vector2 blockMinPos{}, blockMaxPos{};
+        for (uint32_t y = 0; y < kNumVerticalBlocks; ++y) {
+            blockMinPos.x = float(x * kBlockSize);
+            blockMaxPos.x = blockMinPos.x + float(kBlockSize);
+            blockMinPos.y = float(y * kBlockSize);
+            blockMaxPos.y = blockMaxPos.y + float(kBlockSize);
+            // 通常ブロック
+            if (blocks_[x][y] == BlockType::Normal) {
+                TOMATOsEngine::DrawSpriteRect(blockMinPos, blockMaxPos, {}, Vector2(32.0f, 32.0f), textureHandles_.at(Texture::kBlock), Color(blocksColor_[x][y]));
+            }
+            // フラッシュブロック
+            else if (blocks_[x][y] == BlockType::Frash) {
+                blockMinPos.x -= (kFrashTime - breakTime_) * 2.0f;
+                blockMaxPos.x += (kFrashTime - breakTime_) * 2.0f;
+                blockMinPos.y += (kFrashTime - breakTime_) * 2.0f;
+                blockMaxPos.y -= (kFrashTime - breakTime_) * 2.0f;
+                TOMATOsEngine::DrawRect(blockMinPos, blockMaxPos, 0xFFFFFFFF);
+            }
+        }
+    }
+    for (auto& block : gameOverBlocks_) {
+        Random::RandomNumberGenerator rnd{};
+        float distance = 2.0f;
+        Vector2 blockPos{};
+        blockPos.x += block->position_.x + rnd.NextFloatRange(-distance, distance);
+        blockPos.y += block->position_.y + rnd.NextFloatRange(-distance, distance);
+        TOMATOsEngine::DrawSpriteRectAngle(blockPos, Vector2(32.0f, 32.0f), Vector2(0.5f, 0.5f), block->angle_, {}, Vector2(32.0f, 32.0f), textureHandles_.at(Texture::kGameOverBlock), Color(0.5f, 0.5f, 0.5f, 0.5f));
+    }
+    if (isTextDropping_) {
+        TOMATOsEngine::DrawSpriteRectAngle(gameOverPosition_, Vector2(320.0f, 240.0f), Vector2(0.5f, 0.5f), 0.0f, {}, Vector2(320.0f, 240.0f), textureHandles_.at(Texture::kGameOver), Color(0.5f, 0.5f, 0.5f, 0.5f));
 
-	}
+    }
 }
 
 void Field::DrawGrow() {
-	const uint32_t AnimationTime = 30;
-	for (uint32_t i = 0; i < numGrowingBlocks_; i++) {
-		Vector2 position = { static_cast<float>(nextBlockIndices_.at(i)) * static_cast<float>(kBlockSize) + 5.0f, static_cast<float>(kBlockSize) * -1.0f };
-		Vector2 size = { 32.0f ,32.0f };
-		// アニメーション
-		growAnimationCount_++;
-		if (growAnimationCount_ % AnimationTime == 0) {
-			growAnimationCount_ = 0;
-			growAnimationFrame_++;
-			if (growAnimationFrame_ > growAnimationFrameSize_) {
-				growAnimationFrame_ = 0;
-			}
-		}
+    const uint32_t AnimationTime = 30;
+    for (uint32_t i = 0; i < numGrowingBlocks_; i++) {
+        Vector2 position = { static_cast<float>(nextBlockIndices_.at(i)) * static_cast<float>(kBlockSize) + 5.0f, static_cast<float>(kBlockSize) * -1.0f };
+        Vector2 size = { 32.0f ,32.0f };
+        // アニメーション
+        growAnimationCount_++;
+        if (growAnimationCount_ % AnimationTime == 0) {
+            growAnimationCount_ = 0;
+            growAnimationFrame_++;
+            if (growAnimationFrame_ > growAnimationFrameSize_) {
+                growAnimationFrame_ = 0;
+            }
+        }
 
-		Vector2 texBase = { static_cast<float>(growAnimationFrame_) * 64.0f,0.0f };
-		TOMATOsEngine::DrawSpriteRectAngle(position, size, Vector2(0.0f, 0.0f), 0.0f, texBase, Vector2(64.0f, 64.0f), textureHandles_.at(Texture::kGrow), 0xFFFFFFFF);
-	}
+        Vector2 texBase = { static_cast<float>(growAnimationFrame_) * 64.0f,0.0f };
+        TOMATOsEngine::DrawSpriteRectAngle(position, size, Vector2(0.0f, 0.0f), 0.0f, texBase, Vector2(64.0f, 64.0f), textureHandles_.at(Texture::kGrow), 0xFFFFFFFF);
+    }
 
 }
 
 void Field::GameOverUpdate() {
-	if (isBlockBreaking_) {
-		if (blockBleakAnimationCount_ <= 0) {
-			Random::RandomNumberGenerator rnd{};
-			Vector2 move{};
-			const float speed_Min = 10.0f;
-			const float speed_Max = 15.0f;
-			for (uint32_t x = 0; x < kNumHorizontalBlocks; x++) {
-				if (blocks_[x][heightCount_] == BlockType::Normal) {
-					blocks_[x][heightCount_] = BlockType::None;
-					GameOver* gameOver=new GameOver();
-					// ポジション
-					gameOver->position_ = { float(x * kBlockSize) + float(kBlockSize) * 0.5f,float(heightCount_ * kBlockSize) + float(kBlockSize) * 0.5f };
-					// 速度
-					move.x = std::cos(rnd.NextFloatRange(30.0f * Math::ToRadian, 150.0f * Math::ToRadian));
-					move.y = std::sin(rnd.NextFloatRange(30.0f * Math::ToRadian, 150.0f * Math::ToRadian));
-					move.Normalize();
-					float speed = rnd.NextFloatRange(speed_Min, speed_Max);
-					gameOver->velocity_ = move * speed;
-					// 角度
-					gameOver->angle_ = 0.0f;
-					gameOver->addAngle_ = rnd.NextFloatRange(10.0f * Math::ToRadian, 30.0f * Math::ToRadian);
-					if (rnd.NextUIntLimit() % 2 == 0) {
-						gameOver->addAngle_ *= -1;
-					}
-					gameOver->isDrop_ = false;
-					gameOver->isCount_ = false;
-					gameOverBlocks_.emplace_back(gameOver);
-					blocksColor_[x][heightCount_] = { 0.5f,0.5f,0.5f,0.8f };
-				}
-			}
-			// 高さが0になったらゲームオーバーフラグを立てる
-			if (heightCount_ < 0) {
-				heightCount_ = kDeathLine_;
-				isTextDropping_ = true;
-				isBlockBreaking_ = false;
-			}
-			// 高さを一段下げる
-			heightCount_--;
-			// アニメーションカウントリセット
-			const uint32_t kCoolTime = 15;
-			blockBleakAnimationCount_ = kCoolTime;
-		}
-		else {
-			blockBleakAnimationCount_--;
-		}
-	}
-	else if (isTextDropping_) {
-		const uint32_t kDropTextTime = 120;
-		const float kGravity = -1.0f;
-		float t = std::clamp(float(dropTextCount_) / float(kDropTextTime), 0.0f, 1.0f);
-		if (gameOverBlockCount_ >= gameOverBlocks_.size() - 1 && dropTextCount_ >= kDropTextTime) {
-			isGameOver_ = true;
-		}
-		dropTextCount_++;
-		const float c1 = 1.70158f;
-		const float c2 = c1 * 1.525f;
+    if (isBlockBreaking_) {
+        if (blockBleakAnimationCount_ <= 0) {
+            Random::RandomNumberGenerator rnd{};
+            Vector2 move{};
+            const float speed_Min = 10.0f;
+            const float speed_Max = 15.0f;
+            for (uint32_t x = 0; x < kNumHorizontalBlocks; x++) {
+                if (blocks_[x][heightCount_] == BlockType::Normal) {
+                    blocks_[x][heightCount_] = BlockType::None;
+                    GameOver* gameOver = new GameOver();
+                    // ポジション
+                    gameOver->position_ = { float(x * kBlockSize) + float(kBlockSize) * 0.5f,float(heightCount_ * kBlockSize) + float(kBlockSize) * 0.5f };
+                    // 速度
+                    move.x = std::cos(rnd.NextFloatRange(30.0f * Math::ToRadian, 150.0f * Math::ToRadian));
+                    move.y = std::sin(rnd.NextFloatRange(30.0f * Math::ToRadian, 150.0f * Math::ToRadian));
+                    move.Normalize();
+                    float speed = rnd.NextFloatRange(speed_Min, speed_Max);
+                    gameOver->velocity_ = move * speed;
+                    // 角度
+                    gameOver->angle_ = 0.0f;
+                    gameOver->addAngle_ = rnd.NextFloatRange(10.0f * Math::ToRadian, 30.0f * Math::ToRadian);
+                    if (rnd.NextUIntLimit() % 2 == 0) {
+                        gameOver->addAngle_ *= -1;
+                    }
+                    gameOver->isDrop_ = false;
+                    gameOver->isCount_ = false;
+                    gameOverBlocks_.emplace_back(gameOver);
+                    blocksColor_[x][heightCount_] = { 0.5f,0.5f,0.5f,0.8f };
+                }
+            }
+            // 高さが0になったらゲームオーバーフラグを立てる
+            if (heightCount_ < 0) {
+                heightCount_ = kDeathLine_;
+                isTextDropping_ = true;
+                isBlockBreaking_ = false;
+            }
+            // 高さを一段下げる
+            heightCount_--;
+            // アニメーションカウントリセット
+            const uint32_t kCoolTime = 15;
+            blockBleakAnimationCount_ = kCoolTime;
+        }
+        else {
+            blockBleakAnimationCount_--;
+        }
+    }
+    else if (isTextDropping_) {
+        const uint32_t kDropTextTime = 120;
+        const float kGravity = -1.0f;
+        float t = std::clamp(float(dropTextCount_) / float(kDropTextTime), 0.0f, 1.0f);
+        if (gameOverBlockCount_ >= gameOverBlocks_.size() - 1 && dropTextCount_ >= kDropTextTime) {
+            isGameOver_ = true;
+        }
+        dropTextCount_++;
+        const float c1 = 1.70158f;
+        const float c2 = c1 * 1.525f;
 
-		if (t < 0.5f) {
-			t = ((2.0f * t) * (2.0f * t) * ((c2 + 1.0f) * 2.0f * t - c2)) / 2.0f;
-		}
-		else {
-			t = ((2.0f * t - 2.0f)*(2.0f * t - 2.0f)*((c2 + 1.0f) * (t * 2.0f - 2.0f) + c2) + 2.0f) / 2.0f;
-		}
-		gameOverPosition_.y = Math::Lerp(t, gameOverPositionStart_.y, gameOverPositionEnd_.y);
+        if (t < 0.5f) {
+            t = ((2.0f * t) * (2.0f * t) * ((c2 + 1.0f) * 2.0f * t - c2)) / 2.0f;
+        }
+        else {
+            t = ((2.0f * t - 2.0f) * (2.0f * t - 2.0f) * ((c2 + 1.0f) * (t * 2.0f - 2.0f) + c2) + 2.0f) / 2.0f;
+        }
+        gameOverPosition_.y = Math::Lerp(t, gameOverPositionStart_.y, gameOverPositionEnd_.y);
 
-		for (auto& block : gameOverBlocks_) {
-			if (!block->isDrop_ && block->position_.y > gameOverPosition_.y - float(TOMATOsEngine::kMonitorHeight) * 0.5f) {
-				block->isDrop_ = true;
-			}
-			else if(block->isDrop_){
-				block->velocity_.y += kGravity;
-				block->acceleration_ += block->velocity_;
-				block->position_ += block->acceleration_;
-				block->acceleration_ = { 0.0f,0.0f };
-				block->angle_ += block->addAngle_;
-				if (!block->isCount_&&block->position_.y < 0.0f - 32.0f) {
-					block->isCount_ = true;
-					gameOverBlockCount_++;
-				}
-			}
-		}
-	}
+        for (auto& block : gameOverBlocks_) {
+            if (!block->isDrop_ && block->position_.y > gameOverPosition_.y - float(TOMATOsEngine::kMonitorHeight) * 0.5f) {
+                block->isDrop_ = true;
+            }
+            else if (block->isDrop_) {
+                block->velocity_.y += kGravity;
+                block->acceleration_ += block->velocity_;
+                block->position_ += block->acceleration_;
+                block->acceleration_ = { 0.0f,0.0f };
+                block->angle_ += block->addAngle_;
+                if (!block->isCount_ && block->position_.y < 0.0f - 32.0f) {
+                    block->isCount_ = true;
+                    gameOverBlockCount_++;
+                }
+            }
+        }
+    }
 }
 
 
 void Field::ColorClearBlock() {
-	if (!isInGameOver_) {
-		for (uint32_t x = 0; x < kNumVerticalBlocks; x++) {
-			for (uint32_t y = 0; y < kNumHorizontalBlocks; y++) {
-				if (blocks_[x][y] == BlockType::Normal) {
-					blocksColor_[x][y] = initializeColor_;
-				}
-			}
-		}
-	}
+    if (!isInGameOver_) {
+        for (uint32_t x = 0; x < kNumVerticalBlocks; x++) {
+            for (uint32_t y = 0; y < kNumHorizontalBlocks; y++) {
+                if (blocks_[x][y] == BlockType::Normal) {
+                    blocksColor_[x][y] = initializeColor_;
+                }
+            }
+        }
+    }
 }
 
 void Field::SetColorBlock(uint32_t blockIndexX, uint32_t blockIndexY, const Vector4& color) {
@@ -292,9 +293,9 @@ void Field::SetColorBlock(uint32_t blockIndexX, uint32_t blockIndexY, const Vect
 }
 void Field::BreakBlock(uint32_t blockIndexX, uint32_t blockIndexY) {
     assert(IsInField(blockIndexX, blockIndexY));
-	if (blocks_[blockIndexX][blockIndexY] == BlockType::Normal) {
-		blocks_[blockIndexX][blockIndexY] = BlockType::None;
-	}
+    if (blocks_[blockIndexX][blockIndexY] == BlockType::Normal) {
+        blocks_[blockIndexX][blockIndexY] = BlockType::None;
+    }
 
     // 音
     size_t playHandle = TOMATOsEngine::PlayAudio(breakSoundHandle_);
@@ -305,7 +306,7 @@ void Field::BreakBlockHorizon(uint32_t blockIndexX, uint32_t blockIndexY) {
     assert(IsInField(blockIndexX, blockIndexY));
     for (size_t x = 0; x < kNumHorizontalBlocks; x++) {
         breakTime_ = kFrashTime;
-		blocks_[static_cast<uint32_t>(x)][blockIndexY] = BlockType::Frash;
+        blocks_[static_cast<uint32_t>(x)][blockIndexY] = BlockType::Frash;
     }
     downBlockIndex_ = blockIndexY + 1;
     isFlash_ = true;
@@ -316,25 +317,25 @@ void Field::BreakBlockHorizon(uint32_t blockIndexX, uint32_t blockIndexY) {
 }
 
 void Field::ClearBreakBlockHorizon() {
-	int32_t y = GetHeightestIndex();
-	if (y != -1) {
-		// 音 
-		if (isClearFlash_ == false) {
-			size_t playHandle = TOMATOsEngine::PlayAudio(lineBreakSoundHandle_);
-			TOMATOsEngine::SetVolume(playHandle, 1.2f);
+    int32_t y = GetHeightestIndex();
+    if (y != -1) {
+        // 音 
+        if (isClearFlash_ == false) {
+            size_t playHandle = TOMATOsEngine::PlayAudio(lineBreakSoundHandle_);
+            TOMATOsEngine::SetVolume(playHandle, 1.2f);
 
-			for (size_t x = 0; x < kNumHorizontalBlocks; x++) {
-				if (blocks_[static_cast<uint32_t>(x)][y] == BlockType::Normal) {
-					blocks_[static_cast<uint32_t>(x)][y] = BlockType::Frash;
-					breakTime_ = kFrashTime;
-					isClearFlash_ = true;
-				}
-			}
-		}
-	}
-	else {
-		isVanish_ = true;
-	}
+            for (size_t x = 0; x < kNumHorizontalBlocks; x++) {
+                if (blocks_[static_cast<uint32_t>(x)][y] == BlockType::Normal) {
+                    blocks_[static_cast<uint32_t>(x)][y] = BlockType::Frash;
+                    breakTime_ = kFrashTime;
+                    isClearFlash_ = true;
+                }
+            }
+        }
+    }
+    else {
+        isVanish_ = true;
+    }
 }
 
 void Field::DownBlockHorizon() {
@@ -408,14 +409,14 @@ void Field::Edit() {
 }
 
 void Field::ChackBlock() {
-	for (uint32_t x = 0; x < kNumHorizontalBlocks; x++) {
-		if (blocks_[x][kDeathLine_] == BlockType::Normal) {
-			isInGameOver_ = true;
-			isBlockBreaking_ = true;
-			ColorClearBlock();
-			return;
-		}
-	}
+    for (uint32_t x = 0; x < kNumHorizontalBlocks; x++) {
+        if (blocks_[x][kDeathLine_] == BlockType::Normal) {
+            isInGameOver_ = true;
+            isBlockBreaking_ = true;
+            ColorClearBlock();
+            return;
+        }
+    }
 }
 
 void Field::GrowField(uint32_t numBlocks) {
@@ -486,13 +487,33 @@ void Field::SetGrow(std::vector<uint32_t> blockIndices, uint32_t numBlocks) {
 }
 
 int32_t  Field::GetHeightestIndex() {
-	int32_t  heightestIndex = -1;
-	for (uint32_t x = 0; x < kNumHorizontalBlocks; ++x) {
-		for (int32_t y = 0; y < kNumVerticalBlocks; ++y) {
-			if (blocks_[x][y] == BlockType::Normal && heightestIndex < y) {
-				heightestIndex = y;
-			}
-		}
-	}
-	return heightestIndex;
+    int32_t  heightestIndex = -1;
+    for (uint32_t x = 0; x < kNumHorizontalBlocks; ++x) {
+        for (int32_t y = 0; y < kNumVerticalBlocks; ++y) {
+            if (blocks_[x][y] == BlockType::Normal && heightestIndex < y) {
+                heightestIndex = y;
+            }
+        }
+    }
+    return heightestIndex;
+}
+
+void Field::HarryEffect() {
+    GameTime* gameTime = GameTime::GetInstance();
+    if (!gameTime->IsHurryTime()) {
+        bool isHarry = false;
+        // ブロックが高くなってくるとBGMテンポアップ
+        for (uint32_t x = 0; x < kNumHorizontalBlocks; ++x) {
+            if (blocks_[x][kHarryEffectBlockHeight] != BlockType::None) {
+                isHarry = true;
+                break;
+            }
+        }
+        if (isHarry) {
+            gameTime->RaiseTheBGMPitch();
+        }
+        else {
+            gameTime->LowerTheBGMPitch();
+        }
+    }
 }
