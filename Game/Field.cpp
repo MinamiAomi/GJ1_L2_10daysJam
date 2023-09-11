@@ -73,7 +73,6 @@ void Field::Initialize() {
 }
 
 void Field::Update() {
-
 	GameTime* gameTime = GameTime::GetInstance();
 
 	if (gameTime->GetIsFinish() && isFlash_ == false) {
@@ -125,6 +124,7 @@ void Field::Update() {
 					DownBlockHorizon();
 				}
 			}
+      HarryEffect();
 		}
 		else {
 			GameOverUpdate();
@@ -185,23 +185,23 @@ void Field::DrawBlock() {
 }
 
 void Field::DrawGrow() {
-	const uint32_t AnimationTime = 30;
-	for (uint32_t i = 0; i < numGrowingBlocks_; i++) {
-		Vector2 position = { static_cast<float>(nextBlockIndices_.at(i)) * static_cast<float>(kBlockSize) + 5.0f, static_cast<float>(kBlockSize) * -1.0f };
-		Vector2 size = { 32.0f ,32.0f };
-		// アニメーション
-		growAnimationCount_++;
-		if (growAnimationCount_ % AnimationTime == 0) {
-			growAnimationCount_ = 0;
-			growAnimationFrame_++;
-			if (growAnimationFrame_ > growAnimationFrameSize_) {
-				growAnimationFrame_ = 0;
-			}
-		}
+    const uint32_t AnimationTime = 30;
+    for (uint32_t i = 0; i < numGrowingBlocks_; i++) {
+        Vector2 position = { static_cast<float>(nextBlockIndices_.at(i)) * static_cast<float>(kBlockSize) + 5.0f, static_cast<float>(kBlockSize) * -1.0f };
+        Vector2 size = { 32.0f ,32.0f };
+        // アニメーション
+        growAnimationCount_++;
+        if (growAnimationCount_ % AnimationTime == 0) {
+            growAnimationCount_ = 0;
+            growAnimationFrame_++;
+            if (growAnimationFrame_ > growAnimationFrameSize_) {
+                growAnimationFrame_ = 0;
+            }
+        }
 
-		Vector2 texBase = { static_cast<float>(growAnimationFrame_) * 64.0f,0.0f };
-		TOMATOsEngine::DrawSpriteRectAngle(position, size, Vector2(0.0f, 0.0f), 0.0f, texBase, Vector2(64.0f, 64.0f), textureHandles_.at(Texture::kGrow), 0xFFFFFFFF);
-	}
+        Vector2 texBase = { static_cast<float>(growAnimationFrame_) * 64.0f,0.0f };
+        TOMATOsEngine::DrawSpriteRectAngle(position, size, Vector2(0.0f, 0.0f), 0.0f, texBase, Vector2(64.0f, 64.0f), textureHandles_.at(Texture::kGrow), 0xFFFFFFFF);
+    }
 
 }
 
@@ -292,15 +292,15 @@ void Field::GameOverUpdate() {
 
 
 void Field::ColorClearBlock() {
-	if (!isInGameOver_) {
-		for (uint32_t x = 0; x < kNumVerticalBlocks; x++) {
-			for (uint32_t y = 0; y < kNumHorizontalBlocks; y++) {
-				if (blocks_[x][y] == BlockType::Normal) {
-					blocksColor_[x][y] = initializeColor_;
-				}
-			}
-		}
-	}
+    if (!isInGameOver_) {
+        for (uint32_t x = 0; x < kNumVerticalBlocks; x++) {
+            for (uint32_t y = 0; y < kNumHorizontalBlocks; y++) {
+                if (blocks_[x][y] == BlockType::Normal) {
+                    blocksColor_[x][y] = initializeColor_;
+                }
+            }
+        }
+    }
 }
 
 void Field::SetColorBlock(uint32_t blockIndexX, uint32_t blockIndexY, const Vector4& color) {
@@ -333,25 +333,25 @@ void Field::BreakBlockHorizon(uint32_t blockIndexX, uint32_t blockIndexY) {
 }
 
 void Field::ClearBreakBlockHorizon() {
-	int32_t y = GetHeightestIndex();
-	if (y != -1) {
-		// 音 
-		if (isClearFlash_ == false) {
-			size_t playHandle = TOMATOsEngine::PlayAudio(lineBreakSoundHandle_);
-			TOMATOsEngine::SetVolume(playHandle, 1.2f);
+    int32_t y = GetHeightestIndex();
+    if (y != -1) {
+        // 音 
+        if (isClearFlash_ == false) {
+            size_t playHandle = TOMATOsEngine::PlayAudio(lineBreakSoundHandle_);
+            TOMATOsEngine::SetVolume(playHandle, 1.2f);
 
-			for (size_t x = 0; x < kNumHorizontalBlocks; x++) {
-				if (blocks_[static_cast<uint32_t>(x)][y] == BlockType::Normal) {
-					blocks_[static_cast<uint32_t>(x)][y] = BlockType::Frash;
-					breakTime_ = kFrashTime;
-					isClearFlash_ = true;
-				}
-			}
-		}
-	}
-	else {
-		isVanish_ = true;
-	}
+            for (size_t x = 0; x < kNumHorizontalBlocks; x++) {
+                if (blocks_[static_cast<uint32_t>(x)][y] == BlockType::Normal) {
+                    blocks_[static_cast<uint32_t>(x)][y] = BlockType::Frash;
+                    breakTime_ = kFrashTime;
+                    isClearFlash_ = true;
+                }
+            }
+        }
+    }
+    else {
+        isVanish_ = true;
+    }
 }
 
 void Field::DownBlockHorizon() {
@@ -425,14 +425,14 @@ void Field::Edit() {
 }
 
 void Field::ChackBlock() {
-	for (uint32_t x = 0; x < kNumHorizontalBlocks; x++) {
-		if (blocks_[x][kDeathLine_] == BlockType::Normal) {
-			isInGameOver_ = true;
-			isBlockBreaking_ = true;
-			ColorClearBlock();
-			return;
-		}
-	}
+    for (uint32_t x = 0; x < kNumHorizontalBlocks; x++) {
+        if (blocks_[x][kDeathLine_] == BlockType::Normal) {
+            isInGameOver_ = true;
+            isBlockBreaking_ = true;
+            ColorClearBlock();
+            return;
+        }
+    }
 }
 
 void Field::GrowField(uint32_t numBlocks) {
@@ -503,13 +503,33 @@ void Field::SetGrow(std::vector<uint32_t> blockIndices, uint32_t numBlocks) {
 }
 
 int32_t  Field::GetHeightestIndex() {
-	int32_t  heightestIndex = -1;
-	for (uint32_t x = 0; x < kNumHorizontalBlocks; ++x) {
-		for (int32_t y = 0; y < kNumVerticalBlocks; ++y) {
-			if (blocks_[x][y] == BlockType::Normal && heightestIndex < y) {
-				heightestIndex = y;
-			}
-		}
-	}
-	return heightestIndex;
+    int32_t  heightestIndex = -1;
+    for (uint32_t x = 0; x < kNumHorizontalBlocks; ++x) {
+        for (int32_t y = 0; y < kNumVerticalBlocks; ++y) {
+            if (blocks_[x][y] == BlockType::Normal && heightestIndex < y) {
+                heightestIndex = y;
+            }
+        }
+    }
+    return heightestIndex;
+}
+
+void Field::HarryEffect() {
+    GameTime* gameTime = GameTime::GetInstance();
+    if (!gameTime->IsHurryTime()) {
+        bool isHarry = false;
+        // ブロックが高くなってくるとBGMテンポアップ
+        for (uint32_t x = 0; x < kNumHorizontalBlocks; ++x) {
+            if (blocks_[x][kHarryEffectBlockHeight] != BlockType::None) {
+                isHarry = true;
+                break;
+            }
+        }
+        if (isHarry) {
+            gameTime->RaiseTheBGMPitch();
+        }
+        else {
+            gameTime->LowerTheBGMPitch();
+        }
+    }
 }

@@ -18,6 +18,7 @@ public:
     static const uint32_t kGrowInterval = 120;
     static const uint32_t kNumGrowingBlocks = 4;
     static const uint32_t kFrashTime = 10;
+    static const uint32_t kHarryEffectBlockHeight = 7;
 
     enum BlockType {
         None,
@@ -94,7 +95,7 @@ private:
     void DrawBlock();
     void DrawGrow();
     int32_t GetHeightestIndex();
-
+    void HarryEffect();
     void GameOverUpdate();
     // 縦に伸びるので横縦配置
     // 左から右

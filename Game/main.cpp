@@ -69,19 +69,24 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
                 field.Initialize();
                 player.Initialize();
                 player.SetPosition({ field.GetSize().x * 0.5f, field.GetSize().y - 100.0f });
+                gameTime->Initialize();
             }
 
             TOMATOsEngine::DrawSpriteRect({ 0.0f,0.0f }, { static_cast<float>(TOMATOsEngine::kMonitorWidth) ,static_cast<float>(TOMATOsEngine::kMonitorHeight) }, { 0.0f,0.0f }, { 640.0f,480.0f }, titleHandle, 0xFFFFFFFF);
 
             break;
         case inGame:
+
+            // タイトルに戻るa
             if (TOMATOsEngine::IsKeyTrigger(DIK_SPACE)) {
-                field.Initialize();
-                player.Initialize();
-                player.SetPosition({ field.GetSize().x * 0.5f, field.GetSize().y - 100.0f });
+                gameScene = title;
             }
             if (field.GetIsGameOver()) {
                 gameScene = gameOver;
+                gameTime->StopBGM();
+            }
+            if (field.GetIsVanish() == true) {
+                gameScene = gameClear;
             }
 
             field.Update();
@@ -113,6 +118,9 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
             TOMATOsEngine::DrawSpriteRectAngle(gameOverPosition, gameOverSize, { 0.5f,0.5f }, 0.0f, {0.0f,0.0f}, gameOverSize, gameOverHandle,Color(0.5f, 0.5f, 0.5f, 0.5f));
             break;
         case gameClear:
+            player.Update();
+            backGround.FrameDraw();
+            player.Draw();
             break;
         default:
             break;
