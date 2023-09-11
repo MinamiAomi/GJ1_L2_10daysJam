@@ -1,7 +1,6 @@
 #include "GameTime.h"
 #include "TOMATOsEngine.h"
 #include <algorithm>
-int32_t GameTime::time_ = maxTime;
 
 GameTime::GameTime() {
 	textureHandle_ = TOMATOsEngine::LoadTexture("Resources/dekisokonai36.png");
