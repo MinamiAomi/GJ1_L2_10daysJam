@@ -66,7 +66,7 @@ void BackGround::Update() {
 
 void BackGround::Draw() {
 	// フレーム
-	TOMATOsEngine::DrawSpriteRectAngle(fream_Position_, fream_Size_, Vector2(0.5f, 0.5f), 0.0f, {}, fream_Size_, fream_TextureHandle_, Color::HSVA(fream_ColorH_, 1.0f, 1.0f, 0.4f));
+	FrameDraw();
 	// 四角
 	SquareDraw();
 }

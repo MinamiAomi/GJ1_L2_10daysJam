@@ -69,6 +69,7 @@
     <ClInclude Include="Engine\TriangleRenderer.h" />
     <ClInclude Include="Engine\Utility.h" />
     <ClInclude Include="Field.h" />
+    <ClInclude Include="LevelManager.h" />
     <ClInclude Include="Particle\Circle.h" />
     <ClInclude Include="Particle\Follow.h" />
     <ClInclude Include="Particle\ParticleManager.h" />
@@ -140,6 +141,7 @@
     <ClCompile Include="Engine\Utility.cpp" />
     <ClCompile Include="Field.cpp" />
     <ClCompile Include="Follow.cpp" />
+    <ClCompile Include="LevelManager.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Particle\Circle.cpp" />
     <ClCompile Include="Particle\ParticleManager.cpp" />

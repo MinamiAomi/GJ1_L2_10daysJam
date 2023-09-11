@@ -219,6 +219,7 @@
     </ClInclude>
     <ClInclude Include="GameTime.h" />
     <ClInclude Include="Easing.h" />
+    <ClInclude Include="LevelManager.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Externals\ImGui\imgui.cpp">
@@ -380,6 +381,7 @@
     </ClCompile>
     <ClCompile Include="GameTime.cpp" />
     <ClCompile Include="Easing.cpp" />
+    <ClCompile Include="LevelManager.cpp" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="..\Externals\ImGui\LICENSE.txt">
