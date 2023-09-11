@@ -47,8 +47,7 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
     backGround.Initialize();
     backGround.SetPlayer(&player);
 
-    Audio* audio = Audio::GetInstance();
-    size_t alarm = audio->SoundLoadWave("Resources/Audio/Alarm01.wav");
+    size_t alarm = TOMATOsEngine::LoadAudio("Resources/Audio/break.wav");
 
     while (TOMATOsEngine::BeginFrame()) {
 
@@ -58,8 +57,9 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
         ImGui::DragFloat("Pitch", &pitch, 0.01f);
         ImGui::End();
         if (TOMATOsEngine::IsKeyTrigger(DIK_Z)) {
-            size_t playHandle = audio->SoundPlayLoopStart(alarm);
-            audio->SetPitch(playHandle, pitch);
+            size_t playHandle = TOMATOsEngine::PlayAudio(alarm);
+            pitch += 0.01f;
+            TOMATOsEngine::SetPitch(playHandle, pitch);
         }
 
         switch (gameScene)
