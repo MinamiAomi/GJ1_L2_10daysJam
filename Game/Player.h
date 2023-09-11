@@ -25,6 +25,8 @@ public:
     float GetStepColorH() const { return stepColorH_; }
     float GetSameHeightColorH() const { return sameHeightColorH_; }
     float GetRainbowColorH() const { return h_; }
+    bool GetIsEndGameClearEasing()const {return isEndGameClearEasing_;}
+
 private:
     static const int32_t kAnimationSwitchNum = 10;
 
@@ -101,5 +103,7 @@ private:
     Vector2 gameClearPos_;
     Vector2 gameClearSize_;
     float gameClearRadian_;
+    bool isHorizontal_;
+    bool isEndGameClearEasing_;
 
 };

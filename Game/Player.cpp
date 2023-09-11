@@ -54,6 +54,8 @@ void Player::Initialize() {
 	isSaveClearPos_ = false;
 	gameClearRadian_ = 0.0f;
 	gameClearT_ = 0.0f;
+	isHorizontal_ = false;
+	isEndGameClearEasing_ = false;
 }
 
 void Player::Update() {
@@ -259,7 +261,7 @@ void Player::move() {
 					field_->IsInField(blockLeft, blockBottom)) {
 					// ブロック破壊
 					if (stepCount_ >= kCombo_ || sameHeightCount_ >= kCombo_) {
-						field_->BreakBlockHorizon(blockLeft, blockBottom);
+						field_->BreakBlockHorizon(blockLeft, blockBottom, isHorizontal_);
 						isComboed_ = true;
 						// 高さ更新
 						nowHeight_ = blockBottom;
@@ -287,7 +289,7 @@ void Player::move() {
 					field_->IsInField(blockRight, blockBottom)) {
 					// ブロック破壊
 					if (stepCount_ >= kCombo_ || sameHeightCount_ >= kCombo_) {
-						field_->BreakBlockHorizon(blockRight, blockBottom);
+						field_->BreakBlockHorizon(blockRight, blockBottom , isHorizontal_);
 						// 高さ更新
 						nowHeight_ = blockBottom;
 						// コンボカウントリセット
@@ -351,14 +353,17 @@ void Player::Draw() {
 		}
 		else {
 			if (field_->GetIsVanish()) {
-				gameClearRadian_ = Easing::easing(gameClearT_, 0.0f, (20.0f + 360.0f * 3) * Math::ToRadian,0.01f, Easing::easeOutQuint,false);
-				gameClearSize_ = Easing::easing(gameClearT_, Vector2{ 30.0f,60.0f }, Vector2{ 30.0f * 10.0f,60.0f * 10.0f }, 0.01f, Easing::easeOutQuint, false);
+				gameClearRadian_ = Easing::easing(gameClearT_, 0.0f, (20.0f + 360.0f * 3) * Math::ToRadian,0.005f, Easing::easeOutQuint,false);
+				gameClearSize_ = Easing::easing(gameClearT_, Vector2{ 30.0f,60.0f }, Vector2{ 30.0f * 10.0f,60.0f * 10.0f }, 0.005f, Easing::easeOutQuint, false);
 				gameClearPos_ = Easing::easing(gameClearT_, position_, Vector2{ TOMATOsEngine::kMonitorWidth / 4.0f + 50.0f, TOMATOsEngine::kMonitorHeight / 2.0f - 100.0f }, 0.01f, Easing::easeOutQuint);
 			}
 			else {
-				gameClearRadian_ = Easing::easing(gameClearT_, 0.0f, (20.0f + 360.0f * 3) * Math::ToRadian, 0.01f, Easing::easeOutQuint, false);
-				gameClearSize_ = Easing::easing(gameClearT_, Vector2{ 30.0f,60.0f }, Vector2{ 30.0f * 10.0f,60.0f * 10.0f }, 0.01f, Easing::easeOutQuint, false);
+				gameClearRadian_ = Easing::easing(gameClearT_, 0.0f, (20.0f + 360.0f * 3) * Math::ToRadian, 0.005f, Easing::easeOutQuint, false);
+				gameClearSize_ = Easing::easing(gameClearT_, Vector2{ 30.0f,60.0f }, Vector2{ 30.0f * 10.0f,60.0f * 10.0f }, 0.005f, Easing::easeOutQuint, false);
 				gameClearPos_ = Easing::easing(gameClearT_, position_, Vector2{ TOMATOsEngine::kMonitorWidth / 4.0f + 50.0f, TOMATOsEngine::kMonitorHeight / 2.0f - 100.0f }, 0.01f, Easing::easeOutQuint,false);
+			}
+			if (gameClearT_ >= 1.0f) {
+				isEndGameClearEasing_ = true;
 			}
 			TOMATOsEngine::DrawSpriteRectAngle(gameClearPos_, gameClearSize_, Vector2(0.5f, 0.5f), gameClearRadian_, {}, Vector2(270.0f, 540.0f), clearTextureHandle_, 0xFFFFFFFF);
 		}
@@ -425,7 +430,7 @@ void Player::ComboUpdate(float  floor, uint32_t blockIndexX, uint32_t blockIndex
 			if (step_ - 1 == preStep_) {
 				stepCount_++;
 				comboDrawCount_ = 0;
-
+				isHorizontal_ = false;
 				if (stepCount_ >= 1) {
 					size_t playHandle = TOMATOsEngine::PlayAudio(comboSoundHandle_);
 					TOMATOsEngine::SetPitch(playHandle, 1.0f + stepCount_ * 0.1f);
@@ -442,6 +447,7 @@ void Player::ComboUpdate(float  floor, uint32_t blockIndexX, uint32_t blockIndex
 			if (sameHeight_ == preSameHeight_) {
 				sameHeightCount_++;
 				stepCount_ = 0;
+				isHorizontal_ = true;
 				// 2コンボめ以上から音が鳴る
 				if (sameHeightCount_ >= 1) {
 					size_t playHandle = TOMATOsEngine::PlayAudio(comboSoundHandle_);
