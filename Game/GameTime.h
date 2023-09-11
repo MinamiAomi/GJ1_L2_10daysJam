@@ -11,8 +11,12 @@ public:
 	void Initialize();
 	void Update();
 	void Draw();
+
 	void SetTime(uint32_t time) {
 		time_ = time;
+	}
+	bool GetIsFinish() {
+		return isFinish;
 	}
 private:
 	// テクスチャハンドル
@@ -21,6 +25,7 @@ private:
 	Vector2 size_;
 	Vector2 pos_;
 	int32_t frameTime_;
+	bool isFinish;
 	GameTime();
 	~GameTime() = default;
 	GameTime(const GameTime&) = delete;
