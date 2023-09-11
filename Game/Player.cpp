@@ -112,10 +112,14 @@ void Player::move() {
 
 #pragma region 移動
 	velocity_.x = 0.0f;
-	if (TOMATOsEngine::IsKeyPressed(DIK_D)) {
+	const auto& xInputState = TOMATOsEngine::GetGamePadState();
+	
+	if (TOMATOsEngine::IsKeyPressed(DIK_D) ||
+		xInputState.Gamepad.sThumbLX > XINPUT_GAMEPAD_LEFT_THUMB_DEADZONE) {
 		velocity_.x += 3.5f;
 	}
-	if (TOMATOsEngine::IsKeyPressed(DIK_A)) {
+	if (TOMATOsEngine::IsKeyPressed(DIK_A) ||
+		-xInputState.Gamepad.sThumbLX > XINPUT_GAMEPAD_LEFT_THUMB_DEADZONE) {
 		velocity_.x -= 3.5f;
 	}
 
