@@ -9,6 +9,7 @@ GameTime::GameTime() {
 	pos_ = { TOMATOsEngine::kMonitorWidth / 2.0f,TOMATOsEngine::kMonitorHeight - size_.y / 2.0f - 40.0f };
 	time_ = maxTime;
 	frameTime_ = 60;
+	isFinish = false;
 	digit_ = 1;
 	int tmp = time_;
 	while (!(tmp < 10)) {
@@ -35,6 +36,9 @@ void GameTime::Update()
 		time_--;
 	}
 	time_ = std::clamp(time_, 0, maxTime);
+	if (time_ == 0) {
+		isFinish = true;
+	}
 	digit_ = 1;
 	int tmp = time_;
 	while (!(tmp < 10)) {
