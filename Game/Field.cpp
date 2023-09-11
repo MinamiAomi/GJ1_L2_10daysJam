@@ -39,16 +39,21 @@ void Field::Initialize() {
 
 	textureHandles_.at(Texture::kBlock) = TOMATOsEngine::LoadTexture("Resources/block.png");
 	textureHandles_.at(Texture::kGrow) = TOMATOsEngine::LoadTexture("Resources/grow.png");
+	textureHandles_.at(Texture::kGameOverBlock) = TOMATOsEngine::LoadTexture("Resources/gameOverBlock.png");
+	textureHandles_.at(Texture::kGameOver) = TOMATOsEngine::LoadTexture("Resources/gameOver.png");
 
 	heightCount_ = kDeathLine_;
-	gameOverAnimationCount_ = 0;
+	blockBleakAnimationCount_ = 0;
+	blockPosition_.clear();
+	isBlockBreaking_ = false;
+	isTextDropping_ = false;
 	isGameOver_ = false;
 	isInGameOver_ = false;
 }
 
 void Field::Update() {
-	ChackBlock();
 	if (!isInGameOver_) {
+		ChackBlock();
 		++growCoolTime_;
 		breakTime_--;
 		if (growCoolTime_ >= growInterval_ && isFlash_ == false) {
@@ -78,26 +83,7 @@ void Field::Update() {
 		}
 	}
 	else {
-		if (gameOverAnimationCount_ <= 0) {
-		for (uint32_t x = 0; x < kNumHorizontalBlocks; x++) {
-			if (blocks_[x][heightCount_] == BlockType::Normal) {
-				blocksColor_[x][heightCount_] = { 0.8f,0.8f,0.8f,0.8f };
-			}
-		}
-		// 高さが0になったらゲームオーバーフラグを立てる
-		if (heightCount_ <= 0) {
-			heightCount_= kDeathLine_;
-			isGameOver_ = true;
-		}
-		// 高さを一段下げる
-		heightCount_--;
-		// アニメーションカウントリセット
-		const uint32_t kCoolTime = 30;
-		gameOverAnimationCount_ = kCoolTime;
-		}
-		else {
-			gameOverAnimationCount_--;
-		}
+		GameOverUpdate();
 	}
 }
 
@@ -116,17 +102,25 @@ void Field::DrawBlock() {
 			blockMaxPos.x = blockMinPos.x + float(kBlockSize);
 			blockMinPos.y = float(y * kBlockSize);
 			blockMaxPos.y = blockMaxPos.y + float(kBlockSize);
+			Vector2 blockPos = { float(x * kBlockSize) + float(kBlockSize) * 0.5f ,float(y * kBlockSize) + float(kBlockSize) * 0.5f };
 			// 通常ブロック
 			if (blocks_[x][y] == BlockType::Normal) {
 				TOMATOsEngine::DrawSpriteRect(blockMinPos, blockMaxPos, {}, Vector2(32.0f, 32.0f), textureHandles_.at(Texture::kBlock), Color(blocksColor_[x][y]));
 			}
 			// フラッシュブロック
-			if (blocks_[x][y] == BlockType::Frash) {
+			else if (blocks_[x][y] == BlockType::Frash) {
 				blockMinPos.x -= (kFrashTime - breakTime_) * 2.0f;
 				blockMaxPos.x += (kFrashTime - breakTime_) * 2.0f;
 				blockMinPos.y += (kFrashTime - breakTime_) * 2.0f;
 				blockMaxPos.y -= (kFrashTime - breakTime_) * 2.0f;
 				TOMATOsEngine::DrawRect(blockMinPos, blockMaxPos, 0xFFFFFFFF);
+			}
+			else if (blocks_[x][y] == BlockType::GameOverBlock) {
+				Random::RandomNumberGenerator rnd{};
+				float distance = 2.0f;
+				blockPos.x += rnd.NextFloatRange(-distance, distance);
+				blockPos.y += rnd.NextFloatRange(-distance, distance);
+				TOMATOsEngine::DrawSpriteRectAngle(blockPos, Vector2(32.0f, 32.0f), Vector2(0.5f, 0.5f), 0.0f, {}, Vector2(32.0f, 32.0f), textureHandles_.at(Texture::kGameOverBlock), Color(blocksColor_[x][y]));
 			}
 		}
 	}
@@ -149,6 +143,38 @@ void Field::DrawGrow() {
 
 		Vector2 texBase = { static_cast<float>(growAnimationFrame_) * 64.0f,0.0f };
 		TOMATOsEngine::DrawSpriteRectAngle(position, size, Vector2(0.0f, 0.0f), 0.0f, texBase, Vector2(64.0f, 64.0f), textureHandles_.at(Texture::kGrow), 0xFFFFFFFF);
+	}
+}
+
+void Field::GameOverUpdate() {
+	if (isBlockBreaking_) {
+		if (blockBleakAnimationCount_ <= 0) {
+			for (uint32_t x = 0; x < kNumHorizontalBlocks; x++) {
+				if (blocks_[x][heightCount_] == BlockType::Normal) {
+					blocks_[x][heightCount_] = BlockType::None;
+					Vector2 position = { float(x * kBlockSize) + float(kBlockSize) * 0.5f,float(heightCount_ * kBlockSize) + float(kBlockSize) * 0.5f };
+					blockPosition_.emplace_back(position);
+					blocksColor_[x][heightCount_] = { 0.5f,0.5f,0.5f,0.8f };
+				}
+			}
+			// 高さが0になったらゲームオーバーフラグを立てる
+			if (heightCount_ < 0) {
+				heightCount_ = kDeathLine_;
+				isTextDropping_ = true;
+				isBlockBreaking_ = false;
+			}
+			// 高さを一段下げる
+			heightCount_--;
+			// アニメーションカウントリセット
+			const uint32_t kCoolTime = 15;
+			blockBleakAnimationCount_ = kCoolTime;
+		}
+		else {
+			blockBleakAnimationCount_--;
+		}
+	}
+	else if (isTextDropping_) {
+
 	}
 }
 
@@ -260,6 +286,7 @@ void Field::ChackBlock() {
 	for (uint32_t x = 0; x < kNumHorizontalBlocks; x++) {
 		if (blocks_[x][kDeathLine_] == BlockType::Normal) {
 			isInGameOver_ = true;
+			isBlockBreaking_ = true;
 			return;
 		}
 	}

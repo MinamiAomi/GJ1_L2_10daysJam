@@ -22,10 +22,9 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
         inGame,
         gameClear,
         gameOver,
-        result
     };
 
-    GameScene gameScene = title;
+    GameScene gameScene = inGame;
 
     auto tex = TOMATOsEngine::LoadTexture("Resources/playgame.png");
     TextureHandle titleHandle = TOMATOsEngine::LoadTexture("Resources/BBtitle.png");
@@ -100,8 +99,6 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
         case gameOver:
             break;
         case gameClear:
-            break;
-        case result:
             break;
         default:
             break;

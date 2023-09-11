@@ -22,6 +22,7 @@ public:
         None,
         Normal,
         Frash,
+        GameOverBlock,
 
         NumTypes
     };
@@ -29,6 +30,9 @@ public:
     enum Texture {
         kBlock,
         kGrow,
+        kGameOverBlock,
+        kGameOver,
+
 
         Count,
     };
@@ -73,6 +77,7 @@ private:
     void DrawBlock();
     void DrawGrow();
 
+    void GameOverUpdate();
     // 縦に伸びるので横縦配置
     // 左から右
     // 下から上
@@ -107,8 +112,13 @@ private:
 
     // ゲームオーバー
     const uint32_t kDeathLine_ = 10;
-    uint32_t gameOverAnimationCount_;
-    uint32_t heightCount_;
+    uint32_t blockBleakAnimationCount_;
+    int32_t heightCount_;
+    // マップチップの位置を保存
+    std::vector<Vector2> blockPosition_;
+
+    bool isBlockBreaking_;
+    bool isTextDropping_;
     bool isInGameOver_;
     bool isGameOver_;
 };
