@@ -44,10 +44,12 @@ public:
     void Update();
     void Draw();
 
+    void DrawScore();
+
     void ColorClearBlock();
     void SetColorBlock(uint32_t blockIndexX, uint32_t blockIndexY, const Vector4& color);
     void BreakBlock(uint32_t blockIndexX, uint32_t blockIndexY);
-    void BreakBlockHorizon(uint32_t blockIndexX, uint32_t blockIndexY);
+    void BreakBlockHorizon(uint32_t blockIndexX, uint32_t blockIndexY, bool isHorizontal);
     void ClearBreakBlockHorizon();
 
     uint32_t CalcBlockIndexX(float worldPosX) const;
@@ -75,7 +77,9 @@ public:
     bool GetIsInGameOver() { return isInGameOver_; }
     bool GetIsVanish() { return isVanish_; }
 
-    uint32_t GetGrowInterval() { return growInterval_; }
+    uint32_t GetBreakedBlockNum(){ return breakedBlockNum_; }
+
+  uint32_t GetGrowInterval() { return growInterval_; }
     void SetGrowInterval(uint32_t interval) { growInterval_ = interval; }
     uint32_t GetNumGrowingBlocks() { return numGrowingBlocks_; }
     void SetNumGrowingBlocks(uint32_t numGrowingBlock) { numGrowingBlocks_ = numGrowingBlock; }
@@ -154,6 +158,9 @@ private:
     //　ゲームクリア
     uint32_t clearLine_;
     bool isVanish_;
+    uint32_t breakedBlockNum_;
+    uint32_t combedStepNum_;
+    uint32_t combedHrizonNum_;
 
     // マップチップの位置を保存
     std::vector<std::unique_ptr<GameOver>> gameOverBlocks_;
@@ -162,6 +169,10 @@ private:
     Vector2 gameOverPositionEnd_;
     uint32_t dropTextCount_;
     uint32_t gameOverBlockCount_;
+
+    //score
+    float scoreT;
+    TextureHandle scoreTextureHandle_;
 
     bool isBlockBreaking_;
     bool isTextDropping_;

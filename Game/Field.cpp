@@ -7,6 +7,7 @@
 #include "Math/Color.h"
 
 #include "GameTime.h"
+#include "Easing.h"
 
 void Field::Initialize() {
 	memset(blocks_, BlockType::None, sizeof(blocks_));
@@ -67,9 +68,13 @@ void Field::Initialize() {
 	isInGameOver_ = false;
 	isVanish_ = false;
 
-
+	breakedBlockNum_ = 0;
+	combedStepNum_ = 0;
+	combedHrizonNum_ = 0;
 	breakSoundHandle_ = TOMATOsEngine::LoadAudio("Resources/Audio/break.wav");
 	lineBreakSoundHandle_ = TOMATOsEngine::LoadAudio("Resources/Audio/lineBreak.wav");
+	scoreTextureHandle_ = TOMATOsEngine::LoadTexture("Resources/score.png");
+	scoreT = 0.0f;
 }
 
 void Field::Update() {
@@ -124,7 +129,7 @@ void Field::Update() {
 					DownBlockHorizon();
 				}
 			}
-      HarryEffect();
+			HarryEffect();
 		}
 		else {
 			GameOverUpdate();
@@ -145,6 +150,17 @@ void Field::Draw() {
 	TOMATOsEngine::DrawSpriteRectAngle(deadLinePosition_, deadLineSize_, { 0.5f,0.5f }, 0.0f, { deadLineAnimationFront_ ,16.0f }, deadLineSize_, textureHandles_.at(Texture::kDeadLine), Color::HSVA(deadLineColorH_, 0.8f, 0.8f));
 	DrawBlock();
 	DrawGrow();
+}
+
+void Field::DrawScore()
+{
+	Vector2 pos = Easing::easing(scoreT,
+		{ (float)TOMATOsEngine::kMonitorWidth - TOMATOsEngine::kMonitorWidth * 0.5f,(float)TOMATOsEngine::kMonitorHeight * 0.5f },
+		{ TOMATOsEngine::kMonitorWidth * 0.5f,(float)TOMATOsEngine::kMonitorHeight * 0.5f }, 0.005f, Easing::easeOutQuint, true);
+	Vector2 minPos = { pos.x - TOMATOsEngine::kMonitorWidth * 0.5f,pos.y - TOMATOsEngine::kMonitorHeight * 0.5f - 40.0f };
+	Vector2 maxPos = { pos.x + TOMATOsEngine::kMonitorWidth * 0.5f,pos.y + TOMATOsEngine::kMonitorHeight * 0.5f - 40.0f };
+	TOMATOsEngine::DrawSpriteRect(minPos, maxPos, { 0.0f,0.0f }, { (float)TOMATOsEngine::kMonitorWidth ,(float)TOMATOsEngine::kMonitorHeight }, scoreTextureHandle_, 0xFFFFFFFF);
+
 }
 
 void Field::DrawBlock() {
@@ -313,6 +329,7 @@ void Field::BreakBlock(uint32_t blockIndexX, uint32_t blockIndexY) {
 	assert(IsInField(blockIndexX, blockIndexY));
 	if (blocks_[blockIndexX][blockIndexY] == BlockType::Normal) {
 		blocks_[blockIndexX][blockIndexY] = BlockType::None;
+		breakedBlockNum_++;
 	}
 
 	// 音
@@ -320,14 +337,23 @@ void Field::BreakBlock(uint32_t blockIndexX, uint32_t blockIndexY) {
 	TOMATOsEngine::SetPitch(playHandle, 1.0f);
 }
 
-void Field::BreakBlockHorizon(uint32_t blockIndexX, uint32_t blockIndexY) {
+void Field::BreakBlockHorizon(uint32_t blockIndexX, uint32_t blockIndexY,bool isHorizontal) {
 	assert(IsInField(blockIndexX, blockIndexY));
 	for (size_t x = 0; x < kNumHorizontalBlocks; x++) {
 		breakTime_ = kFrashTime;
+		if (blocks_[static_cast<uint32_t>(x)][blockIndexY] == BlockType::Normal) {
+			breakedBlockNum_++;
+		}
 		blocks_[static_cast<uint32_t>(x)][blockIndexY] = BlockType::Frash;
 	}
 	downBlockIndex_ = blockIndexY + 1;
 	isFlash_ = true;
+	if (isHorizontal) {
+		combedHrizonNum_++;
+	}
+	else {
+		combedStepNum_++;
+	}
 
 	// 音 
 	size_t playHandle = TOMATOsEngine::PlayAudio(lineBreakSoundHandle_);
