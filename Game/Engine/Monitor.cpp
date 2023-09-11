@@ -28,7 +28,7 @@ void Monitor::Initilaize(uint32_t bufferWidth, uint32_t bufferHeight, DXGI_FORMA
 
         CD3DX12_STATIC_SAMPLER_DESC staticSampler(
             0,
-            D3D12_FILTER_MIN_MAG_MIP_POINT,
+            D3D12_FILTER_MIN_MAG_MIP_LINEAR,
             D3D12_TEXTURE_ADDRESS_MODE_BORDER,
             D3D12_TEXTURE_ADDRESS_MODE_BORDER,
             D3D12_TEXTURE_ADDRESS_MODE_BORDER,

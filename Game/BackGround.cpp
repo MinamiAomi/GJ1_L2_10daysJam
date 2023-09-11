@@ -34,7 +34,7 @@ void HSLToRGB(float hue, float saturation, float lightness, Vector4& rgb) {
 BackGround::BackGround() {
 	// フレーム
 	fream_TextureHandle_ = TOMATOsEngine::LoadTexture("Resources/frame.png");
-	fream_Position_ = { float(TOMATOsEngine::kMonitorWidth) * 0.5f,float(TOMATOsEngine::kMonitorHeight) * 0.5f };
+	fream_Position_ = { float(TOMATOsEngine::kMonitorWidth) * 0.5f,float(TOMATOsEngine::kMonitorHeight) * 0.5f - 40.0f };
 	fream_Size_ = { float(TOMATOsEngine::kMonitorWidth),float(TOMATOsEngine::kMonitorHeight) };
 	fream_ColorH_ = 0.319f;
 	// 四角

@@ -120,6 +120,10 @@ private:
     uint32_t downBlockIndex_;
     bool isFlash_;
 
+    // オーディオ類
+    size_t breakSoundHandle_ = 0;
+    size_t lineBreakSoundHandle_ = 0;
+
     // ゲームオーバー
     const uint32_t kDeathLine_ = 10;
     uint32_t blockBleakAnimationCount_;
