@@ -46,6 +46,7 @@ public:
     void SetColorBlock(uint32_t blockIndexX, uint32_t blockIndexY, const Vector4& color);
     void BreakBlock(uint32_t blockIndexX, uint32_t blockIndexY);
     void BreakBlockHorizon(uint32_t blockIndexX, uint32_t blockIndexY);
+    void ClearBreakBlockHorizon();
 
     uint32_t CalcBlockIndexX(float worldPosX) const;
     uint32_t CalcBlockIndexY(float worldPosY) const;
@@ -89,6 +90,7 @@ private:
     void SetGrow(std::vector<uint32_t> horizontalIndex, uint32_t numBlocks);
     void DrawBlock();
     void DrawGrow();
+    int32_t GetHeightestIndex();
 
     void GameOverUpdate();
     // 縦に伸びるので横縦配置
@@ -122,6 +124,7 @@ private:
     uint32_t breakTime_;
     uint32_t downBlockIndex_;
     bool isFlash_;
+    bool isClearFlash_;
 
     // オーディオ類
     size_t breakSoundHandle_ = 0;
@@ -131,6 +134,10 @@ private:
     const uint32_t kDeathLine_ = 10;
     uint32_t blockBleakAnimationCount_;
     int32_t heightCount_;
+    //　ゲームクリア
+    uint32_t clearLine_;
+
+
     // マップチップの位置を保存
     std::vector<std::unique_ptr<GameOver>> gameOverBlocks_;
     Vector2 gameOverPosition_;
