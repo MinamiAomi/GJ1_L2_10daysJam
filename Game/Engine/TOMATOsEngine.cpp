@@ -416,7 +416,7 @@ namespace TOMATOsEngine {
         return audio->SoundPlayWave(soundHandle);
     }
 
-    size_t StopAudio(size_t playHandle) {
+    void StopAudio(size_t playHandle) {
         audio->StopSound(playHandle);
     }
 

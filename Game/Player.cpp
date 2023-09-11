@@ -40,6 +40,8 @@ void Player::Initialize() {
 	animationFrame = 0;
 	continueTextureNum = 3;
 	break_ = false;
+
+	jumpSoundHandle_ = TOMATOsEngine::LoadAudio("Resources/Audio/break.wav");
 }
 
 void Player::Update() {
@@ -81,6 +83,8 @@ void Player::Update() {
 }
 
 void Player::move() {
+
+	const float kJumpPower = 20.0f;
 
 #pragma region 移動
 	velocity_.x = 0.0f;
@@ -218,9 +222,14 @@ void Player::move() {
 				bottom <= 0.0f) {
 				// 高さ更新
 				preHeight_ = nowHeight_;
-				velocity_.y = 20.0f;
+				velocity_.y = kJumpPower;
 				animationFrame = (continueTextureNum - 1) * kAnimationSwitchNum;
 				float blockTopPosition = 0.0f;
+
+				// ジャンプ音
+				size_t playHandle = TOMATOsEngine::PlayAudio(jumpSoundHandle_);
+				playHandle;
+
 				if (bottom > 0.0f && bottom <= field_->GetSize().y) {
 					blockTopPosition = field_->GetBlockTop(blockBottom);
 				}

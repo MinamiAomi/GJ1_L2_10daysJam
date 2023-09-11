@@ -27,6 +27,7 @@ public:
     };
     // 音声データ
     struct SoundData {
+        std::string filename;
         // 波形フォーマット
         WAVEFORMATEX wfex;
         // バッファの先頭アドレス

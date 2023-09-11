@@ -114,6 +114,13 @@ void Audio::SoundPlayLoopEnd(size_t playHandle) {
 }
 
 size_t Audio::SoundLoadWave(const char* filename) {
+    auto iter = std::find_if(soundData_.begin(), soundData_.end(), [&](const SoundData& soundData) {
+        return soundData.filename == filename;
+        });
+    if (iter != soundData_.end()) {
+        return std::distance(soundData_.begin(), iter);
+    }
+
 #pragma region ファイルオープン
     // ファイル入出ストリームのインスタンス
     std::ifstream file;
@@ -201,6 +208,7 @@ size_t Audio::SoundLoadWave(const char* filename) {
 #pragma region 読み込んだ音声データのreturn
     // returnする為の音声データ
     SoundData soundData = {};
+    soundData.filename = filename;
     soundData.wfex = format.fmt;
     soundData.pBuffer = std::move(pBuffer);
     soundData.bufferSize = data.size;

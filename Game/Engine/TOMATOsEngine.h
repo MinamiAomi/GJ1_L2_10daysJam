@@ -56,7 +56,7 @@ namespace TOMATOsEngine {
 
     size_t LoadAudio(const std::string& name);
     size_t PlayAudio(size_t soundHandle, bool loop = false);
-    size_t StopAudio(size_t playHandle);
+    void StopAudio(size_t playHandle);
     size_t IsPlayAudio(size_t playHandle);
     void SetPitch(size_t soundHandle, float pitch);
     void SetVolume(size_t soundHandle, float volume);
