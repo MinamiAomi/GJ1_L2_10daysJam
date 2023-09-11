@@ -6,6 +6,8 @@
 #include "Particle/ParticleManager.h"
 #include "Math/Color.h"
 
+#include "GameTime.h"
+
 void Field::Initialize() {
 	memset(blocks_, BlockType::None, sizeof(blocks_));
 
@@ -56,13 +58,36 @@ void Field::Initialize() {
 	isTextDropping_ = false;
 	isGameOver_ = false;
 	isInGameOver_ = false;
-  
+ 
   
     breakSoundHandle_ = TOMATOsEngine::LoadAudio("Resources/Audio/break1.wav");
     lineBreakSoundHandle_ = TOMATOsEngine::LoadAudio("Resources/Audio/lineBreak.wav");
 }
 
 void Field::Update() {
+
+	GameTime* gameTime = GameTime::GetInstance();
+
+	if (gameTime->GetIsFinish() && isFlash_ == false) {
+		breakTime_--;
+		ClearBreakBlockHorizon();
+		if (breakTime_ > 0) {
+
+		}
+		else {
+			if (isClearFlash_ == true) {
+				isClearFlash_ = false;
+				for (uint32_t x = 0; x < kNumVerticalBlocks; x++) {
+					for (uint32_t y = 0; y < kNumHorizontalBlocks; y++) {
+						if (blocks_[x][y] == BlockType::Frash) {
+							blocks_[x][y] = BlockType::None;
+						}
+					}
+				}
+			}
+		}
+	}
+	else
 	if (!isInGameOver_) {
 		ChackBlock();
 		++growCoolTime_;
@@ -279,10 +304,6 @@ void Field::BreakBlockHorizon(uint32_t blockIndexX, uint32_t blockIndexY) {
     assert(IsInField(blockIndexX, blockIndexY));
     for (size_t x = 0; x < kNumHorizontalBlocks; x++) {
         breakTime_ = kFrashTime;
-      /*  if (blocks_[static_cast<uint32_t>(x)][blockIndexY] == BlockType::Normal) {
-            blocks_[static_cast<uint32_t>(x)][blockIndexY] = BlockType::Frash;
-
-        }*/
 		blocks_[static_cast<uint32_t>(x)][blockIndexY] = BlockType::Frash;
     }
     downBlockIndex_ = blockIndexY + 1;
@@ -291,6 +312,25 @@ void Field::BreakBlockHorizon(uint32_t blockIndexX, uint32_t blockIndexY) {
     // 音 
     size_t playHandle = TOMATOsEngine::PlayAudio(lineBreakSoundHandle_);
     TOMATOsEngine::SetVolume(playHandle, 1.2f);
+}
+
+void Field::ClearBreakBlockHorizon() {
+	int32_t y = GetHeightestIndex();
+	if (y != -1) {
+		// 音 
+		if (isClearFlash_ == false) {
+			size_t playHandle = TOMATOsEngine::PlayAudio(lineBreakSoundHandle_);
+			TOMATOsEngine::SetVolume(playHandle, 1.2f);
+
+			for (size_t x = 0; x < kNumHorizontalBlocks; x++) {
+				if (blocks_[static_cast<uint32_t>(x)][y] == BlockType::Normal) {
+					blocks_[static_cast<uint32_t>(x)][y] = BlockType::Frash;
+					breakTime_ = kFrashTime;
+					isClearFlash_ = true;
+				}
+			}
+		}
+	}
 }
 
 void Field::DownBlockHorizon() {
@@ -439,4 +479,16 @@ void Field::SetGrow(std::vector<uint32_t> blockIndices, uint32_t numBlocks) {
         // 成長
         Grow(blockIndices[i]);
     }
+}
+
+int32_t  Field::GetHeightestIndex() {
+	int32_t  heightestIndex = -1;
+	for (uint32_t x = 0; x < kNumHorizontalBlocks; ++x) {
+		for (int32_t y = 0; y < kNumVerticalBlocks; ++y) {
+			if (blocks_[x][y] == BlockType::Normal && heightestIndex < y) {
+				heightestIndex = y;
+			}
+		}
+	}
+	return heightestIndex;
 }
