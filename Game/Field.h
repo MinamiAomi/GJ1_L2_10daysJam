@@ -2,6 +2,7 @@
 
 #include <array>
 #include <cstdint>
+#include <memory>
 
 #include "TextureHandle.h"
 #include "Math/MathUtils.h"
@@ -22,6 +23,7 @@ public:
         None,
         Normal,
         Frash,
+        GameOverBlock,
 
         NumTypes
     };
@@ -29,6 +31,9 @@ public:
     enum Texture {
         kBlock,
         kGrow,
+        kGameOverBlock,
+        kGameOver,
+
 
         Count,
     };
@@ -61,7 +66,19 @@ public:
 
     void SetParticleManager(ParticleManager* particleManager) {particleManager_ = particleManager;}
     void DownBlockHorizon();
+
+    bool GetIsGameOver() { return isGameOver_; }
 private:
+    struct GameOver {
+        Vector2 position_;
+        Vector2 velocity_;
+        Vector2 acceleration_;
+        float angle_;
+        float addAngle_;
+        bool isDrop_;
+    };
+
+    void ChackBlock();
     void GrowField(uint32_t numBlocks);
     void Grow(uint32_t horizontalIndex);
     // nextBlockIndices_を使って制御
@@ -70,6 +87,7 @@ private:
     void DrawBlock();
     void DrawGrow();
 
+    void GameOverUpdate();
     // 縦に伸びるので横縦配置
     // 左から右
     // 下から上
@@ -105,4 +123,20 @@ private:
     // オーディオ類
     size_t breakSoundHandle_ = 0;
     size_t lineBreakSoundHandle_ = 0;
+
+    // ゲームオーバー
+    const uint32_t kDeathLine_ = 10;
+    uint32_t blockBleakAnimationCount_;
+    int32_t heightCount_;
+    // マップチップの位置を保存
+    std::vector<std::unique_ptr<GameOver>> gameOverBlocks_;
+    Vector2 gameOverPosition_;
+    Vector2 gameOverPositionStart_;
+    Vector2 gameOverPositionEnd_;
+    uint32_t dropTextCount_;
+
+    bool isBlockBreaking_;
+    bool isTextDropping_;
+    bool isInGameOver_;
+    bool isGameOver_;
 };

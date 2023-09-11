@@ -217,6 +217,7 @@
     <ClInclude Include="Engine\TextureManager.h">
       <Filter>Engine</Filter>
     </ClInclude>
+    <ClInclude Include="GameTime.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Externals\ImGui\imgui.cpp">
@@ -376,6 +377,7 @@
     <ClCompile Include="Engine\TextureManager.cpp">
       <Filter>Engine</Filter>
     </ClCompile>
+    <ClCompile Include="GameTime.cpp" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="..\Externals\ImGui\LICENSE.txt">

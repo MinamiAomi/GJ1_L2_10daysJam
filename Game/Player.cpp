@@ -371,7 +371,8 @@ void Player::ComboUpdate(float  floor, uint32_t blockIndexX, uint32_t blockIndex
             sameHeight_ = blockIndexY;
             if (sameHeight_ == preSameHeight_) {
                 sameHeightCount_++;
-             
+             stepCount_ = 0;
+              // 2コンボめ以上から音が鳴る
                 if (sameHeightCount_ >= 1) {
                     size_t playHandle = TOMATOsEngine::PlayAudio(comboSoundHandle_);
                     TOMATOsEngine::SetPitch(playHandle, 1.0f + sameHeightCount_ * 0.1f);

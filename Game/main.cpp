@@ -11,6 +11,8 @@
 
 #include "Audio/Audio.h"
 
+#include "GameTime.h"
+
 int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 
     TOMATOsEngine::Initialize();
@@ -20,7 +22,8 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
     enum GameScene {
         title,
         inGame,
-        result
+        gameClear,
+        gameOver,
     };
 
     GameScene gameScene = inGame;
@@ -44,6 +47,8 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
     BackGround backGround;
     backGround.Initialize();
     backGround.SetPlayer(&player);
+
+    GameTime* gameTime = GameTime::GetInstance();
 
     size_t alarm = TOMATOsEngine::LoadAudio("Resources/Audio/break.wav");
 
@@ -77,22 +82,29 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
                 player.Initialize();
                 player.SetPosition({ field.GetSize().x * 0.5f, field.GetSize().y - 100.0f });
             }
+            if (field.GetIsGameOver()) {
+                gameScene = gameOver;
+            }
 
             field.Update();
             backGround.Update();
             player.Update();
             particleManager.Update();
+            gameTime->Update();
+            
 
             backGround.Draw();
             field.Draw();
             particleManager.Draw();
             player.Draw();
-
+            gameTime->Draw();
             
 
             field.Edit();
             break;
-        case result:
+        case gameOver:
+            break;
+        case gameClear:
             break;
         default:
             break;
