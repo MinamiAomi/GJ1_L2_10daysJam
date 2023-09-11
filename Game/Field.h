@@ -102,4 +102,7 @@ private:
     uint32_t downBlockIndex_;
     bool isFlash_;
 
+    // オーディオ類
+    size_t breakSoundHandle_ = 0;
+    size_t lineBreakSoundHandle_ = 0;
 };
