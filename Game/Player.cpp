@@ -226,6 +226,7 @@ void Player::move() {
 					// ブロック破壊
 					if (stepCount_ >= kCombo_ || sameHeightCount_ >= kCombo_) {
 						field_->BreakBlockHorizon(blockLeft, blockBottom);
+						isComboed_ = true;
 						// 高さ更新
 						nowHeight_ = blockBottom;
 						// コンボカウントリセット
@@ -453,40 +454,48 @@ void Player::SetBlockColor(int32_t blockIndexY) {
 
 void Player::SetBlockParticleColor(int32_t blockIndexY) {
 	if (blockIndexY != -1) {
-		for (uint32_t x = 0; x < Field::kNumHorizontalBlocks; x++) {
-			// コンボ達成しているか
-			if (stepCount_ < kCombo_ && sameHeightCount_ < kCombo_) {
-				// 階段
-				if (field_->GetBlock(x, static_cast<uint32_t>(blockIndexY + 2)) == Field::None && field_->GetBlock(static_cast<uint32_t>(x), static_cast<uint32_t>(blockIndexY + 1)) == Field::Normal) {
-					if (stepCount_ == 0) {
-						// 色
-						const float kS = 1.0f;
-						const float kV = 0.3f;
-						particleManager_->GetCircle()->Create(Vector2(float(x * Field::kBlockSize) + (Field::kBlockSize / 2), float((blockIndexY+1) * Field::kBlockSize) + (Field::kBlockSize / 2)), Color::HSVA(stepColorH_, kS, kV), static_cast<uint32_t>(Circle::Texture::kSquare));
+		if (!isComboed_) {
+			for (uint32_t x = 0; x < Field::kNumHorizontalBlocks; x++) {
+				// コンボ達成しているか
+				if (stepCount_ < kCombo_ && sameHeightCount_ < kCombo_) {
+
+					// 階段
+					if (field_->GetBlock(x, static_cast<uint32_t>(blockIndexY + 2)) == Field::None && field_->GetBlock(static_cast<uint32_t>(x), static_cast<uint32_t>(blockIndexY + 1)) == Field::Normal) {
+						if (stepCount_ == 0) {
+							// 色
+							const float kS = 1.0f;
+							const float kV = 0.3f;
+							particleManager_->GetCircle()->Create(Vector2(float(x * Field::kBlockSize) + (Field::kBlockSize / 2), float((blockIndexY + 1) * Field::kBlockSize) + (Field::kBlockSize / 2)), Color::HSVA(stepColorH_, kS, kV), static_cast<uint32_t>(Circle::Texture::kSquare));
+						}
+						else {
+							// 色
+							const float kS = 1.0f;
+							const float kV = 1.0f;
+							particleManager_->GetCircle()->Create(Vector2(float(x * Field::kBlockSize) + (Field::kBlockSize / 2), float((blockIndexY + 1) * Field::kBlockSize) + (Field::kBlockSize / 2)), Color::HSVA(stepColorH_, kS, kV), static_cast<uint32_t>(Circle::Texture::kSquare));
+						}
 					}
-					else {
-						// 色
-						const float kS = 1.0f;
-						const float kV = 1.0f;
-						particleManager_->GetCircle()->Create(Vector2(float(x * Field::kBlockSize) + (Field::kBlockSize / 2), float((blockIndexY + 1) * Field::kBlockSize) + (Field::kBlockSize / 2)), Color::HSVA(stepColorH_, kS, kV), static_cast<uint32_t>(Circle::Texture::kSquare));
+					// 平行
+					if (field_->GetBlock(x, static_cast<uint32_t>(blockIndexY + 1)) == Field::None && field_->GetBlock(static_cast<uint32_t>(x), static_cast<uint32_t>(blockIndexY)) == Field::Normal) {
+						if (sameHeightCount_ == 0) {
+							// 色
+							const float kS = 1.0f;
+							const float kV = 0.3f;
+							particleManager_->GetCircle()->Create(Vector2(float(x * Field::kBlockSize) + (Field::kBlockSize / 2), float(blockIndexY * Field::kBlockSize) + (Field::kBlockSize / 2)), Color::HSVA(sameHeightColorH_, kS, kV), static_cast<uint32_t>(Circle::Texture::kSquare));
+						}
+						else {
+							// 色
+							const float kS = 1.0f;
+							const float kV = 1.0f;
+							particleManager_->GetCircle()->Create(Vector2(float(x * Field::kBlockSize) + (Field::kBlockSize / 2), float(blockIndexY * Field::kBlockSize) + (Field::kBlockSize / 2)), Color::HSVA(sameHeightColorH_, kS, kV), static_cast<uint32_t>(Circle::Texture::kSquare));
+						}
 					}
-				}
-				// 平行
-				if (field_->GetBlock(x, static_cast<uint32_t>(blockIndexY + 1)) == Field::None && field_->GetBlock(static_cast<uint32_t>(x), static_cast<uint32_t>(blockIndexY)) == Field::Normal) {
-					if (sameHeightCount_ == 0) {
-						// 色
-						const float kS = 1.0f;
-						const float kV = 0.3f;
-						particleManager_->GetCircle()->Create(Vector2(float(x * Field::kBlockSize) + (Field::kBlockSize / 2), float(blockIndexY * Field::kBlockSize) + (Field::kBlockSize / 2)), Color::HSVA(sameHeightColorH_, kS, kV), static_cast<uint32_t>(Circle::Texture::kSquare));
-					}
-					else {
-						// 色
-						const float kS = 1.0f;
-						const float kV = 1.0f;
-						particleManager_->GetCircle()->Create(Vector2(float(x * Field::kBlockSize) + (Field::kBlockSize / 2), float(blockIndexY * Field::kBlockSize) + (Field::kBlockSize / 2)), Color::HSVA(sameHeightColorH_, kS, kV), static_cast<uint32_t>(Circle::Texture::kSquare));
-					}
+
+
 				}
 			}
+		}
+		else {
+			isComboed_ = true;
 		}
 	}
 }

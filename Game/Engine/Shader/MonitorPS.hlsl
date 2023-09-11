@@ -27,7 +27,7 @@ PSOutput main(PSInput input) {
     
     float distort = 0.1f;
     
-   // texcoord /= 1.0f - length(texcoord) * distort;
+    texcoord /= 1.0f - length(texcoord) * distort;
     
     //float power = pow(length(texcoord), distort);
     //texcoord *= power;

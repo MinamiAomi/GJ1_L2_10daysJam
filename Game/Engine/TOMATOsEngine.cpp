@@ -12,6 +12,8 @@
 #include "RealWorld.h"
 #include "Monitor.h"
 
+#include "Audio/Audio.h"
+
 namespace {
     GameWindow* gameWindow = nullptr;
     RenderManager* renderManager = nullptr;
@@ -19,6 +21,7 @@ namespace {
     SpriteRenderer* spriteRenderer = nullptr;
     TextureManager* textureManager = nullptr;
     Input* input = nullptr;
+    Audio* audio = nullptr;
 
     Matrix4x4 screenMatrix;
 
@@ -44,6 +47,7 @@ namespace TOMATOsEngine {
         assert(!textureManager);
         assert(!input);
         assert(!monitor);
+        assert(!audio);
 
         gameWindow = GameWindow::GetInstance();
         gameWindow->Initialize(L"Title", 1280, 720);
@@ -69,6 +73,9 @@ namespace TOMATOsEngine {
         spriteRenderer->Initialize(monitor->GetColorBuffer().GetFormat());
 
         textureManager = TextureManager::GetInstance();
+
+        audio = Audio::GetInstance();
+        audio->Initialize();
 
         screenMatrix = Matrix4x4::MakeTranslation({ 0.0f, 40.0f, 0.0f });
         screenMatrix *= Matrix4x4::MakeOrthographicProjection(float(kMonitorWidth), float(kMonitorHeight), 0.0f, 1.0f);
@@ -110,6 +117,10 @@ namespace TOMATOsEngine {
 
     TextureHandle LoadTexture(const std::string& name) {
         return textureManager->Load(name);
+    }
+
+    size_t LoadAudio(const std::string& name) {
+        return audio->SoundLoadWave(name.c_str());
     }
 
     void SetBlendMode(BlendMode blendMode) {

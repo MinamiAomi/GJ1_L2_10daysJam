@@ -34,6 +34,9 @@
     <Filter Include="Game\Particle">
       <UniqueIdentifier>{6a90fed0-02ae-4f99-a26e-95e5c0b12ed2}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Engine\Audio">
+      <UniqueIdentifier>{e9e6fbd5-4544-472b-9347-419aa6aff440}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Externals\ImGui\imconfig.h">
@@ -123,9 +126,6 @@
     <ClInclude Include="Engine\Graphics\Texture.h">
       <Filter>Engine\Graphics</Filter>
     </ClInclude>
-    <ClInclude Include="Engine\TextureManager.h">
-      <Filter>Engine</Filter>
-    </ClInclude>
     <ClInclude Include="Engine\Graphics\SamplerManager.h">
       <Filter>Engine\Graphics</Filter>
     </ClInclude>
@@ -156,9 +156,6 @@
     <ClInclude Include="Engine\Graphics\LinearAllocator.h">
       <Filter>Engine\Graphics</Filter>
     </ClInclude>
-    <ClInclude Include="Engine\TextureHandle.h">
-      <Filter>Engine\Graphics</Filter>
-    </ClInclude>
     <ClInclude Include="Engine\Monitor.h">
       <Filter>Engine</Filter>
     </ClInclude>
@@ -177,7 +174,6 @@
     <ClInclude Include="Player.h">
       <Filter>Game</Filter>
     </ClInclude>
-    <ClInclude Include="Engine\Math\Color.h" />
     <ClInclude Include="Particle\Circle.h">
       <Filter>Game\Particle</Filter>
     </ClInclude>
@@ -206,8 +202,20 @@
     <ClInclude Include="Engine\Model.h">
       <Filter>Engine</Filter>
     </ClInclude>
+    <ClInclude Include="Engine\Math\Color.h">
+      <Filter>Engine\Math</Filter>
+    </ClInclude>
     <ClInclude Include="BackGround.h">
       <Filter>Game</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\Audio\Audio.h">
+      <Filter>Engine\Audio</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\TextureHandle.h">
+      <Filter>Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\TextureManager.h">
+      <Filter>Engine</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -290,9 +298,6 @@
     <ClCompile Include="Engine\Graphics\Texture.cpp">
       <Filter>Engine\Graphics</Filter>
     </ClCompile>
-    <ClCompile Include="Engine\TextureManager.cpp">
-      <Filter>Engine</Filter>
-    </ClCompile>
     <ClCompile Include="Engine\Graphics\SamplerManager.cpp">
       <Filter>Engine\Graphics</Filter>
     </ClCompile>
@@ -335,7 +340,6 @@
     <ClCompile Include="BackGround.cpp">
       <Filter>Game</Filter>
     </ClCompile>
-    <ClCompile Include="Engine\Math\Color.cpp" />
     <ClCompile Include="Particle\Circle.cpp">
       <Filter>Game\Particle</Filter>
     </ClCompile>
@@ -360,7 +364,18 @@
     <ClCompile Include="Engine\ArcadeMachine.cpp">
       <Filter>Engine</Filter>
     </ClCompile>
-    <ClCompile Include="Engine\RealWorld.cpp" />
+    <ClCompile Include="Engine\RealWorld.cpp">
+      <Filter>Engine</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\Math\Color.cpp">
+      <Filter>Engine\Math</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\Audio\Audio.cpp">
+      <Filter>Engine\Audio</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\TextureManager.cpp">
+      <Filter>Engine</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Text Include="..\Externals\ImGui\LICENSE.txt">
