@@ -13,9 +13,12 @@ void Player::Initialize() {
 	comboTextureHandle_.at(0) = TOMATOsEngine::LoadTexture("Resources/x1.png");
 	comboTextureHandle_.at(1) = TOMATOsEngine::LoadTexture("Resources/x2.png");
 	comboTextureHandle_.at(2) = TOMATOsEngine::LoadTexture("Resources/x3.png");
-	comboPosition_ = { 487.0f,367.0f };
+	comboPosition_ = { float(TOMATOsEngine::kMonitorWidth)*0.5f,float(TOMATOsEngine::kMonitorHeight) *0.5f};
 	comboSize_ = { 150.0f,150.0f };
-	comboColor_ = { 1.0f,1.0f,1.0f,1.0f };
+	comboColorH_ = 0.0f;
+	comboDrawCount_ = 0;
+	comboDrawAngle_ = 0.0f;
+	comboDrawSize_ = { 0.0f ,0.0f };
 	// 階段;
 	preStep_ = 0;
 	step_ = 0;
@@ -298,16 +301,16 @@ void Player::Draw() {
 	Vector2 rectMinPos = position_ - size_ * 0.5f;
 	Vector2 rectMaxPos = position_ + size_ * 0.5f;
 	animationFrame--;
-	
+
 	if (animationFrame > 0) {
-		Vector2 texBase = {0.0f,0.0f};
+		Vector2 texBase = { 0.0f,0.0f };
 		texBase.x = (continueTextureNum - 1 - (animationFrame / kAnimationSwitchNum)) * 30.0f;
 		TOMATOsEngine::DrawSpriteRect(rectMinPos, rectMaxPos, texBase, Vector2(30.0f, 60.0f), textureHandle_, 0xFFFFFFFF);
 	}
 	else {
 		TOMATOsEngine::DrawSpriteRect(rectMinPos, rectMaxPos, {}, Vector2(30.0f, 60.0f), textureHandle_, 0xFFFFFFFF);
 	}
-	
+
 	//TOMATOsEngine::DrawRect(rectMinPos, rectMaxPos, 0x883333FF);
 
 	// コンボ数描画
@@ -344,9 +347,11 @@ void Player::ComboUpdate(float  floor, uint32_t blockIndexX, uint32_t blockIndex
 			step_ = blockIndexY;
 			if (step_ - 1 == preStep_) {
 				stepCount_++;
+				comboDrawCount_ = 0;
 			}
 			else {
 				stepCount_ = 0;
+				comboDrawCount_ = 0;
 			}
 			preStep_ = step_;
 #pragma endregion
@@ -357,6 +362,7 @@ void Player::ComboUpdate(float  floor, uint32_t blockIndexX, uint32_t blockIndex
 			}
 			else {
 				sameHeightCount_ = 0;
+				comboDrawCount_ = 0;
 			}
 			preSameHeight_ = sameHeight_;
 		}
@@ -373,24 +379,52 @@ void Player::ComboUpdate(float  floor, uint32_t blockIndexX, uint32_t blockIndex
 void Player::ComboDraw() {
 	float tex1 = std::clamp(static_cast<float>(sameHeightCount_), -1.0f, 2.0f);
 	float tex2 = std::clamp(static_cast<float>(stepCount_), -1.0f, 2.0f);
+	if (stepCount_ > sameHeightCount_) {
+		comboColorH_ = stepColorH_;
+	}
+	else {
+		comboColorH_ = sameHeightColorH_;
+	}
 	float tex = std::max(tex1, tex2);
 	if (tex >= 0) {
+		Random::RandomNumberGenerator rnd{};
+		const uint32_t comboTime = 20;
+		Vector2 position{};
 		float distance = 0.0f;
-		float angle_Origin = 0.0f;
-		if (tex == 1) {
+		float s = 0.0f;
+		float v = 0.0f;
+		float SizeMax = 0.0f;
+		float AngleMax = 0.0f;
+		comboDrawCount_++;
+		float t = std::clamp(float(comboDrawCount_) / float(comboTime), 0.0f, 1.0f);
+		if (tex == 0) {
 			distance = 2.0f;
-			angle_Origin = 3.0f;
+			s = kCombo1S_;
+			v = kCombo1V_;
+			SizeMax = 150.0f;
+			AngleMax = 360.0f;
+		}
+		else if (tex == 1) {
+			distance = 5.0f;
+			s = kCombo2S_;
+			v = kCombo2V_;
+			SizeMax = 200.0f;
+			AngleMax = 720.0f;
 		}
 		else {
-			distance = 5.0f;
-			angle_Origin = 8.0f;
+			distance = 8.0f;
+			comboColorH_ = h_;
+			s = kCombo3S_;
+			v = kCombo3V_;
+			SizeMax = 300.0f;
+			AngleMax = 1080.0f;
 		}
-		Random::RandomNumberGenerator rnd{};
-		Vector2 position{};
 		position.x = comboPosition_.x + rnd.NextFloatRange(-distance, distance);
 		position.y = comboPosition_.y + rnd.NextFloatRange(-distance, distance);
-		float angle = rnd.NextFloatRange(-angle_Origin, angle_Origin);
-		TOMATOsEngine::DrawSpriteRectAngle(Vector2(0.0f, 0.0f), comboSize_, Vector2(0.5f, 0.5f), angle * Math::ToRadian, {}, Vector2(64.0f, 64.0f), comboTextureHandle_.at(static_cast<uint32_t>(tex)), Color(comboColor_));
+		comboSize_.x = Math::Lerp(t, 0.0f, SizeMax);
+		comboSize_.x = Math::Lerp(t, 0.0f, SizeMax);
+		comboDrawAngle_ = Math::Lerp(t, 0.0f, AngleMax);
+		TOMATOsEngine::DrawSpriteRectAngle(position, comboSize_, Vector2(0.5f, 0.5f), comboDrawAngle_ * Math::ToRadian, {}, Vector2(64.0f, 64.0f), comboTextureHandle_.at(static_cast<uint32_t>(tex)), Color::HSVA(comboColorH_, s, v));
 	}
 }
 
@@ -405,30 +439,22 @@ void Player::SetBlockColor(int32_t blockIndexY) {
 				if (field_->GetBlock(x, static_cast<uint32_t>(blockIndexY + 2)) == Field::None && field_->GetBlock(static_cast<uint32_t>(x), static_cast<uint32_t>(blockIndexY + 1)) == Field::Normal) {
 					if (stepCount_ == 0) {
 						// 色
-						const float kS = 1.0f;
-						const float kV = 0.3f;
-						field_->SetColorBlock(x, static_cast<uint32_t>(blockIndexY + 1), Color::HSVA(stepColorH_, kS, kV));
+						field_->SetColorBlock(x, static_cast<uint32_t>(blockIndexY + 1), Color::HSVA(stepColorH_, kCombo1S_, kCombo1V_));
 					}
 					else {
 						// 色
-						const float kS = 1.0f;
-						const float kV = 1.0f;
-						field_->SetColorBlock(x, static_cast<uint32_t>(blockIndexY + 1), Color::HSVA(stepColorH_, kS, kV));
+						field_->SetColorBlock(x, static_cast<uint32_t>(blockIndexY + 1), Color::HSVA(stepColorH_, kCombo2S_, kCombo2V_));
 					}
 				}
 				// 平行
 				if (field_->GetBlock(x, static_cast<uint32_t>(blockIndexY + 1)) == Field::None && field_->GetBlock(static_cast<uint32_t>(x), static_cast<uint32_t>(blockIndexY)) == Field::Normal) {
 					if (sameHeightCount_ == 0) {
 						// 色
-						const float kS = 1.0f;
-						const float kV = 0.3f;
-						field_->SetColorBlock(x, static_cast<uint32_t>(blockIndexY), Color::HSVA(sameHeightColorH_, kS, kV));
+						field_->SetColorBlock(x, static_cast<uint32_t>(blockIndexY), Color::HSVA(sameHeightColorH_, kCombo1S_, kCombo1V_));
 					}
 					else {
 						// 色
-						const float kS = 1.0f;
-						const float kV = 1.0f;
-						field_->SetColorBlock(x, static_cast<uint32_t>(blockIndexY), Color::HSVA(sameHeightColorH_, kS, kV));
+						field_->SetColorBlock(x, static_cast<uint32_t>(blockIndexY), Color::HSVA(sameHeightColorH_, kCombo2S_, kCombo2V_));
 					}
 				}
 			}
@@ -437,14 +463,12 @@ void Player::SetBlockColor(int32_t blockIndexY) {
 					if (field_->GetBlock(x, y) == Field::Normal) {
 						// 色
 						const float kAddH = 0.0008f;
-						const float kS = 1.0f;
-						const float kV = 1.0f;
 						h_ += kAddH;
 						if (h_ >= 1.0f) {
 							h_ = 0.0f;
 						}
 
-						field_->SetColorBlock(x, y, Color::HSVA(h_, kS, kV));
+						field_->SetColorBlock(x, y, Color::HSVA(h_, kCombo3S_, kCombo3V_));
 					}
 				}
 			}

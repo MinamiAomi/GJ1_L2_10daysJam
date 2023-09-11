@@ -20,6 +20,11 @@ public:
     void SetField(Field* field) { field_ = field; }
     void SetParticleManager(ParticleManager* particleManager) { particleManager_ = particleManager; }
     
+    int32_t GetStepCount() const { return stepCount_; }
+    int32_t GetSameHeightCount() const { return sameHeightCount_; }
+    float GetStepColorH() const { return stepColorH_; }
+    float GetSameHeightColorH() const { return sameHeightColorH_; }
+    float GetRainbowColorH() const { return h_; }
 private:
     static const int32_t kAnimationSwitchNum = 10;
 
@@ -36,10 +41,23 @@ private:
     // コンボ
     const int32_t kCombo_ = 2;
     std::array<TextureHandle, 3> comboTextureHandle_;
+    uint32_t comboDrawCount_;
+    float comboDrawAngle_;
+    Vector2 comboDrawSize_;
+
     Vector2 comboPosition_;
     Vector2 comboSize_;
-    Vector4 comboColor_;
+    float comboColorH_;
     bool break_;
+    // コンボ1
+    const float kCombo1S_ = 1.0f;
+    const float kCombo1V_ = 0.3f;
+    // コンボ2
+    const float kCombo2S_ = 1.0f;
+    const float kCombo2V_ = 1.0f;
+    // コンボ3
+    const float kCombo3S_ = 1.0f;
+    const float kCombo3V_ = 1.0f;
     // 虹色
     float h_;
     Vector4 bonusColor_;

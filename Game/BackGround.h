@@ -6,6 +6,7 @@
 #include "Math/MathUtils.h"
 #include "TextureHandle.h"
 
+class Player;
 class BackGround {
 private:
 	// 粒粒
@@ -15,16 +16,6 @@ private:
 		Vector2 velocity_;
 		Vector2 size_;
 		Vector2 size_Original_;
-		Vector4 color_;
-		uint32_t death_Time_;
-		uint32_t death_Count_;
-		bool isAlive_;
-	};
-	// 円
-	struct Circle {
-		Vector2 position_;
-		Vector2 velocity_;
-		Vector2 size_;
 		Vector4 color_;
 		uint32_t death_Time_;
 		uint32_t death_Count_;
@@ -48,46 +39,42 @@ public:
 	void Initialize();
 	void Update();
 	void Draw();
+
+	void SetPlayer(Player* player) { player_ = player; }
 private:
-	// 粒粒
-	void GrainInitialize();
-	void GrainUpdate();
-	void GrainDraw();
-	// 円
-	void CircleInitialize();
-	void CircleUpdate();
-	void CircleDraw();
 	// 四角
 	void SquareInitialize();
 	void SquareUpdate();
 	void SquareDraw();
+
+	void SetColorH(float& h, float& s, float& v);
 private:
-	TextureHandle white_particle_TextureHandle_;
-	// 粒粒
-	static const uint32_t kGrain_Max = 16;
-	std::array<std::unique_ptr<Grain>, kGrain_Max> grains_;
-	TextureHandle grain_TextureHandle_;
-	const uint32_t grain_CoolTime_ = 120;
-	uint32_t grain_Count_;
+	// コンボ1
+	const float kCombo1S_ = 1.0f;
+	const float kCombo1V_ = 0.3f;
+	// コンボ2
+	const float kCombo2S_ = 1.0f;
+	const float kCombo2V_ = 1.0f;
+	// コンボ3
+	const float kCombo3S_ = 1.0f;
+	const float kCombo3V_ = 1.0f;
 
-	// くるくる
-	Vector2 circle_Emitter_;
-	float angle_;
-	static const uint32_t kCircle_Max = 50;
-	std::array<std::unique_ptr<Circle>, kCircle_Max> circles_;
-	TextureHandle circle_TextureHandle_;
-	const uint32_t circle_CoolTime_ = 2;
-	uint32_t circle_Count_;
-
+	// フレーム
+	TextureHandle fream_TextureHandle_;
+	Vector2 fream_Position_;
+	Vector2 fream_Size_;
+	float fream_ColorH_;
 	// 四角
 	static const uint32_t kSquare_Max = 30;
 	std::array<std::unique_ptr<Square>, kSquare_Max> squares_;
 	TextureHandle square_TextureHandle_;
-	const uint32_t square_CoolTime_ = 120;
+	const uint32_t square_CoolTime_ = 300;
 	uint32_t square_Count_;
 
-	Vector4 square_Color_;
-	float duration_;
-	float currentTime_;
+	float square_ColorH_;
+	float square_ColorS_;
+	float square_ColorV_;
+	
+	Player* player_;
 };
 

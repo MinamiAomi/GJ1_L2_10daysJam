@@ -31,9 +31,6 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
     ParticleManager particleManager;
     particleManager.Initialize();
 
-    BackGround backGround;
-    backGround.Initialize();
-
     Field field;
     field.Initialize();
     field.SetParticleManager(&particleManager);
@@ -43,6 +40,10 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
     player.SetField(&field);
     player.SetParticleManager(&particleManager);
     player.SetPosition({ field.GetSize().x * 0.5f, field.GetSize().y - 100.0f });
+
+    BackGround backGround;
+    backGround.Initialize();
+    backGround.SetPlayer(&player);
 
     Audio* audio = Audio::GetInstance();
     size_t alarm = audio->SoundLoadWave("Resources/Audio/Alarm01.wav");
