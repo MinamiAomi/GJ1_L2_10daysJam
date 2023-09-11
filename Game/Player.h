@@ -85,7 +85,5 @@ private:
     int32_t animationFrame;
     uint32_t continueTextureNum;
 
-    // オーディオ類
-    size_t jumpSoundHandle_ = 0;
-
+    size_t comboSoundHandle_;
 };
