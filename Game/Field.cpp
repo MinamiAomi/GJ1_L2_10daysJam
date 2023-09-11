@@ -31,7 +31,7 @@ void Field::Initialize() {
 
 	growAnimationCount_ = 0;
 	growAnimationFrame_ = 0;
-	growAnimationFrameSize_=4;
+	growAnimationFrameSize_ = 4;
 
 	breakTime_ = 0;
 	downBlockIndex_ = 0;
@@ -39,34 +39,64 @@ void Field::Initialize() {
 
 	textureHandles_.at(Texture::kBlock) = TOMATOsEngine::LoadTexture("Resources/block.png");
 	textureHandles_.at(Texture::kGrow) = TOMATOsEngine::LoadTexture("Resources/grow.png");
+
+	heightCount_ = kDeathLine_;
+	gameOverAnimationCount_ = 0;
+	isGameOver_ = false;
+	isInGameOver_ = false;
 }
 
 void Field::Update() {
-	++growCoolTime_;
-	breakTime_--;
-	if (growCoolTime_ >= growInterval_ && isFlash_ == false) {
-		// 成長
-		SetGrow(nextBlockIndices_, numGrowingBlocks_);
-		// 次成長するところをセット
-		nextBlockIndices_ = GetGrowField(numGrowingBlocks_);
-		growCoolTime_ = 0;
-	}
+	ChackBlock();
+	if (!isInGameOver_) {
+		++growCoolTime_;
+		breakTime_--;
+		if (growCoolTime_ >= growInterval_ && isFlash_ == false) {
+			// 成長
+			SetGrow(nextBlockIndices_, numGrowingBlocks_);
+			// 次成長するところをセット
+			nextBlockIndices_ = GetGrowField(numGrowingBlocks_);
+			growCoolTime_ = 0;
+		}
 
 
-	if (breakTime_ > 0) {
-		
-	}
-	else {
-		if (isFlash_ == true) {
-			isFlash_ = false;
-			for (uint32_t x = 0; x < kNumVerticalBlocks; x++) {
-				for (uint32_t y = 0; y < kNumHorizontalBlocks; y++) {
-					if (blocks_[x][y] == BlockType::Frash) {
-						blocks_[x][y] = BlockType::None;
+		if (breakTime_ > 0) {
+
+		}
+		else {
+			if (isFlash_ == true) {
+				isFlash_ = false;
+				for (uint32_t x = 0; x < kNumVerticalBlocks; x++) {
+					for (uint32_t y = 0; y < kNumHorizontalBlocks; y++) {
+						if (blocks_[x][y] == BlockType::Frash) {
+							blocks_[x][y] = BlockType::None;
+						}
 					}
 				}
+				DownBlockHorizon();
 			}
-			DownBlockHorizon();
+		}
+	}
+	else {
+		if (gameOverAnimationCount_ <= 0) {
+		for (uint32_t x = 0; x < kNumHorizontalBlocks; x++) {
+			if (blocks_[x][heightCount_] == BlockType::Normal) {
+				blocksColor_[x][heightCount_] = { 0.8f,0.8f,0.8f,0.8f };
+			}
+		}
+		// 高さが0になったらゲームオーバーフラグを立てる
+		if (heightCount_ <= 0) {
+			heightCount_= kDeathLine_;
+			isGameOver_ = true;
+		}
+		// 高さを一段下げる
+		heightCount_--;
+		// アニメーションカウントリセット
+		const uint32_t kCoolTime = 30;
+		gameOverAnimationCount_ = kCoolTime;
+		}
+		else {
+			gameOverAnimationCount_--;
 		}
 	}
 }
@@ -96,7 +126,7 @@ void Field::DrawBlock() {
 				blockMaxPos.x += (kFrashTime - breakTime_) * 2.0f;
 				blockMinPos.y += (kFrashTime - breakTime_) * 2.0f;
 				blockMaxPos.y -= (kFrashTime - breakTime_) * 2.0f;
-				TOMATOsEngine::DrawRect(blockMinPos, blockMaxPos,0xFFFFFFFF);
+				TOMATOsEngine::DrawRect(blockMinPos, blockMaxPos, 0xFFFFFFFF);
 			}
 		}
 	}
@@ -105,7 +135,7 @@ void Field::DrawBlock() {
 void Field::DrawGrow() {
 	const uint32_t AnimationTime = 30;
 	for (uint32_t i = 0; i < numGrowingBlocks_; i++) {
-		Vector2 position = { static_cast<float>(nextBlockIndices_.at(i)) * static_cast<float>(kBlockSize) + 5.0f, static_cast<float>(kBlockSize)*-1.0f };
+		Vector2 position = { static_cast<float>(nextBlockIndices_.at(i)) * static_cast<float>(kBlockSize) + 5.0f, static_cast<float>(kBlockSize) * -1.0f };
 		Vector2 size = { 32.0f ,32.0f };
 		// アニメーション
 		growAnimationCount_++;
@@ -124,10 +154,12 @@ void Field::DrawGrow() {
 
 
 void Field::ColorClearBlock() {
-	for (uint32_t x = 0; x < kNumVerticalBlocks; x++) {
-		for (uint32_t y = 0; y < kNumHorizontalBlocks; y++) {
-			if (blocks_[x][y] == BlockType::Normal) {
-				blocksColor_[x][y] = initializeColor_;
+	if (!isInGameOver_) {
+		for (uint32_t x = 0; x < kNumVerticalBlocks; x++) {
+			for (uint32_t y = 0; y < kNumHorizontalBlocks; y++) {
+				if (blocks_[x][y] == BlockType::Normal) {
+					blocksColor_[x][y] = initializeColor_;
+				}
 			}
 		}
 	}
@@ -222,6 +254,15 @@ void Field::Edit() {
 	ImGui::SliderInt("NumGrowingBlocks", &numB, 0, int(kNumHorizontalBlocks - 1));
 	numGrowingBlocks_ = uint32_t(numB);
 	ImGui::End();
+}
+
+void Field::ChackBlock() {
+	for (uint32_t x = 0; x < kNumHorizontalBlocks; x++) {
+		if (blocks_[x][kDeathLine_] == BlockType::Normal) {
+			isInGameOver_ = true;
+			return;
+		}
+	}
 }
 
 void Field::GrowField(uint32_t numBlocks) {

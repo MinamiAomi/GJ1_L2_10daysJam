@@ -61,7 +61,10 @@ public:
 
     void SetParticleManager(ParticleManager* particleManager) {particleManager_ = particleManager;}
     void DownBlockHorizon();
+
+    bool GetIsGameOver() { return isGameOver_; }
 private:
+    void ChackBlock();
     void GrowField(uint32_t numBlocks);
     void Grow(uint32_t horizontalIndex);
     // nextBlockIndices_を使って制御
@@ -102,4 +105,10 @@ private:
     uint32_t downBlockIndex_;
     bool isFlash_;
 
+    // ゲームオーバー
+    const uint32_t kDeathLine_ = 10;
+    uint32_t gameOverAnimationCount_;
+    uint32_t heightCount_;
+    bool isInGameOver_;
+    bool isGameOver_;
 };
