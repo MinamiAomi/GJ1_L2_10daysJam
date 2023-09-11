@@ -9,6 +9,7 @@ void Circle::Initialize() {
 	emitter_ = {0.0f, 0.0f};
 	textureHandle_.at(static_cast<uint32_t>(Texture::kCircle)) = TOMATOsEngine::LoadTexture("Resources/Particle/circle.png");
 	textureHandle_.at(static_cast<uint32_t>(Texture::kSquare)) = TOMATOsEngine::LoadTexture("Resources/Particle/square.png");
+	textureHandle_.at(static_cast<uint32_t>(Texture::kSphere)) = TOMATOsEngine::LoadTexture("Resources/Particle/sphere.png");
 	for (auto& particle : particles_) {
 		particle = std::make_unique<Particle>();
 	}

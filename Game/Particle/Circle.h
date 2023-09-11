@@ -25,6 +25,7 @@ public:
 	enum class Texture {
 		kCircle,
 		kSquare,
+		kSphere,
 		kCount,
 	};
 public:
