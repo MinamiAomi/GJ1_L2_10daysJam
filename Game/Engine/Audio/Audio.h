@@ -60,6 +60,7 @@ public:
     /// <returns></returns>
     size_t SoundLoadWave(const char* filename);
 
+    void StopSound(size_t playHandle);
     void SetPitch(size_t playHandle, float pitch);
     void SetValume(size_t playHandle, float volume);
     bool IsValidPlayHandle(size_t playHandle);

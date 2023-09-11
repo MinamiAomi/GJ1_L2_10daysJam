@@ -210,6 +210,11 @@ size_t Audio::SoundLoadWave(const char* filename) {
     return soundData_.size() - 1;
 }
 
+void Audio::StopSound(size_t playHandle) {
+    assert(playHandle < kMaxNumPlayHandles);
+    DestroyPlayHandle(playHandle);
+}
+
 void Audio::SetPitch(size_t playHandle, float pitch) {
     assert(playHandle < kMaxNumPlayHandles);
     sourceVoices_[playHandle]->SetFrequencyRatio(pitch);
