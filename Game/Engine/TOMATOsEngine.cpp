@@ -24,6 +24,7 @@ namespace {
     Audio* audio = nullptr;
 
     Matrix4x4 screenMatrix;
+    Matrix4x4 frameMatrix;
 
     Monitor* monitor = nullptr;
     std::unique_ptr<RealWorld> realWorld;
@@ -77,10 +78,14 @@ namespace TOMATOsEngine {
         audio = Audio::GetInstance();
         audio->Initialize();
 
-        screenMatrix = Matrix4x4::MakeTranslation({ 0.0f, 40.0f, 0.0f });
-        screenMatrix *= Matrix4x4::MakeOrthographicProjection(float(kMonitorWidth), float(kMonitorHeight), 0.0f, 1.0f);
-        screenMatrix *= Matrix4x4::MakeScaling({ 1.0f, 1.0f,1.0f });
-        screenMatrix *= Matrix4x4::MakeTranslation({ -1.0f, -1.0f, 0.0f });
+
+
+        frameMatrix = Matrix4x4::MakeTranslation({ 0.0f, 40.0f, 0.0f });
+        frameMatrix *= Matrix4x4::MakeOrthographicProjection(float(kMonitorWidth), float(kMonitorHeight), 0.0f, 1.0f);
+        frameMatrix *= Matrix4x4::MakeScaling({ 1.0f, 1.0f,1.0f });
+        frameMatrix *= Matrix4x4::MakeTranslation({ -1.0f, -1.0f, 0.0f });
+
+        screenMatrix = frameMatrix * Matrix4x4::MakeScaling({ 0.93f, 0.91f, 0.0f });
 
         renderManager->Reset();
 
@@ -348,6 +353,46 @@ namespace TOMATOsEngine {
 
         for (auto& vertex : tmp) {
             vertex = (Vector3(vertex) * screenMatrix).GetXY();
+        }
+
+        SpriteRenderer::Vertex vertices[] = {
+            { {tmp[0], 0.0f}, color, {ul, ub} },
+            { {tmp[1], 0.0f}, color, {ul, ut} },
+            { {tmp[2], 0.0f}, color, {ur, ut} },
+            { {tmp[0], 0.0f}, color, {ul, ub} },
+            { {tmp[2], 0.0f}, color, {ur, ut} },
+            { {tmp[3], 0.0f}, color, {ur, ub} },
+        };
+        spriteRenderer->Draw(renderManager->GetCommandContext(), vertices, 2, texture.GetSRV());
+    }
+
+    void DrawFrame(const Vector2& pos, const Vector2& size, const Vector2& anchorPoint, float angle, const Vector2& texBase, const Vector2& texSize, TextureHandle texHandle, uint32_t color) {
+        color = RGBAtoABGR(color);
+        assert(texHandle.IsValid());
+
+        auto& texture = textureManager->GetTexture(texHandle);
+        auto& desc = texture.GetDesc();
+
+        float invWidth = 1.0f / float(desc.Width);
+        float invHeight = 1.0f / float(desc.Height);
+
+        float ul = texBase.x * invWidth;
+        float ur = (texBase.x + texSize.x) * invWidth;
+        float ut = texBase.y * invHeight;
+        float ub = (texBase.y + texSize.y) * invHeight;
+
+        Vector2 tmp[] = {
+           { 0.0f, 0.0f },
+           { 0.0f, 1.0f },
+           { 1.0f, 1.0f },
+           { 1.0f, 0.0f },
+        };
+
+        Matrix3x3 matrix = Matrix3x3::MakeTranslation(-anchorPoint) * Matrix3x3::MakeAffineTransform(size, angle, pos);
+
+        for (auto& vertex : tmp) {
+            vertex = vertex * matrix;
+            vertex = (Vector3(vertex) * frameMatrix).GetXY();
         }
 
         SpriteRenderer::Vertex vertices[] = {
