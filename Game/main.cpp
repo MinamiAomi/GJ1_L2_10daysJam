@@ -13,6 +13,8 @@
 
 #include "GameTime.h"
 
+static float pitch = 1.0f;
+
 int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 
     TOMATOsEngine::Initialize();
@@ -25,7 +27,7 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
         gameOver,
     };
 
-    GameScene gameScene = inGame;
+    GameScene gameScene = title;
 
     auto tex = TOMATOsEngine::LoadTexture("Resources/playgame.png");
     TextureHandle titleHandle = TOMATOsEngine::LoadTexture("Resources/BBtitle.png");
@@ -49,20 +51,12 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 
     GameTime* gameTime = GameTime::GetInstance();
 
-    size_t alarm = TOMATOsEngine::LoadAudio("Resources/Audio/break.wav");
+    size_t bgmSoundHandle = TOMATOsEngine::LoadAudio("Resources/Audio/ingameBGM.wav");
+    size_t bgmPlayHandle = 0;
 
     while (TOMATOsEngine::BeginFrame()) {
 
-        ImGui::Begin("Audio");
-        ImGui::Text("Z button");
-        static float pitch = 1.0f;
-        ImGui::DragFloat("Pitch", &pitch, 0.01f);
-        ImGui::End();
-        if (TOMATOsEngine::IsKeyTrigger(DIK_Z)) {
-            size_t playHandle = TOMATOsEngine::PlayAudio(alarm);
-            pitch += 0.01f;
-            TOMATOsEngine::SetPitch(playHandle, pitch);
-        }
+
 
         switch (gameScene)
         {
@@ -70,12 +64,22 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 
             if (TOMATOsEngine::IsKeyTrigger(DIK_SPACE)) {
                 gameScene = inGame;
+                bgmPlayHandle = TOMATOsEngine::PlayAudio(bgmSoundHandle, true);
+                TOMATOsEngine::SetVolume(bgmPlayHandle, 0.9f);
             }
 
             TOMATOsEngine::DrawSpriteRect({ 0.0f,0.0f }, { static_cast<float>(TOMATOsEngine::kMonitorWidth) ,static_cast<float>(TOMATOsEngine::kMonitorHeight) }, { 0.0f,0.0f }, { 640.0f,480.0f }, titleHandle, 0xFFFFFFFF);
 
             break;
         case inGame:
+            ImGui::Begin("BGM");
+            ImGui::Text("Z button");
+            ImGui::DragFloat("Pitch", &pitch, 0.01f);
+            ImGui::End();
+            if (TOMATOsEngine::IsKeyTrigger(DIK_Z)) {
+                TOMATOsEngine::SetPitch(bgmPlayHandle, pitch);
+            }
+
             if (TOMATOsEngine::IsKeyTrigger(DIK_SPACE)) {
                 field.Initialize();
                 player.Initialize();
@@ -90,14 +94,15 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
             player.Update();
             particleManager.Update();
             gameTime->Update();
-            
+
+            gameTime->time_
 
             backGround.Draw();
             field.Draw();
             particleManager.Draw();
             player.Draw();
             gameTime->Draw();
-            
+
 
             field.Edit();
             break;
@@ -108,7 +113,7 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
         default:
             break;
         }
-   
+
     }
 
     TOMATOsEngine::Shutdown();
