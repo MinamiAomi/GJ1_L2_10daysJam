@@ -228,7 +228,7 @@ void Player::move() {
 
 				// ジャンプ音
 				size_t playHandle = TOMATOsEngine::PlayAudio(jumpSoundHandle_);
-				playHandle;
+				TOMATOsEngine::SetPitch(playHandle,0.5f);
 
 				if (bottom > 0.0f && bottom <= field_->GetSize().y) {
 					blockTopPosition = field_->GetBlockTop(blockBottom);
