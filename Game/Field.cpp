@@ -58,6 +58,7 @@ void Field::Initialize() {
 	isTextDropping_ = false;
 	isGameOver_ = false;
 	isInGameOver_ = false;
+	isVanish_ = false;
  
   
     breakSoundHandle_ = TOMATOsEngine::LoadAudio("Resources/Audio/break1.wav");
@@ -330,6 +331,9 @@ void Field::ClearBreakBlockHorizon() {
 				}
 			}
 		}
+	}
+	else {
+		isVanish_ = true;
 	}
 }
 

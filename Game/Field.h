@@ -71,6 +71,7 @@ public:
     Vector2 GetGameOverPosition() { return gameOverPosition_; }
     bool GetIsGameOver() { return isGameOver_; }
     bool GetIsInGameOver() { return isInGameOver_; }
+    bool GetIsVanish() { return isVanish_; }
 
 private:
     struct GameOver {
@@ -135,9 +136,10 @@ private:
     const uint32_t kDeathLine_ = 10;
     uint32_t blockBleakAnimationCount_;
     int32_t heightCount_;
+
     //　ゲームクリア
     uint32_t clearLine_;
-
+    bool isVanish_;
 
     // マップチップの位置を保存
     std::vector<std::unique_ptr<GameOver>> gameOverBlocks_;

@@ -35,6 +35,7 @@ private:
     void CreateUpdate(uint32_t x, uint32_t y);
 
     void GameOverUpdate();
+    void GameClearUpdate();
     // 真ん中
     Vector2 position_;
     Vector2 size_;
@@ -83,13 +84,22 @@ private:
     ParticleManager* particleManager_;
     // テクスチャハンドル
     TextureHandle textureHandle_;
+    // テクスチャハンドル
+    TextureHandle clearTextureHandle_;
     //animation
-    int32_t animationFrame;
-    uint32_t continueTextureNum;
+    int32_t animationFrame_;
+    uint32_t continueTextureNum_;
 
     size_t comboSoundHandle_;
-    
+    //gameover
     Vector2 gameOverVelocity_;
     float gameOverAngle_;
     bool isGameOver_;
+    //gameClear
+    bool isSaveClearPos_;
+    float gameClearT_;
+    Vector2 gameClearPos_;
+    Vector2 gameClearSize_;
+    float gameClearRadian_;
+
 };

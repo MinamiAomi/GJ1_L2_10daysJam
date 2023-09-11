@@ -25,6 +25,7 @@
     <ClInclude Include="..\Externals\ImGui\imstb_textedit.h" />
     <ClInclude Include="..\Externals\ImGui\imstb_truetype.h" />
     <ClInclude Include="BackGround.h" />
+    <ClInclude Include="Easing.h" />
     <ClInclude Include="Engine\ArcadeMachine.h" />
     <ClInclude Include="Engine\Audio\Audio.h" />
     <ClInclude Include="Engine\Graphics\DepthBuffer.h" />
@@ -100,6 +101,7 @@
       <Optimization Condition="'$(Configuration)|$(Platform)'=='Release|x64'">MinSpace</Optimization>
     </ClCompile>
     <ClCompile Include="BackGround.cpp" />
+    <ClCompile Include="Easing.cpp" />
     <ClCompile Include="Engine\ArcadeMachine.cpp" />
     <ClCompile Include="Engine\Audio\Audio.cpp" />
     <ClCompile Include="Engine\Graphics\DepthBuffer.cpp" />

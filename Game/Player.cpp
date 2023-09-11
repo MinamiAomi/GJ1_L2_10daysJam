@@ -5,6 +5,8 @@
 #include "Field.h"
 #include "Particle/ParticleManager.h"
 #include "Math/Random.h"
+#include "GameTime.h"
+#include "Easing.h"
 
 void Player::Initialize() {
 	size_ = { 30.0f, 60.0f };
@@ -37,8 +39,8 @@ void Player::Initialize() {
 	h_ = 0.0f;
 	bonusColor_ = { 0.0f,0.0f,0.0f,0.0f };
 
-	animationFrame = 0;
-	continueTextureNum = 3;
+	animationFrame_ = 0;
+	continueTextureNum_ = 3;
 	break_ = false;
 
 	comboSoundHandle_ = TOMATOsEngine::LoadAudio("Resources/Audio/combo.wav");
@@ -46,27 +48,41 @@ void Player::Initialize() {
 	gameOverVelocity_ = { 0.0f,0.0f };
 	gameOverAngle_ = 0.0f;
 	isGameOver_ = false;
+
+	clearTextureHandle_ = TOMATOsEngine::LoadTexture("Resources/clearPlayer.png");
+
+	isSaveClearPos_ = false;
+	gameClearRadian_ = 0.0f;
+	gameClearT_ = 0.0f;
 }
 
 void Player::Update() {
-	if (!field_->GetIsInGameOver()) {
-		move();
+	GameTime* gameTime = GameTime::GetInstance();
 
-		SetBlockColor(nowHeight_);
-		// コンボ数によってエフェクト変化
-		if (stepCount_ == 1 || sameHeightCount_ == 1) {
-			particleManager_->GetFollow()->Create(position_, Vector4(1.0f, 1.0f, 1.0f, 1.0f), static_cast<uint32_t>(Follow::Texture::kPlayer));
-			particleManager_->GetYenLetter()->Create(position_, Vector4(1.0f, 1.0f, 1.0f, 0.8f), static_cast<uint32_t>(YenLetter::Texture::kWhite1x1));
-			particleManager_->GetYenLetter()->Create(position_, Vector4(1.0f, 1.0f, 1.0f, 0.8f), static_cast<uint32_t>(YenLetter::Texture::kWhite1x1), false);
+	if (!field_->GetIsInGameOver()) {
+		if (!gameTime->GetIsFinish()) {
+			move();
+
+			SetBlockColor(nowHeight_);
+			// コンボ数によってエフェクト変化
+			if (stepCount_ == 1 || sameHeightCount_ == 1) {
+				particleManager_->GetFollow()->Create(position_, Vector4(1.0f, 1.0f, 1.0f, 1.0f), static_cast<uint32_t>(Follow::Texture::kPlayer));
+				particleManager_->GetYenLetter()->Create(position_, Vector4(1.0f, 1.0f, 1.0f, 0.8f), static_cast<uint32_t>(YenLetter::Texture::kWhite1x1));
+				particleManager_->GetYenLetter()->Create(position_, Vector4(1.0f, 1.0f, 1.0f, 0.8f), static_cast<uint32_t>(YenLetter::Texture::kWhite1x1), false);
+			}
+			else if (stepCount_ == 2 || sameHeightCount_ == 2) {
+				particleManager_->GetFollow()->Create(position_, Vector4(1.0f, 1.0f, 1.0f, 1.0f), static_cast<uint32_t>(Follow::Texture::kPlayer));
+				particleManager_->GetFollow()->Create(position_, Vector4(1.0f, 1.0f, 1.0f, 1.0f), static_cast<uint32_t>(Follow::Texture::kStar));
+				particleManager_->GetYenLetter()->Create(position_, Vector4(1.0f, 1.0f, 1.0f, 1.0f), static_cast<uint32_t>(YenLetter::Texture::kWhite1x1));
+				particleManager_->GetYenLetter()->Create(position_, Vector4(1.0f, 1.0f, 1.0f, 1.0f), static_cast<uint32_t>(YenLetter::Texture::kWhite1x1), false);
+			}
+			else if (stepCount_ == 0 || sameHeightCount_ == 0) {
+				particleManager_->GetFollow()->Create(position_, Vector4(1.0f, 1.0f, 1.0f, 0.5f), static_cast<uint32_t>(Follow::Texture::kPlayer));
+			}
+
 		}
-		else if (stepCount_ == 2 || sameHeightCount_ == 2) {
-			particleManager_->GetFollow()->Create(position_, Vector4(1.0f, 1.0f, 1.0f, 1.0f), static_cast<uint32_t>(Follow::Texture::kPlayer));
-			particleManager_->GetFollow()->Create(position_, Vector4(1.0f, 1.0f, 1.0f, 1.0f), static_cast<uint32_t>(Follow::Texture::kStar));
-			particleManager_->GetYenLetter()->Create(position_, Vector4(1.0f, 1.0f, 1.0f, 1.0f), static_cast<uint32_t>(YenLetter::Texture::kWhite1x1));
-			particleManager_->GetYenLetter()->Create(position_, Vector4(1.0f, 1.0f, 1.0f, 1.0f), static_cast<uint32_t>(YenLetter::Texture::kWhite1x1), false);
-		}
-		else if (stepCount_ == 0 || sameHeightCount_ == 0) {
-			particleManager_->GetFollow()->Create(position_, Vector4(1.0f, 1.0f, 1.0f, 0.5f), static_cast<uint32_t>(Follow::Texture::kPlayer));
+		else {
+
 		}
 	}
 	else {
@@ -231,7 +247,7 @@ void Player::move() {
 				// 高さ更新
 				preHeight_ = nowHeight_;
 				velocity_.y = kJumpPower;
-				animationFrame = (continueTextureNum - 1) * kAnimationSwitchNum;
+				animationFrame_ = (continueTextureNum_ - 1) * kAnimationSwitchNum;
 				float blockTopPosition = 0.0f;
 
 
@@ -313,21 +329,39 @@ void Player::move() {
 }
 
 void Player::Draw() {
-	if (!field_->GetIsInGameOver()) {
-		Vector2 rectMinPos = position_ - size_ * 0.5f;
-		Vector2 rectMaxPos = position_ + size_ * 0.5f;
-		animationFrame--;
 
-		if (animationFrame > 0) {
-			Vector2 texBase = { 0.0f,0.0f };
-			texBase.x = (continueTextureNum - 1 - (animationFrame / kAnimationSwitchNum)) * 30.0f;
-			TOMATOsEngine::DrawSpriteRect(rectMinPos, rectMaxPos, texBase, Vector2(30.0f, 60.0f), textureHandle_, 0xFFFFFFFF);
+	GameTime* gameTime = GameTime::GetInstance();
+	if (!field_->GetIsInGameOver()) {
+		if (!gameTime->GetIsFinish()) {
+
+			Vector2 rectMinPos = position_ - size_ * 0.5f;
+			Vector2 rectMaxPos = position_ + size_ * 0.5f;
+			animationFrame_--;
+
+			if (animationFrame_ > 0) {
+				Vector2 texBase = { 0.0f,0.0f };
+				texBase.x = (continueTextureNum_ - 1 - (animationFrame_ / kAnimationSwitchNum)) * 30.0f;
+				TOMATOsEngine::DrawSpriteRect(rectMinPos, rectMaxPos, texBase, Vector2(30.0f, 60.0f), textureHandle_, 0xFFFFFFFF);
+			}
+			else {
+				TOMATOsEngine::DrawSpriteRect(rectMinPos, rectMaxPos, {}, Vector2(30.0f, 60.0f), textureHandle_, 0xFFFFFFFF);
+			}
+			// コンボ数描画
+			ComboDraw();
 		}
 		else {
-			TOMATOsEngine::DrawSpriteRect(rectMinPos, rectMaxPos, {}, Vector2(30.0f, 60.0f), textureHandle_, 0xFFFFFFFF);
+			if (field_->GetIsVanish()) {
+				gameClearRadian_ = Easing::easing(gameClearT_, 0.0f, (20.0f + 360.0f * 3) * Math::ToRadian,0.01f, Easing::easeOutQuint,false);
+				gameClearSize_ = Easing::easing(gameClearT_, Vector2{ 30.0f,60.0f }, Vector2{ 30.0f * 10.0f,60.0f * 10.0f }, 0.01f, Easing::easeOutQuint, false);
+				gameClearPos_ = Easing::easing(gameClearT_, position_, Vector2{ TOMATOsEngine::kMonitorWidth / 4.0f + 50.0f, TOMATOsEngine::kMonitorHeight / 2.0f - 100.0f }, 0.01f, Easing::easeOutQuint);
+			}
+			else {
+				gameClearRadian_ = Easing::easing(gameClearT_, 0.0f, (20.0f + 360.0f * 3) * Math::ToRadian, 0.01f, Easing::easeOutQuint, false);
+				gameClearSize_ = Easing::easing(gameClearT_, Vector2{ 30.0f,60.0f }, Vector2{ 30.0f * 10.0f,60.0f * 10.0f }, 0.01f, Easing::easeOutQuint, false);
+				gameClearPos_ = Easing::easing(gameClearT_, position_, Vector2{ TOMATOsEngine::kMonitorWidth / 4.0f + 50.0f, TOMATOsEngine::kMonitorHeight / 2.0f - 100.0f }, 0.01f, Easing::easeOutQuint,false);
+			}
+			TOMATOsEngine::DrawSpriteRectAngle(gameClearPos_, gameClearSize_, Vector2(0.5f, 0.5f), gameClearRadian_, {}, Vector2(270.0f, 540.0f), clearTextureHandle_, 0xFFFFFFFF);
 		}
-		// コンボ数描画
-		ComboDraw();
 	}
 	else {
 		Random::RandomNumberGenerator rnd{};
@@ -374,6 +408,10 @@ void Player::GameOverUpdate() {
 		position_ += gameOverVelocity_;
 		gameOverAngle_ += kAddAngle;
 	}
+}
+
+void Player::GameClearUpdate() {
+	
 }
 
 void Player::ComboUpdate(float  floor, uint32_t blockIndexX, uint32_t blockIndexY) {
