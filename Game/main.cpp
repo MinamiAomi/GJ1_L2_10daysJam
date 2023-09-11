@@ -87,6 +87,7 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
             }
             if (field.GetIsVanish() == true) {
                 gameScene = gameClear;
+                gameTime->StopBGM();
             }
 
             field.Update();
