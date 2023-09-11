@@ -76,16 +76,17 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 
             break;
         case inGame:
+
             // タイトルに戻るa
             if (TOMATOsEngine::IsKeyTrigger(DIK_SPACE)) {
-              /*  field.Initialize();
-                player.Initialize();
-                player.SetPosition({ field.GetSize().x * 0.5f, field.GetSize().y - 100.0f });*/
                 gameScene = title;
             }
             if (field.GetIsGameOver()) {
                 gameScene = gameOver;
                 gameTime->StopBGM();
+            }
+            if (field.GetIsVanish() == true) {
+                gameScene = gameClear;
             }
 
             field.Update();
@@ -117,6 +118,9 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
             TOMATOsEngine::DrawSpriteRectAngle(gameOverPosition, gameOverSize, { 0.5f,0.5f }, 0.0f, {0.0f,0.0f}, gameOverSize, gameOverHandle,Color(0.5f, 0.5f, 0.5f, 0.5f));
             break;
         case gameClear:
+            player.Update();
+            backGround.FrameDraw();
+            player.Draw();
             break;
         default:
             break;

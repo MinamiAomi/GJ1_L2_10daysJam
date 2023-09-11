@@ -38,6 +38,7 @@ public:
 	~BackGround();
 	void Initialize();
 	void Update();
+	void FrameDraw();
 	void Draw();
 
 	void SetPlayer(Player* player) { player_ = player; }
