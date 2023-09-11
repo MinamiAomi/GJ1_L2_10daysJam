@@ -83,7 +83,7 @@ void GameTime::Draw()
 }
 
 void GameTime::RaiseTheBGMPitch() {
-    const float upperPitch = 1.2f;
+    const float upperPitch = 1.4f;
     TOMATOsEngine::SetPitch(bgmPlayHandle_, upperPitch);
 }
 
