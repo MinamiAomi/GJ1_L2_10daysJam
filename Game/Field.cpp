@@ -50,6 +50,7 @@ void Field::Initialize() {
 	gameOverPositionStart_ = gameOverPosition_;
 	gameOverPositionEnd_ = { gameOverPosition_ .x,float(TOMATOsEngine::kMonitorHeight) * 0.5f };
 	dropTextCount_ = 0;
+	gameOverBlockCount_ = 0;
 
 	isBlockBreaking_ = false;
 	isTextDropping_ = false;
@@ -187,6 +188,7 @@ void Field::GameOverUpdate() {
 						gameOver->addAngle_ *= -1;
 					}
 					gameOver->isDrop_ = false;
+					gameOver->isCount_ = false;
 					gameOverBlocks_.emplace_back(gameOver);
 					blocksColor_[x][heightCount_] = { 0.5f,0.5f,0.5f,0.8f };
 				}
@@ -208,11 +210,11 @@ void Field::GameOverUpdate() {
 		}
 	}
 	else if (isTextDropping_) {
+		if (gameOverBlockCount_ >= gameOverBlocks_.size() - 1) {
+			isGameOver_ = true;
+		}
 		const uint32_t kDropTextTime = 120;
 		const float kGravity = -1.0f;
-		if (dropTextCount_ >= kDropTextTime) {
-			/*isGameOver_ = true;*/
-		}
 		dropTextCount_++;
 		float t = std::clamp(float(dropTextCount_) / float(kDropTextTime), 0.0f, 1.0f);
 
@@ -237,8 +239,11 @@ void Field::GameOverUpdate() {
 				block->position_ += block->acceleration_;
 				block->acceleration_ = { 0.0f,0.0f };
 				block->angle_ += block->addAngle_;
+				if (!block->isCount_&&block->position_.y < 0.0f - 32.0f) {
+					block->isCount_ = true;
+					gameOverBlockCount_++;
+				}
 			}
-
 		}
 	}
 }

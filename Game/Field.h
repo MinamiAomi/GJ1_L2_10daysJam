@@ -79,6 +79,7 @@ private:
         float angle_;
         float addAngle_;
         bool isDrop_;
+        bool isCount_;
     };
 
     void ChackBlock();
@@ -137,6 +138,7 @@ private:
     Vector2 gameOverPositionStart_;
     Vector2 gameOverPositionEnd_;
     uint32_t dropTextCount_;
+    uint32_t gameOverBlockCount_;
 
     bool isBlockBreaking_;
     bool isTextDropping_;

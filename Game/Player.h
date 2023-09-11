@@ -33,6 +33,8 @@ private:
     void SetBlockColor(int32_t y);
     void SetBlockParticleColor(int32_t y);
     void CreateUpdate(uint32_t x, uint32_t y);
+
+    void GameOverUpdate();
     // 真ん中
     Vector2 position_;
     Vector2 size_;
@@ -86,4 +88,8 @@ private:
     uint32_t continueTextureNum;
 
     size_t comboSoundHandle_;
+    
+    Vector2 gameOverVelocity_;
+    float gameOverAngle_;
+    bool isGameOver_;
 };

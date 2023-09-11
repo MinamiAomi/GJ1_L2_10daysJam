@@ -42,10 +42,14 @@ void Player::Initialize() {
 	break_ = false;
 
 	comboSoundHandle_ = TOMATOsEngine::LoadAudio("Resources/Audio/combo.wav");
+
+	gameOverVelocity_ = { 0.0f,0.0f };
+	gameOverAngle_ = 0.0f;
+	isGameOver_ = false;
 }
 
 void Player::Update() {
-	if (field_->GetIsInGameOver()) {
+	if (!field_->GetIsInGameOver()) {
 		move();
 
 		SetBlockColor(nowHeight_);
@@ -66,7 +70,7 @@ void Player::Update() {
 		}
 	}
 	else {
-
+		GameOverUpdate();
 	}
 
 
@@ -309,23 +313,30 @@ void Player::move() {
 }
 
 void Player::Draw() {
-	Vector2 rectMinPos = position_ - size_ * 0.5f;
-	Vector2 rectMaxPos = position_ + size_ * 0.5f;
-	animationFrame--;
+	if (!field_->GetIsInGameOver()) {
+		Vector2 rectMinPos = position_ - size_ * 0.5f;
+		Vector2 rectMaxPos = position_ + size_ * 0.5f;
+		animationFrame--;
 
-	if (animationFrame > 0) {
-		Vector2 texBase = { 0.0f,0.0f };
-		texBase.x = (continueTextureNum - 1 - (animationFrame / kAnimationSwitchNum)) * 30.0f;
-		TOMATOsEngine::DrawSpriteRect(rectMinPos, rectMaxPos, texBase, Vector2(30.0f, 60.0f), textureHandle_, 0xFFFFFFFF);
+		if (animationFrame > 0) {
+			Vector2 texBase = { 0.0f,0.0f };
+			texBase.x = (continueTextureNum - 1 - (animationFrame / kAnimationSwitchNum)) * 30.0f;
+			TOMATOsEngine::DrawSpriteRect(rectMinPos, rectMaxPos, texBase, Vector2(30.0f, 60.0f), textureHandle_, 0xFFFFFFFF);
+		}
+		else {
+			TOMATOsEngine::DrawSpriteRect(rectMinPos, rectMaxPos, {}, Vector2(30.0f, 60.0f), textureHandle_, 0xFFFFFFFF);
+		}
+		// コンボ数描画
+		ComboDraw();
 	}
 	else {
-		TOMATOsEngine::DrawSpriteRect(rectMinPos, rectMaxPos, {}, Vector2(30.0f, 60.0f), textureHandle_, 0xFFFFFFFF);
+		Random::RandomNumberGenerator rnd{};
+		float distance = 2.0f;
+		Vector2 playerPosition{};
+		playerPosition.x += position_.x + rnd.NextFloatRange(-distance, distance);
+		playerPosition.y += position_.y + rnd.NextFloatRange(-distance, distance);
+		TOMATOsEngine::DrawSpriteRectAngle(playerPosition, size_, Vector2(0.5f, 0.5f), gameOverAngle_, {}, Vector2(30.0f, 60.0f), textureHandle_, 0xFFFFFFFF);
 	}
-
-	//TOMATOsEngine::DrawRect(rectMinPos, rectMaxPos, 0x883333FF);
-
-	// コンボ数描画
-	ComboDraw();
 }
 
 void Player::CreateUpdate(uint32_t x, uint32_t y) {
@@ -346,6 +357,23 @@ void Player::CreateUpdate(uint32_t x, uint32_t y) {
 		Vector4(1.0f, 1.0f, 1.0f, 1.0f),
 		static_cast<uint32_t>(Pop::Texture::kBlock),
 		10);
+}
+
+void Player::GameOverUpdate() {
+	if (!isGameOver_ && position_.y > field_->GetGameOverPosition().y - float(TOMATOsEngine::kMonitorHeight) * 0.5f) {
+		Vector2 move{};
+		const float kSpeed = 15.0f;
+		Random::RandomNumberGenerator rnd{};
+		gameOverVelocity_.x = std::cos(rnd.NextFloatRange(-1.0f, 1.0f));
+		gameOverVelocity_.y = std::sin(rnd.NextFloatRange(-1.0f, 1.0f));
+		gameOverVelocity_.Normalized();
+		gameOverVelocity_ *= kSpeed;
+		isGameOver_ = true;
+	} else if (isGameOver_) {
+		const float kAddAngle = 30.0f * Math::ToRadian;
+		position_ += gameOverVelocity_;
+		gameOverAngle_ += kAddAngle;
+	}
 }
 
 void Player::ComboUpdate(float  floor, uint32_t blockIndexX, uint32_t blockIndexY) {
