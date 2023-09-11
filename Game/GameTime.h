@@ -6,7 +6,7 @@ class GameTime
 {
 public:
 	static GameTime* GetInstance();
-	static const int maxTime = 60;
+	static const int maxTime = 1;
 	static int32_t time_;
 	void Initialize();
 	void Update();
