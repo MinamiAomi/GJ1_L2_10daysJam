@@ -16,15 +16,18 @@ void ArcadeMachine::Initialize() {
 
 void ArcadeMachine::Update() {
     auto input = Input::GetInstance();
+    auto& xInputState = input->GetXInputState();
 
-    if (input->IsKeyPressed(DIK_D) || input->IsKeyPressed(DIK_A)) {
+    if (input->IsKeyPressed(DIK_D) || input->IsKeyPressed(DIK_A) ||
+        std::abs(xInputState.Gamepad.sThumbLX) > XINPUT_GAMEPAD_LEFT_THUMB_DEADZONE) {
         Quaternion diff;
-        if (input->IsKeyPressed(DIK_D)) {
+        if (input->IsKeyPressed(DIK_D) || xInputState.Gamepad.sThumbLX > 0) {
             diff = Quaternion::MakeForZAxis(-30.0f * Math::ToRadian) * diff;
         }
-        if (input->IsKeyPressed(DIK_A)) {
+        if (input->IsKeyPressed(DIK_A) || xInputState.Gamepad.sThumbLX < 0) {
             diff = Quaternion::MakeForZAxis(30.0f * Math::ToRadian) * diff;
         }
+
         stickTransform_.rotate = Quaternion::Slerp(0.1f, stickTransform_.rotate, diff);
     }
     else {

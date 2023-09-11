@@ -291,6 +291,13 @@ namespace TOMATOsEngine {
         spriteRenderer->Draw(renderManager->GetCommandContext(), vertices, 2, texture.GetSRV());
     }
 
+    void DrawSpriteRectCenter(const Vector2& center, const Vector2& size, const Vector2& texBase, const Vector2& texSize, TextureHandle texHandle, uint32_t color) {
+        Vector2 half = size * 0.5f;
+        Vector2 min = center - half;
+        Vector2 max = center + half;
+        DrawSpriteRect(min, max, texBase, texSize, texHandle, color);
+    }
+
     void DrawSpriteRectAngle(const Vector2& pos, const Vector2& size, const Vector2& anchorPoint, float angle, const Vector2& texBase, const Vector2& texSize, TextureHandle texHandle, uint32_t color) {
         color = RGBAtoABGR(color);
         assert(texHandle.IsValid());

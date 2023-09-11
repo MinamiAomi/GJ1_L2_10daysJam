@@ -79,6 +79,11 @@ public:
 
     uint32_t GetBreakedBlockNum(){ return breakedBlockNum_; }
 
+  uint32_t GetGrowInterval() { return growInterval_; }
+    void SetGrowInterval(uint32_t interval) { growInterval_ = interval; }
+    uint32_t GetNumGrowingBlocks() { return numGrowingBlocks_; }
+    void SetNumGrowingBlocks(uint32_t numGrowingBlock) { numGrowingBlocks_ = numGrowingBlock; }
+
 private:
     struct GameOver {
         Vector2 position_;

@@ -13,6 +13,7 @@
 
 #include "GameTime.h"
 #include "Math/Color.h"
+#include "LevelManager.h"
 
 static float pitch = 1.0f;
 
@@ -51,6 +52,10 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
     BackGround backGround;
     backGround.Initialize();
     backGround.SetPlayer(&player);
+
+    LevelManager levelManager;
+    levelManager.Initialize();
+    levelManager.GetFild(&field);
 
     GameTime* gameTime = GameTime::GetInstance();
 
@@ -93,11 +98,12 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
             field.Update();
             backGround.Update();
             player.Update();
-            particleManager.Update();
+            
             if (!field.GetIsInGameOver()) {
                 gameTime->Update();
             }
-            
+            particleManager.Update();
+            levelManager.Update();
 
             backGround.Draw();
             field.Draw();
