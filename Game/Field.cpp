@@ -68,7 +68,7 @@ void Field::Initialize() {
 	isVanish_ = false;
 
 
-	breakSoundHandle_ = TOMATOsEngine::LoadAudio("Resources/Audio/break1.wav");
+	breakSoundHandle_ = TOMATOsEngine::LoadAudio("Resources/Audio/break.wav");
 	lineBreakSoundHandle_ = TOMATOsEngine::LoadAudio("Resources/Audio/lineBreak.wav");
 }
 
