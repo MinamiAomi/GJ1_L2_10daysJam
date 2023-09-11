@@ -12,6 +12,7 @@
 #include "Audio/Audio.h"
 
 #include "GameTime.h"
+#include "Math/Color.h"
 
 int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 
@@ -29,7 +30,9 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 
     auto tex = TOMATOsEngine::LoadTexture("Resources/playgame.png");
     TextureHandle titleHandle = TOMATOsEngine::LoadTexture("Resources/BBtitle.png");
-
+    TextureHandle gameOverHandle = TOMATOsEngine::LoadTexture("Resources/gameOver.png");
+    Vector2 gameOverPosition = { static_cast<float>(TOMATOsEngine::kMonitorWidth) * 0.5f,static_cast<float>(TOMATOsEngine::kMonitorHeight) * 0.5f };
+    Vector2 gameOverSize = { 320.0f,240.0f };
     ParticleManager particleManager;
     particleManager.Initialize();
 
@@ -70,6 +73,11 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 
             if (TOMATOsEngine::IsKeyTrigger(DIK_SPACE)) {
                 gameScene = inGame;
+                backGround.Initialize();
+                particleManager.Initialize();
+                field.Initialize();
+                player.Initialize();
+                player.SetPosition({ field.GetSize().x * 0.5f, field.GetSize().y - 100.0f });
             }
 
             TOMATOsEngine::DrawSpriteRect({ 0.0f,0.0f }, { static_cast<float>(TOMATOsEngine::kMonitorWidth) ,static_cast<float>(TOMATOsEngine::kMonitorHeight) }, { 0.0f,0.0f }, { 640.0f,480.0f }, titleHandle, 0xFFFFFFFF);
@@ -89,19 +97,29 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
             backGround.Update();
             player.Update();
             particleManager.Update();
-            gameTime->Update();
+            if (!field.GetIsInGameOver()) {
+                gameTime->Update();
+            }
             
 
             backGround.Draw();
             field.Draw();
             particleManager.Draw();
             player.Draw();
-            gameTime->Draw();
+            if (!field.GetIsInGameOver()) {
+                gameTime->Draw();
+            }
             
 
             field.Edit();
             break;
         case gameOver:
+            if (TOMATOsEngine::IsKeyTrigger(DIK_SPACE)) {
+                gameScene = title;
+            }
+            backGround.Update();
+            backGround.Draw();
+            TOMATOsEngine::DrawSpriteRectAngle(gameOverPosition, gameOverSize, { 0.5f,0.5f }, 0.0f, {0.0f,0.0f}, gameOverSize, gameOverHandle,Color(0.5f, 0.5f, 0.5f, 0.5f));
             break;
         case gameClear:
             break;

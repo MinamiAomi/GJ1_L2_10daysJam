@@ -210,14 +210,13 @@ void Field::GameOverUpdate() {
 		}
 	}
 	else if (isTextDropping_) {
-		if (gameOverBlockCount_ >= gameOverBlocks_.size() - 1) {
-			isGameOver_ = true;
-		}
 		const uint32_t kDropTextTime = 120;
 		const float kGravity = -1.0f;
-		dropTextCount_++;
 		float t = std::clamp(float(dropTextCount_) / float(kDropTextTime), 0.0f, 1.0f);
-
+		if (gameOverBlockCount_ >= gameOverBlocks_.size() - 1 && dropTextCount_ >= kDropTextTime) {
+			isGameOver_ = true;
+		}
+		dropTextCount_++;
 		const float c1 = 1.70158f;
 		const float c2 = c1 * 1.525f;
 
