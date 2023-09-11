@@ -134,6 +134,10 @@ void Field::DrawBlock() {
 		blockPos.y += block->position_.y + rnd.NextFloatRange(-distance, distance);
 		TOMATOsEngine::DrawSpriteRectAngle(blockPos, Vector2(32.0f, 32.0f), Vector2(0.5f, 0.5f), block->angle_, {}, Vector2(32.0f, 32.0f), textureHandles_.at(Texture::kGameOverBlock), Color(0.5f,0.5f,0.5f,0.5f));
 	}
+	if (isTextDropping_) {
+		TOMATOsEngine::DrawSpriteRectAngle(gameOverPosition_, Vector2(320.0f, 240.0f), Vector2(0.5f, 0.5f),0.0f, {}, Vector2(320.0f, 240.0f), textureHandles_.at(Texture::kGameOver), Color(0.5f,0.5f,0.5f,0.5f));
+
+	}
 }
 
 void Field::DrawGrow() {
@@ -204,25 +208,27 @@ void Field::GameOverUpdate() {
 		}
 	}
 	else if (isTextDropping_) {
-		const uint32_t kDropTextTime = 60;
+		const uint32_t kDropTextTime = 120;
 		const float kGravity = -1.0f;
-
+		if (dropTextCount_ >= kDropTextTime) {
+			/*isGameOver_ = true;*/
+		}
+		dropTextCount_++;
 		float t = std::clamp(float(dropTextCount_) / float(kDropTextTime), 0.0f, 1.0f);
 
 		const float c1 = 1.70158f;
 		const float c2 = c1 * 1.525f;
 
 		if (t < 0.5f) {
-			t = ((1.0f * t)* (1.0f * t)* ((c2 + 1.0f) * 2.0f * t - c2)) / 2.0f;
+			t = ((2.0f * t) * (2.0f * t) * ((c2 + 1.0f) * 2.0f * t - c2)) / 2.0f;
 		}
 		else {
-			t = ((3.0f * t - 3.0f)*(3.0f * t - 3.0f) * ((c2 + 1.0f) * (t * 2.0f - 2.0f) + c2) + 2.0f) / 2;
+			t = ((2.0f * t - 2.0f)*(2.0f * t - 2.0f)*((c2 + 1.0f) * (t * 2.0f - 2.0f) + c2) + 2.0f) / 2.0f;
 		}
-
 		gameOverPosition_.y = Math::Lerp(t, gameOverPositionStart_.y, gameOverPositionEnd_.y);
 
 		for (auto& block : gameOverBlocks_) {
-			if (!block->isDrop_ && block->position_.y > gameOverPosition_.y) {
+			if (!block->isDrop_ && block->position_.y > gameOverPosition_.y - float(TOMATOsEngine::kMonitorHeight) * 0.5f) {
 				block->isDrop_ = true;
 			}
 			else if(block->isDrop_){
