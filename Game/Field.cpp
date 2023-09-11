@@ -260,7 +260,9 @@ void Field::SetColorBlock(uint32_t blockIndexX, uint32_t blockIndexY, const Vect
 }
 void Field::BreakBlock(uint32_t blockIndexX, uint32_t blockIndexY) {
     assert(IsInField(blockIndexX, blockIndexY));
-    blocks_[blockIndexX][blockIndexY] = BlockType::None;
+	if (blocks_[blockIndexX][blockIndexY] == BlockType::Normal) {
+		blocks_[blockIndexX][blockIndexY] = BlockType::None;
+	}
 
     // 音
     size_t playHandle = TOMATOsEngine::PlayAudio(breakSoundHandle_);
@@ -271,10 +273,11 @@ void Field::BreakBlockHorizon(uint32_t blockIndexX, uint32_t blockIndexY) {
     assert(IsInField(blockIndexX, blockIndexY));
     for (size_t x = 0; x < kNumHorizontalBlocks; x++) {
         breakTime_ = kFrashTime;
-        if (blocks_[static_cast<uint32_t>(x)][blockIndexY] == BlockType::Normal) {
+      /*  if (blocks_[static_cast<uint32_t>(x)][blockIndexY] == BlockType::Normal) {
             blocks_[static_cast<uint32_t>(x)][blockIndexY] = BlockType::Frash;
 
-        }
+        }*/
+		blocks_[static_cast<uint32_t>(x)][blockIndexY] = BlockType::Frash;
     }
     downBlockIndex_ = blockIndexY + 1;
     isFlash_ = true;
