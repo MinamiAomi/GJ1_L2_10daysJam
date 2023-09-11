@@ -46,10 +46,10 @@ void Field::Initialize() {
 	textureHandles_.at(Texture::kDeadLine) = TOMATOsEngine::LoadTexture("Resources/deadLine_1.png");
 
 	deadLinePosition_ = { float(TOMATOsEngine::kMonitorWidth) * 0.5f ,float(Field::kBlockSize) * float(kDeathLine_)/* + float(Field::kBlockSize) * 0.5f*/ };
-	deadLineSize_ = { 608.0f ,16.0f };
+	deadLineSize_ = { 630.0f ,16.0f };
 	deadLineAnimationFront_ = 0.0f;
 	deadLineAnimationBack_ = deadLineSize_.x;
-	deadLineColorH_ = 0.025f;
+	deadLineColorH_ = 0.0f;
 
 	heightCount_ = kDeathLine_;
 	blockBleakAnimationCount_ = 0;
@@ -200,7 +200,9 @@ void Field::DrawGrow() {
         }
 
         Vector2 texBase = { static_cast<float>(growAnimationFrame_) * 64.0f,0.0f };
-        TOMATOsEngine::DrawSpriteRectAngle(position, size, Vector2(0.0f, 0.0f), 0.0f, texBase, Vector2(64.0f, 64.0f), textureHandles_.at(Texture::kGrow), 0xFFFFFFFF);
+		size.y = 32.0f * (float(growCoolTime_) / float(growInterval_));
+        TOMATOsEngine::DrawRectAngle(position, size, Vector2(0.0f, 0.0f), 0.0f,  0xA2A2A2A2);
+        TOMATOsEngine::DrawSpriteRectAngle(position, { 32.0f ,32.0f }, Vector2(0.0f, 0.0f), 0.0f, texBase, Vector2(64.0f, 64.0f), textureHandles_.at(Texture::kGrow), 0xFFFFFFFF);
     }
 
 }
