@@ -34,6 +34,7 @@ public:
         kGrow,
         kGameOverBlock,
         kGameOver,
+        kDeadLine,
 
 
         Count,
@@ -132,6 +133,13 @@ private:
     // オーディオ類
     size_t breakSoundHandle_ = 0;
     size_t lineBreakSoundHandle_ = 0;
+
+    // デットライン
+    Vector2 deadLinePosition_;
+    Vector2 deadLineSize_;
+    float deadLineAnimationFront_;
+    float deadLineAnimationBack_;
+    float deadLineColorH_;
 
     // ゲームオーバー
     const uint32_t kDeathLine_ = 10;
