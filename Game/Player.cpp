@@ -368,6 +368,7 @@ void Player::ComboUpdate(float  floor, uint32_t blockIndexX, uint32_t blockIndex
 			sameHeight_ = blockIndexY;
 			if (sameHeight_ == preSameHeight_) {
 				sameHeightCount_++;
+				stepCount_ = 0;
 			}
 			else {
 				sameHeightCount_ = 0;

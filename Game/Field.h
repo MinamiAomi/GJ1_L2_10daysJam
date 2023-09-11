@@ -2,6 +2,7 @@
 
 #include <array>
 #include <cstdint>
+#include <memory>
 
 #include "TextureHandle.h"
 #include "Math/MathUtils.h"
@@ -68,6 +69,15 @@ public:
 
     bool GetIsGameOver() { return isGameOver_; }
 private:
+    struct GameOver {
+        Vector2 position_;
+        Vector2 velocity_;
+        Vector2 acceleration_;
+        float angle_;
+        float addAngle_;
+        bool isDrop_;
+    };
+
     void ChackBlock();
     void GrowField(uint32_t numBlocks);
     void Grow(uint32_t horizontalIndex);
@@ -115,7 +125,11 @@ private:
     uint32_t blockBleakAnimationCount_;
     int32_t heightCount_;
     // マップチップの位置を保存
-    std::vector<Vector2> blockPosition_;
+    std::vector<std::unique_ptr<GameOver>> gameOverBlocks_;
+    Vector2 gameOverPosition_;
+    Vector2 gameOverPositionStart_;
+    Vector2 gameOverPositionEnd_;
+    uint32_t dropTextCount_;
 
     bool isBlockBreaking_;
     bool isTextDropping_;

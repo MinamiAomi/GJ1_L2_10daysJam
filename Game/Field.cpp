@@ -44,7 +44,13 @@ void Field::Initialize() {
 
 	heightCount_ = kDeathLine_;
 	blockBleakAnimationCount_ = 0;
-	blockPosition_.clear();
+	gameOverBlocks_.clear();
+
+	gameOverPosition_ = { float(TOMATOsEngine::kMonitorWidth) * 0.5f,float(TOMATOsEngine::kMonitorHeight) + float(TOMATOsEngine::kMonitorHeight) * 0.5f };
+	gameOverPositionStart_ = gameOverPosition_;
+	gameOverPositionEnd_ = { gameOverPosition_ .x,float(TOMATOsEngine::kMonitorHeight) * 0.5f };
+	dropTextCount_ = 0;
+
 	isBlockBreaking_ = false;
 	isTextDropping_ = false;
 	isGameOver_ = false;
@@ -102,7 +108,6 @@ void Field::DrawBlock() {
 			blockMaxPos.x = blockMinPos.x + float(kBlockSize);
 			blockMinPos.y = float(y * kBlockSize);
 			blockMaxPos.y = blockMaxPos.y + float(kBlockSize);
-			Vector2 blockPos = { float(x * kBlockSize) + float(kBlockSize) * 0.5f ,float(y * kBlockSize) + float(kBlockSize) * 0.5f };
 			// 通常ブロック
 			if (blocks_[x][y] == BlockType::Normal) {
 				TOMATOsEngine::DrawSpriteRect(blockMinPos, blockMaxPos, {}, Vector2(32.0f, 32.0f), textureHandles_.at(Texture::kBlock), Color(blocksColor_[x][y]));
@@ -115,14 +120,15 @@ void Field::DrawBlock() {
 				blockMaxPos.y -= (kFrashTime - breakTime_) * 2.0f;
 				TOMATOsEngine::DrawRect(blockMinPos, blockMaxPos, 0xFFFFFFFF);
 			}
-			else if (blocks_[x][y] == BlockType::GameOverBlock) {
-				Random::RandomNumberGenerator rnd{};
-				float distance = 2.0f;
-				blockPos.x += rnd.NextFloatRange(-distance, distance);
-				blockPos.y += rnd.NextFloatRange(-distance, distance);
-				TOMATOsEngine::DrawSpriteRectAngle(blockPos, Vector2(32.0f, 32.0f), Vector2(0.5f, 0.5f), 0.0f, {}, Vector2(32.0f, 32.0f), textureHandles_.at(Texture::kGameOverBlock), Color(blocksColor_[x][y]));
-			}
 		}
+	}
+	for (auto& block : gameOverBlocks_) {
+		Random::RandomNumberGenerator rnd{};
+		float distance = 2.0f;
+		Vector2 blockPos{};
+		blockPos.x += block->position_.x + rnd.NextFloatRange(-distance, distance);
+		blockPos.y += block->position_.y + rnd.NextFloatRange(-distance, distance);
+		TOMATOsEngine::DrawSpriteRectAngle(blockPos, Vector2(32.0f, 32.0f), Vector2(0.5f, 0.5f), block->angle_, {}, Vector2(32.0f, 32.0f), textureHandles_.at(Texture::kGameOverBlock), Color(0.5f,0.5f,0.5f,0.5f));
 	}
 }
 
@@ -149,11 +155,30 @@ void Field::DrawGrow() {
 void Field::GameOverUpdate() {
 	if (isBlockBreaking_) {
 		if (blockBleakAnimationCount_ <= 0) {
+			Random::RandomNumberGenerator rnd{};
+			Vector2 move{};
+			const float speed_Min = 10.0f;
+			const float speed_Max = 15.0f;
 			for (uint32_t x = 0; x < kNumHorizontalBlocks; x++) {
 				if (blocks_[x][heightCount_] == BlockType::Normal) {
 					blocks_[x][heightCount_] = BlockType::None;
-					Vector2 position = { float(x * kBlockSize) + float(kBlockSize) * 0.5f,float(heightCount_ * kBlockSize) + float(kBlockSize) * 0.5f };
-					blockPosition_.emplace_back(position);
+					GameOver* gameOver=new GameOver();
+					// ポジション
+					gameOver->position_ = { float(x * kBlockSize) + float(kBlockSize) * 0.5f,float(heightCount_ * kBlockSize) + float(kBlockSize) * 0.5f };
+					// 速度
+					move.x = std::cos(rnd.NextFloatRange(30.0f * Math::ToRadian, 150.0f * Math::ToRadian));
+					move.y = std::sin(rnd.NextFloatRange(30.0f * Math::ToRadian, 150.0f * Math::ToRadian));
+					move.Normalize();
+					float speed = rnd.NextFloatRange(speed_Min, speed_Max);
+					gameOver->velocity_ = move * speed;
+					// 角度
+					gameOver->angle_ = 0.0f;
+					gameOver->addAngle_ = rnd.NextFloatRange(10.0f * Math::ToRadian, 30.0f * Math::ToRadian);
+					if (rnd.NextUIntLimit() % 2 == 0) {
+						gameOver->addAngle_ *= -1;
+					}
+					gameOver->isDrop_ = false;
+					gameOverBlocks_.emplace_back(gameOver);
 					blocksColor_[x][heightCount_] = { 0.5f,0.5f,0.5f,0.8f };
 				}
 			}
@@ -174,7 +199,36 @@ void Field::GameOverUpdate() {
 		}
 	}
 	else if (isTextDropping_) {
+		const uint32_t kDropTextTime = 60;
+		const float kGravity = -1.0f;
 
+		float t = std::clamp(float(dropTextCount_) / float(kDropTextTime), 0.0f, 1.0f);
+
+		const float c1 = 1.70158f;
+		const float c2 = c1 * 1.525f;
+
+		if (t < 0.5f) {
+			t = ((1.0f * t)* (1.0f * t)* ((c2 + 1.0f) * 2.0f * t - c2)) / 2.0f;
+		}
+		else {
+			t = ((3.0f * t - 3.0f)*(3.0f * t - 3.0f) * ((c2 + 1.0f) * (t * 2.0f - 2.0f) + c2) + 2.0f) / 2;
+		}
+
+		gameOverPosition_.y = Math::Lerp(t, gameOverPositionStart_.y, gameOverPositionEnd_.y);
+
+		for (auto& block : gameOverBlocks_) {
+			if (!block->isDrop_ && block->position_.y > gameOverPosition_.y) {
+				block->isDrop_ = true;
+			}
+			else if(block->isDrop_){
+				block->velocity_.y += kGravity;
+				block->acceleration_ += block->velocity_;
+				block->position_ += block->acceleration_;
+				block->acceleration_ = { 0.0f,0.0f };
+				block->angle_ += block->addAngle_;
+			}
+
+		}
 	}
 }
 
@@ -287,6 +341,7 @@ void Field::ChackBlock() {
 		if (blocks_[x][kDeathLine_] == BlockType::Normal) {
 			isInGameOver_ = true;
 			isBlockBreaking_ = true;
+			ColorClearBlock();
 			return;
 		}
 	}
