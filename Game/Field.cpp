@@ -135,7 +135,7 @@ void Field::DrawBlock() {
 		TOMATOsEngine::DrawSpriteRectAngle(blockPos, Vector2(32.0f, 32.0f), Vector2(0.5f, 0.5f), block->angle_, {}, Vector2(32.0f, 32.0f), textureHandles_.at(Texture::kGameOverBlock), Color(0.5f,0.5f,0.5f,0.5f));
 	}
 	if (isTextDropping_) {
-		TOMATOsEngine::DrawSpriteRectAngle(gameOverPosition_, Vector2(320.0f, 240.0f), Vector2(0.5f, 0.5f),0.0f, {}, Vector2(320.0f, 240.0f), textureHandles_.at(Texture::kGameOverBlock), Color(0.5f,0.5f,0.5f,0.5f));
+		TOMATOsEngine::DrawSpriteRectAngle(gameOverPosition_, Vector2(320.0f, 240.0f), Vector2(0.5f, 0.5f),0.0f, {}, Vector2(320.0f, 240.0f), textureHandles_.at(Texture::kGameOver), Color(0.5f,0.5f,0.5f,0.5f));
 
 	}
 }
@@ -208,7 +208,7 @@ void Field::GameOverUpdate() {
 		}
 	}
 	else if (isTextDropping_) {
-		const uint32_t kDropTextTime = 300;
+		const uint32_t kDropTextTime = 120;
 		const float kGravity = -1.0f;
 		if (dropTextCount_ >= kDropTextTime) {
 			/*isGameOver_ = true;*/
@@ -219,14 +219,16 @@ void Field::GameOverUpdate() {
 		const float c1 = 1.70158f;
 		const float c2 = c1 * 1.525f;
 
-		if (t > 0.5f) {	
-			t = ((4.0f * t - 5.0f)*(4.0f * t - 4.0f) * ((c2 + 1.0f) * (t * 2.0f - 2.0f) + c2) + 2.0f) / 2;
+		if (t < 0.5f) {
+			t = ((2.0f * t) * (2.0f * t) * ((c2 + 1.0f) * 2.0f * t - c2)) / 2.0f;
 		}
-
+		else {
+			t = ((2.0f * t - 2.0f)*(2.0f * t - 2.0f)*((c2 + 1.0f) * (t * 2.0f - 2.0f) + c2) + 2.0f) / 2.0f;
+		}
 		gameOverPosition_.y = Math::Lerp(t, gameOverPositionStart_.y, gameOverPositionEnd_.y);
 
 		for (auto& block : gameOverBlocks_) {
-			if (!block->isDrop_ && block->position_.y > gameOverPosition_.y) {
+			if (!block->isDrop_ && block->position_.y > gameOverPosition_.y - float(TOMATOsEngine::kMonitorHeight) * 0.5f) {
 				block->isDrop_ = true;
 			}
 			else if(block->isDrop_){

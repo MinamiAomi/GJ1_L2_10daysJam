@@ -67,7 +67,10 @@ public:
     void SetParticleManager(ParticleManager* particleManager) {particleManager_ = particleManager;}
     void DownBlockHorizon();
 
+    Vector2 GetGameOverPosition() { return gameOverPosition_; }
     bool GetIsGameOver() { return isGameOver_; }
+    bool GetIsInGameOver() { return isInGameOver_; }
+
 private:
     struct GameOver {
         Vector2 position_;
