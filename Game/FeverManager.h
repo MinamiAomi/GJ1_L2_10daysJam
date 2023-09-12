@@ -9,7 +9,7 @@ public:
 	void Draw();
 
 	void SetBlockCount(uint32_t block) { blockCount_ += block; }
-	void SetComboCount(uint32_t combo) { blockCount_ += kTripleConbo_; }
+	void SetComboCount(uint32_t combo) { blockCount_ += combo; }
 	bool GetIsFever() {	return isFever_;}
 private:
 	const uint32_t kComboMax_ = 80;
