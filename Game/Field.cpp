@@ -15,15 +15,12 @@ void Field::Initialize() {
 
 	fieldSize_ = { float(kBlockSize * kNumHorizontalBlocks), float(kBlockSize * kNumVerticalBlocks) };
 
-	GrowField(5);
-	GrowField(5);
-	GrowField(5);
-	GrowField(5);
-	GrowField(5);
-	GrowField(5);
-	GrowField(5);
-	GrowField(5);
-	GrowField(5);
+    const uint32_t kHeight = 2;
+    for (uint32_t y = 0; y < kHeight; y++) {
+        for (uint32_t x = 0; x < kNumHorizontalBlocks; x++) {
+            blocks_[x][y] = BlockType::Normal;
+        }
+    }
 	GrowField(5);
 	GrowField(5);
 	// 次成長するところをセット
