@@ -34,7 +34,7 @@ private:
     void ComboDraw();
     void SetBlockColor(int32_t y);
     void SetBlockParticleColor(int32_t y);
-    void CreateUpdate(uint32_t x, uint32_t y);
+    void CreateParticle(uint32_t x, uint32_t y);
 
     void GameOverUpdate();
     void GameClearUpdate();

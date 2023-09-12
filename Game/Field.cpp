@@ -6,6 +6,7 @@
 #include "Particle/ParticleManager.h"
 #include "Math/Color.h"
 
+#include "FeverManager.h"
 #include "GameTime.h"
 #include "Easing.h"
 
@@ -349,9 +350,14 @@ void Field::SetColorBlock(uint32_t blockIndexX, uint32_t blockIndexY, const Vect
 }
 void Field::BreakBlock(uint32_t blockIndexX, uint32_t blockIndexY) {
     assert(IsInField(blockIndexX, blockIndexY));
+    FeverManager* fever = FeverManager::GetInstance();
     if (blocks_[blockIndexX][blockIndexY] == BlockType::Normal) {
         blocks_[blockIndexX][blockIndexY] = BlockType::None;
         breakedBlockNum_++;
+        // フィーバー用の壊れたブロックを取得
+        if (!fever->GetIsFever()) {
+            fever->SetBlockCount(1);
+        }
     }
 
     // 音
@@ -362,10 +368,15 @@ void Field::BreakBlock(uint32_t blockIndexX, uint32_t blockIndexY) {
 void Field::BreakBlockHorizon(uint32_t blockIndexX, uint32_t blockIndexY, bool isHorizontal) {
     assert(IsInField(blockIndexX, blockIndexY));
     blockIndexX;
+    FeverManager* fever = FeverManager::GetInstance();
     for (size_t x = 0; x < kNumHorizontalBlocks; x++) {
         breakTime_ = kFrashTime;
         if (blocks_[static_cast<uint32_t>(x)][blockIndexY] == BlockType::Normal) {
             breakedBlockNum_++;
+            // フィーバー用の壊れたブロックを取得
+            if (!fever->GetIsFever()) {
+                fever->SetBlockCount(1);
+            }
         }
         blocks_[static_cast<uint32_t>(x)][blockIndexY] = BlockType::Frash;
     }
@@ -543,6 +554,7 @@ void Field::Grow(uint32_t horizontalIndex) {
         }
     }
     block[0] = BlockType::Normal;
+    
     blocksColor_[horizontalIndex][0] = initializeColor_;
 }
 

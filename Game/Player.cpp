@@ -3,6 +3,7 @@
 #include "TOMATOsEngine.h"
 #include "Math/Color.h"
 #include "Field.h"
+#include "FeverManager.h"
 #include "Particle/ParticleManager.h"
 #include "Math/Random.h"
 #include "GameTime.h"
@@ -266,7 +267,8 @@ void Player::move() {
 				if (blockLeftBottomType != Field::None &&
 					field_->IsInField(blockLeft, blockBottom)) {
 					// ブロック破壊
-					if (stepCount_ >= kCombo_ || sameHeightCount_ >= kCombo_) {
+					if (FeverManager::GetInstance()->GetIsFever() ||
+						stepCount_ >= kCombo_ || sameHeightCount_ >= kCombo_) {
 						field_->BreakBlockHorizon(blockLeft, blockBottom, isHorizontal_);
 						isComboed_ = false;
 						// 高さ更新
@@ -279,7 +281,7 @@ void Player::move() {
 						// パーティクル
 						for (size_t x = 0; x < Field::kNumHorizontalBlocks; x++) {
 							if (field_->GetBlock(static_cast<uint32_t>(x), blockBottom) == Field::Frash) {
-								CreateUpdate(static_cast<uint32_t>(x), blockBottom);
+								CreateParticle(static_cast<uint32_t>(x), blockBottom);
 							}
 						}
 					}
@@ -288,13 +290,14 @@ void Player::move() {
 						// 高さ更新
 						nowHeight_ = blockBottom;
 						// パーティクル
-						CreateUpdate(blockLeft, blockBottom);
+						CreateParticle(blockLeft, blockBottom);
 					}
 				}
 				if (blockRightBottomType != Field::None &&
 					field_->IsInField(blockRight, blockBottom)) {
 					// ブロック破壊
-					if (stepCount_ >= kCombo_ || sameHeightCount_ >= kCombo_) {
+					if (FeverManager::GetInstance()->GetIsFever() ||
+						stepCount_ >= kCombo_ || sameHeightCount_ >= kCombo_) {
 						field_->BreakBlockHorizon(blockRight, blockBottom , isHorizontal_);
 						isComboed_ = false;
 						// 高さ更新
@@ -307,7 +310,7 @@ void Player::move() {
 						// パーティクル
 						for (size_t x = 0; x < Field::kNumHorizontalBlocks; x++) {
 							if (field_->GetBlock(static_cast<uint32_t>(x), blockBottom) == Field::Frash) {
-								CreateUpdate(static_cast<uint32_t>(x), blockBottom);
+								CreateParticle(static_cast<uint32_t>(x), blockBottom);
 							}
 						}
 					}
@@ -316,7 +319,7 @@ void Player::move() {
 						// 高さ更新
 						nowHeight_ = blockBottom;
 						// パーティクル
-						CreateUpdate(blockRight, blockBottom);
+						CreateParticle(blockRight, blockBottom);
 					}
 				}
 				tempPosition.y += blockTopPosition - bottom;
@@ -385,7 +388,7 @@ void Player::Draw() {
 	}
 }
 
-void Player::CreateUpdate(uint32_t x, uint32_t y) {
+void Player::CreateParticle(uint32_t x, uint32_t y) {
 	// パーティクル
 	particleManager_->GetSplash()->Create(
 		Vector2(
@@ -538,8 +541,24 @@ void Player::SetBlockColor(int32_t blockIndexY) {
 	field_->ColorClearBlock();
 	if (blockIndexY != -1) {
 		for (uint32_t x = 0; x < Field::kNumHorizontalBlocks; x++) {
+			// フィーバーかどうか
+			if (FeverManager::GetInstance()->GetIsFever()) {
+				// フィーバー中は虹色
+				for (uint32_t y = 0; y < Field::kNumVerticalBlocks; y++) {
+					if (field_->GetBlock(x, y) == Field::Normal) {
+						// 色
+						const float kAddH = 0.0008f;
+						h_ += kAddH;
+						if (h_ >= 1.0f) {
+							h_ = 0.0f;
+						}
+
+						field_->SetColorBlock(x, y, Color::HSVA(h_, kCombo3S_, kCombo3V_));
+					}
+				}
+			}
 			// コンボ達成しているか
-			if (stepCount_ < kCombo_ && sameHeightCount_ < kCombo_) {
+			else if (stepCount_ < kCombo_ && sameHeightCount_ < kCombo_) {
 				// 階段
 				if (field_->GetBlock(x, static_cast<uint32_t>(blockIndexY + 2)) == Field::None && field_->GetBlock(static_cast<uint32_t>(x), static_cast<uint32_t>(blockIndexY + 1)) == Field::Normal) {
 					if (stepCount_ == 0) {
