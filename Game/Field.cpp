@@ -339,6 +339,7 @@ void Field::BreakBlock(uint32_t blockIndexX, uint32_t blockIndexY) {
 
 void Field::BreakBlockHorizon(uint32_t blockIndexX, uint32_t blockIndexY,bool isHorizontal) {
 	assert(IsInField(blockIndexX, blockIndexY));
+	blockIndexX;
 	for (size_t x = 0; x < kNumHorizontalBlocks; x++) {
 		breakTime_ = kFrashTime;
 		if (blocks_[static_cast<uint32_t>(x)][blockIndexY] == BlockType::Normal) {
@@ -491,7 +492,7 @@ void Field::GrowField(uint32_t numBlocks) {
 
 std::vector<uint32_t> Field::GetGrowField(uint32_t numBlocks) {
 	assert(numBlocks > 0 && numBlocks < kNumHorizontalBlocks);
-
+	numBlocks;
 	// 0~横幅分の数字配列をシャッフルして
 	// numBlocks以下の配列要素のインデックスを成長させる
 	std::vector<uint32_t> blockIndices(kNumHorizontalBlocks);
