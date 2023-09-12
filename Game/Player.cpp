@@ -421,7 +421,7 @@ void Player::CreateParticle(uint32_t x, uint32_t y) {
 		10);
 }
 
-void Player::SetColorChange(const Vector2& position, uint32_t nowHeight) {
+void Player::SetColorChange(const Vector2& position) {
 	sameHeightColorChangePosition_ = position;
 
 }
