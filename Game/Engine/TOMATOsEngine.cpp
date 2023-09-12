@@ -31,8 +31,8 @@ namespace {
 
     inline uint32_t RGBAtoABGR(uint32_t argb) {
         uint8_t R = (argb >> 24) & 0xFFu;
-        uint8_t B = (argb >> 16) & 0xFFu;
-        uint8_t G = (argb >> 8) & 0xFFu;
+        uint8_t G = (argb >> 16) & 0xFFu;
+        uint8_t B = (argb >> 8) & 0xFFu;
         uint8_t A = (argb >> 0) & 0xFFu;
         return (A << 24) | (B << 16) | (G << 8) | (R << 0);
     }
@@ -158,6 +158,22 @@ namespace TOMATOsEngine {
            { Vector3(pos0) * screenMatrix, color },
            { Vector3(pos1) * screenMatrix, color },
            { Vector3(pos2) * screenMatrix, color },
+        };
+
+        triangleRenderer->Draw(
+            renderManager->GetCommandContext(),
+            vertices, 3);
+    }
+
+    void DrawTriangle(const Vector2& p0, uint32_t c0, const Vector2& p1, uint32_t c1, const Vector2& p2, uint32_t c2) {
+        c0 = RGBAtoABGR(c0);
+        c1 = RGBAtoABGR(c1);
+        c2 = RGBAtoABGR(c2);
+
+        TriangleRenderer::Vertex vertices[] = {
+           { Vector3(p0) * screenMatrix, c0 },
+           { Vector3(p1) * screenMatrix, c1 },
+           { Vector3(p2) * screenMatrix, c2 },
         };
 
         triangleRenderer->Draw(
