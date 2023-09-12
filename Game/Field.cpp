@@ -78,6 +78,10 @@ void Field::Initialize() {
 	scoreTextureHandle_ = TOMATOsEngine::LoadTexture("Resources/score.png");
 	numTextureHandle_ = TOMATOsEngine::LoadTexture("Resources/dekisokonai36.png");
 	scoreT = 0.0f;
+
+    growCoolTime_ = 0;
+    growInterval_ = 120;
+    numGrowingBlocks_ = 4;
 }
 
 void Field::Update() {

@@ -145,6 +145,7 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
                 player.Initialize();
                 player.SetPosition({ field.GetSize().x * 0.5f, field.GetSize().y - 100.0f });
                 gameTime->Initialize();
+                levelManager.Initialize();
             }
             break;
         default:

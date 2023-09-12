@@ -7,7 +7,7 @@ class GameTime
 public:
 	static GameTime* GetInstance();
 
-	static const int32_t kMaxTime = 5;
+	static const int32_t kMaxTime = 60;
 	static const int32_t kHurryStartTime = 20;
 	int32_t time_ = kMaxTime;
 
