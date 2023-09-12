@@ -376,6 +376,9 @@ void Player::Draw() {
 		else {
 			TOMATOsEngine::DrawSpriteRect(rectMinPos, rectMaxPos, {}, Vector2(30.0f, 60.0f), textureHandle_, 0xFFFFFFFF);
 		}
+		// 円
+		TOMATOsEngine::DrawCircle(sameHeightColorChangePositionRight_,5.0f,0x66666666);
+		TOMATOsEngine::DrawCircle(sameHeightColorChangePositionLeft_,5.0f, 0x66666666);
 	}
 	else {
 
@@ -574,23 +577,24 @@ void Player::SetBlockColor(int32_t blockIndexY) {
 		for (uint32_t x = 0; x < Field::kNumHorizontalBlocks; x++) {
 			// ライン
 			if (sameHeightStart_) {
-				if (uint32_t(sameHeightColorChangePositionRight_.x) > x * Field::kBlockSize + (Field::kBlockSize / 2) &&
-					uint32_t(sameHeightColorChangePositionLeft_.x) < x * Field::kBlockSize + (Field::kBlockSize / 2)) {
+				int32_t posX = int32_t(x)* int32_t(Field::kBlockSize) + int32_t(Field::kBlockSize / 2);
+				if (int32_t(sameHeightColorChangePositionRight_.x) > posX &&
+					int32_t(sameHeightColorChangePositionLeft_.x) < posX) {
 
 					// 平行(パーティクル)
 					if (!sameHeightParticleFlag_.at(x)) {
 						if (sameHeightCount_ == 0) {
-							// 色
-							const float kS = 0.5f;
-							const float kV = 0.3f;
-							particleManager_->GetCircle()->Create(Vector2(float(x * Field::kBlockSize) + (Field::kBlockSize / 2), float(blockIndexY * Field::kBlockSize) + (Field::kBlockSize / 2)), Color::HSVA(sameHeightColorH_, kS, kV), static_cast<uint32_t>(Circle::Texture::kSquare));
+							//// 色
+							//const float kS = 0.5f;
+							//const float kV = 0.3f;
+							particleManager_->GetCircle()->Create(Vector2(float(x * Field::kBlockSize) + (Field::kBlockSize / 2), float(blockIndexY * Field::kBlockSize) + (Field::kBlockSize / 2)), {1.0f,1.0f,1.0,0.1f}, static_cast<uint32_t>(Circle::Texture::kSquare));
 							sameHeightParticleFlag_.at(x) = true;
 						}
 						else if(sameHeightCount_ == 1) {
-							// 色
-							const float kS = 0.5f;
-							const float kV = 0.3f;
-							particleManager_->GetCircle()->Create(Vector2(float(x * Field::kBlockSize) + (Field::kBlockSize / 2), float(blockIndexY * Field::kBlockSize) + (Field::kBlockSize / 2)), Color::HSVA(sameHeightColorH_, kS, kV), static_cast<uint32_t>(Circle::Texture::kSquare));
+							//// 色
+							//const float kS = 0.5f;
+							//const float kV = 0.3f;
+							particleManager_->GetCircle()->Create(Vector2(float(x * Field::kBlockSize) + (Field::kBlockSize / 2), float(blockIndexY * Field::kBlockSize) + (Field::kBlockSize / 2)), { 1.0f,1.0f,1.0,0.1f }, static_cast<uint32_t>(Circle::Texture::kSquare));
 							sameHeightParticleFlag_.at(x) = true;
 						}
 					}
@@ -632,7 +636,7 @@ void Player::SetBlockColor(int32_t blockIndexY) {
 						// 色
 						field_->SetColorBlock(x, static_cast<uint32_t>(blockIndexY + 1), Color::HSVA(stepColorH_, kCombo1S_, kCombo1V_));
 					}
-					else {
+					else if(stepCount_ == 1) {
 						// 色
 						field_->SetColorBlock(x, static_cast<uint32_t>(blockIndexY + 1), Color::HSVA(stepColorH_, kCombo2S_, kCombo2V_));
 					}
@@ -643,7 +647,7 @@ void Player::SetBlockColor(int32_t blockIndexY) {
 						// 色
 						field_->SetColorBlock(x, static_cast<uint32_t>(blockIndexY), Color::HSVA(sameHeightColorH_, kCombo1S_, kCombo1V_));
 					}
-					else {
+					else if (sameHeightCount_ == 1) {
 						// 色
 						field_->SetColorBlock(x, static_cast<uint32_t>(blockIndexY), Color::HSVA(sameHeightColorH_, kCombo2S_, kCombo2V_));
 					}
