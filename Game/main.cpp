@@ -54,8 +54,8 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
     backGround.SetPlayer(&player);
 
     LevelManager levelManager;
-    levelManager.Initialize();
     levelManager.GetFild(&field);
+    levelManager.Initialize();
     
     FeverManager* feverManager = FeverManager::GetInstance();
 

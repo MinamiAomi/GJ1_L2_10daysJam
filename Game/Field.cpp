@@ -15,17 +15,13 @@ void Field::Initialize() {
 
     fieldSize_ = { float(kBlockSize * kNumHorizontalBlocks), float(kBlockSize * kNumVerticalBlocks) };
 
-    GrowField(5);
-    GrowField(5);
-    GrowField(5);
-    GrowField(5);
-    GrowField(5);
-    GrowField(5);
-    GrowField(5);
-    GrowField(5);
-    GrowField(5);
-    GrowField(5);
-    GrowField(5);
+    const uint32_t kHeight = 2;
+    for (uint32_t y = 0; y < kHeight; y++) {
+        for (uint32_t x = 0; x < kNumHorizontalBlocks; x++) {
+            blocks_[x][y] = BlockType::Normal;
+        }
+    }
+    GrowField(7);
     // 次成長するところをセット
     nextBlockIndices_ = GetGrowField(numGrowingBlocks_);
     // 色
@@ -356,7 +352,7 @@ void Field::BreakBlock(uint32_t blockIndexX, uint32_t blockIndexY) {
         breakedBlockNum_++;
         // フィーバー用の壊れたブロックを取得
         if (!fever->GetIsFever()) {
-            fever->SetBlockCount(1);
+            fever->IncreaseBlock(1);
         }
     }
 
@@ -375,7 +371,7 @@ void Field::BreakBlockHorizon(uint32_t blockIndexX, uint32_t blockIndexY, bool i
             breakedBlockNum_++;
             // フィーバー用の壊れたブロックを取得
             if (!fever->GetIsFever()) {
-                fever->SetBlockCount(1);
+                fever->IncreaseBlock(1);
             }
         }
         blocks_[static_cast<uint32_t>(x)][blockIndexY] = BlockType::Frash;
