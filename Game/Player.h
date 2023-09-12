@@ -82,8 +82,6 @@ private:
     int32_t preHeight_;
     int32_t nowHeight_;
 
-    Field* field_;
-    ParticleManager* particleManager_;
     // テクスチャハンドル
     TextureHandle textureHandle_;
     // テクスチャハンドル
@@ -106,4 +104,6 @@ private:
     bool isHorizontal_;
     bool isEndGameClearEasing_;
 
+    Field* field_;
+    ParticleManager* particleManager_;
 };

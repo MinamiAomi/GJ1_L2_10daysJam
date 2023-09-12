@@ -4,6 +4,8 @@
 
 class FeverManager {
 public:
+	static FeverManager* GetInstance();
+
 	void Initialize();
 	void Update();
 	void Draw();

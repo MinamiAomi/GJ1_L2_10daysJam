@@ -56,8 +56,8 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
     LevelManager levelManager;
     levelManager.Initialize();
     levelManager.GetFild(&field);
-
-    FeverManager feverManager;
+    
+    FeverManager* feverManager = FeverManager::GetInstance();
 
     GameTime* gameTime = GameTime::GetInstance();
 
@@ -106,11 +106,13 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
             }
             particleManager.Update();
             levelManager.Update();
+            feverManager->Update();
 
             backGround.Draw();
             field.Draw();
             particleManager.Draw();
             player.Draw();
+            feverManager->Draw();
             if (!field.GetIsInGameOver()) {
                 gameTime->Draw();
             }

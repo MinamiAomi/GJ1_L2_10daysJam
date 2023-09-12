@@ -2,6 +2,11 @@
 
 #include "TOMATOsEngine.h"
 
+FeverManager* FeverManager::GetInstance() {
+	static FeverManager instance;
+	return &instance;
+}
+
 void FeverManager::Initialize() {
 	blockCount_ = 0;
 	feverCount_ = 0;
