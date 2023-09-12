@@ -1,6 +1,7 @@
 #include "FeverManager.h"
 
 #include "TOMATOsEngine.h"
+#include "Math/Color.h"
 
 FeverManager* FeverManager::GetInstance() {
     static FeverManager instance;
@@ -38,4 +39,43 @@ void FeverManager::Update() {
 }
 
 void FeverManager::Draw() {
+    const uint32_t kNumWaveDivisions = 32;
+    const float kWaveHeight = 10.0f;
+    const float kNumWavesInMonitor = 5.0f;
+
+    // ゲージの割合
+    float gaugeRatio = 0.5f;
+    // 波の基準の高さ
+    float waveBaseHeight = TOMATOsEngine::kMonitorHeight * gaugeRatio;
+    // 角度のオフセット
+    float angleOffset = Math::TwoPi * frame_ / kFrameCycle;
+    // 一つの波の角度
+    float angleSlice = kNumWavesInMonitor * Math::TwoPi / kNumWaveDivisions;
+    // 一つのHの増加量
+    float colorHSlice = 1.0f / kNumWaveDivisions;
+    // 高さ
+    float heights[kNumWaveDivisions]{};
+    uint32_t colors[kNumWaveDivisions]{};
+    for (uint32_t i = 0; i < kNumWaveDivisions; ++i) {
+        float angle = i * angleSlice + angleOffset;
+        heights[i] = std::sin(angle) * kWaveHeight + waveBaseHeight;
+        colors[i] = Color::HSVA(colorHSlice * i, 1.0f, 1.0f, 0.2f);
+        //colors[i] = 0x222222FF;
+    }
+
+    const float xSlice = 1.0f / kNumWaveDivisions * TOMATOsEngine::kMonitorWidth;
+    const float waveWidth = 10.0f;
+    for (uint32_t i = 0; i < kNumWaveDivisions - 1; ++i) {
+        float left = xSlice * i;
+        float right = left + xSlice;
+        float top0 = heights[i];
+        float top1 = heights[i + 1];
+        float bottom0 = top0 - waveWidth;
+        float bottom1 = top1 - waveWidth;
+        uint32_t color0 = colors[i];
+        uint32_t color1 = colors[i + 1];
+
+        TOMATOsEngine::DrawTriangle({ left, bottom0 }, color0, { left, top0 }, color0, { right, top1 }, color1);
+        TOMATOsEngine::DrawTriangle({ left, bottom0 }, color0, { right, top1 }, color1, { right, bottom1 }, color1);
+    }
 }

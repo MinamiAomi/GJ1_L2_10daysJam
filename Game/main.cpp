@@ -63,8 +63,6 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 
     while (TOMATOsEngine::BeginFrame()) {
 
-
-
         switch (gameScene)
         {
         case title:
@@ -108,11 +106,11 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
             levelManager.Update();
             feverManager->Update();
 
+            feverManager->Draw();
             backGround.Draw();
             field.Draw();
             particleManager.Draw();
             player.Draw();
-            feverManager->Draw();
             if (!field.GetIsInGameOver()) {
                 gameTime->Draw();
             }

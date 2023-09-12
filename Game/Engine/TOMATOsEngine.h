@@ -32,6 +32,7 @@ namespace TOMATOsEngine {
     TextureHandle LoadTexture(const std::string& name);
 
     void DrawTriangle(const Vector2& pos0, const Vector2& pos1, const Vector2& pos2, uint32_t color);
+    void DrawTriangle(const Vector2& p0, uint32_t c0, const Vector2& p1, uint32_t c1, const Vector2& p2, uint32_t c2);
     void DrawRect(const Vector2& min, const Vector2& max, uint32_t color);
     void DrawRectAngle(const Vector2& pos, const Vector2& size, const Vector2& anchorPoint, float angle, uint32_t color);
     void DrawCircle(const Vector2& pos, float radius, uint32_t color);
