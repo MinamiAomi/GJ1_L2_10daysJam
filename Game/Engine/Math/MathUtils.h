@@ -13,6 +13,16 @@ namespace Math {
     constexpr float positiveInfinity = (std::numeric_limits<float>::max)();
     constexpr float negativeInfinity = (std::numeric_limits<float>::min)();
 
+    inline uint32_t Digit(int32_t num) {
+        uint32_t digit = 1;
+        int32_t tmp = abs(num);
+        while (!(tmp < 10)) {
+            tmp = tmp / 10;
+            digit++;
+        }
+        return digit;
+    }
+
     inline constexpr float Lerp(float t, float start, float end) {
         return start + t * (end - start);
     }
