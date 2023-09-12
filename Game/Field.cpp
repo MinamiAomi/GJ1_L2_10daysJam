@@ -169,8 +169,8 @@ void Field::DrawScore()
 	TOMATOsEngine::DrawSpriteRect(minPos, maxPos, { 0.0f,0.0f }, { (float)TOMATOsEngine::kMonitorWidth ,(float)TOMATOsEngine::kMonitorHeight }, scoreTextureHandle_, 0xFFFFFFFF);
 	if (scoreT >= 1.0f) {
 		DrawScoreNum(breakedBlockNum_, { 421.0f,357.0f - 40.0f }, { 36.0f,36.0f }, { 36.0f,36.0f }, numTextureHandle_);
-		DrawScoreNum(combedHrizonNum_, { 324.0f,244.0f - 40.0f }, { 36.0f,36.0f }, { 36.0f,36.0f }, numTextureHandle_);
-		DrawScoreNum(combedStepNum_, { 516.0f,244.0f - 40.0f }, { 36.0f,36.0f }, { 36.0f,36.0f }, numTextureHandle_);
+		DrawScoreNum(combedStepNum_, { 324.0f,244.0f - 40.0f }, { 36.0f,36.0f }, { 36.0f,36.0f }, numTextureHandle_);
+		DrawScoreNum(combedHrizonNum_, { 516.0f,244.0f - 40.0f }, { 36.0f,36.0f }, { 36.0f,36.0f }, numTextureHandle_);
 		uint32_t score = breakedBlockNum_ + combedHrizonNum_ * kScoreHorizonMultiply + combedStepNum_ * kScoreStepMultiply;
 		DrawScoreNum(score, { 503.0f,129.0f - 40.0f }, { 36.0f,36.0f }, { 36.0f,36.0f }, numTextureHandle_);
 	}

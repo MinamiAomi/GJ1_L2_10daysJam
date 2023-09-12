@@ -6,7 +6,7 @@ GameTime::GameTime() {
     textureHandle_ = TOMATOsEngine::LoadTexture("Resources/dekisokonai36.png");
     size_ = { 36.0f,36.0f };
     pos_ = { TOMATOsEngine::kMonitorWidth / 2.0f,TOMATOsEngine::kMonitorHeight - size_.y / 2.0f - 40.0f };
-    time_ = kMaxTime;
+    time_ = 0;
     frameTime_ = 60;
     isFinish_ = false;
     digit_ = 1;
@@ -15,7 +15,6 @@ GameTime::GameTime() {
         tmp = tmp / 10;
         digit_++;
     }
-
     bgmSoundHandle_ = TOMATOsEngine::LoadAudio("Resources/Audio/ingameBGM.wav");
 }
 
@@ -37,15 +36,8 @@ void GameTime::Update()
     frameTime_--;
     if (frameTime_ <= 0) {
         frameTime_ = 60;
-       /* time_--;*/
+        time_++;
     }
-    time_ = std::clamp(time_, 0, kMaxTime);
-    if (time_ == 0) {
-        isFinish_ = true;
-    }
-   /* if (time_ == kHurryStartTime) {
-        RaiseTheBGMPitch();
-    }*/
     digit_ = 1;
     int tmp = time_;
     while (!(tmp < 10)) {
