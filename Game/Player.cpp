@@ -144,12 +144,13 @@ void Player::move() {
 #pragma region 当たり判定
 
 	float top = tempPosition.y + size_.x * 0.5f;
-	float mid = tempPosition.y;
+	float midY = tempPosition.y;
 	float bottom = tempPosition.y - size_.y * 0.5f;
 	float left = tempPosition.x - size_.x * 0.5f;
 	float right = tempPosition.x + size_.x * 0.5f;
 
-
+	bool isLeftHit = false;
+	bool isRightHit = false;
 
 	/*float preTop = position_.y + size_.x * 0.5f;*/
 	float preBottom = position_.y - size_.y * 0.5f;
@@ -157,7 +158,7 @@ void Player::move() {
 	float preRight = position_.x + size_.x * 0.5f;*/
 
 	uint32_t blockTop = field_->CalcBlockIndexY(top);
-	uint32_t blockMid = field_->CalcBlockIndexY(mid);
+	uint32_t blockMidY = field_->CalcBlockIndexY(midY);
 	uint32_t blockBottom = field_->CalcBlockIndexY(bottom);
 	uint32_t blockLeft = field_->CalcBlockIndexX(left);
 	uint32_t blockRight = field_->CalcBlockIndexX(right);
@@ -183,41 +184,39 @@ void Player::move() {
 
 	top = tempPosition.y + size_.x * 0.5f;
 	bottom = tempPosition.y - size_.y * 0.5f;
-	mid = tempPosition.y;
+	midY = tempPosition.y;
 	left = tempPosition.x - size_.x * 0.5f;
 	right = tempPosition.x + size_.x * 0.5f;
 
 	blockTop = field_->CalcBlockIndexY(top);
-	blockMid = field_->CalcBlockIndexY(mid);
+	blockMidY = field_->CalcBlockIndexY(midY);
 	blockBottom = field_->CalcBlockIndexY(bottom);
 	blockLeft = field_->CalcBlockIndexX(left);
 	blockRight = field_->CalcBlockIndexX(right);
 
 	// 左のポイント(真ん中)ふたつがブロックだった場合
-	if (field_->GetBlock(blockLeft, blockMid) == Field::Normal &&
+	if (field_->GetBlock(blockLeft, blockMidY) == Field::Normal &&
 		field_->GetBlock(blockLeft, blockBottom) == Field::Normal) {
 		tempPosition.x = (blockLeft + 1) * Field::kBlockSize + size_.x * 0.5f + 0.1f;
 	}
 
 	// 右のポイント(真ん中)ふたつがブロックだった場合
-	if (field_->GetBlock(blockRight, blockMid) == Field::Normal &&
+	if (field_->GetBlock(blockRight, blockMidY) == Field::Normal &&
 		field_->GetBlock(blockRight, blockBottom) == Field::Normal) {
 		tempPosition.x = blockRight * Field::kBlockSize - size_.x * 0.5f - 0.1f;
 	}
 
 	top = tempPosition.y + size_.x * 0.5f;
 	bottom = tempPosition.y - size_.y * 0.5f;
-	mid = tempPosition.y;
+	midY = tempPosition.y;
 	left = tempPosition.x - size_.x * 0.5f;
 	right = tempPosition.x + size_.x * 0.5f;
 
 	blockTop = field_->CalcBlockIndexY(top);
-	blockMid = field_->CalcBlockIndexY(mid);
+	blockMidY = field_->CalcBlockIndexY(midY);
 	blockBottom = field_->CalcBlockIndexY(bottom);
 	blockLeft = field_->CalcBlockIndexX(left);
 	blockRight = field_->CalcBlockIndexX(right);
-
-
 
 	// 下のポイントふたつがブロックじゃなかった場合
 	if (!(field_->GetBlock(blockLeft, blockBottom) == Field::Normal &&
@@ -249,6 +248,8 @@ void Player::move() {
 
 
 	{
+
+		uint32_t blockMidX = field_->CalcBlockIndexX(tempPosition.x);
 		auto blockLeftBottomType = field_->GetBlock(blockLeft, blockBottom);
 		auto blockRightBottomType = field_->GetBlock(blockRight, blockBottom);
 
@@ -290,7 +291,7 @@ void Player::move() {
 						}
 					}
 					else {
-						field_->BreakBlock(blockLeft, blockBottom);
+						isLeftHit = true;
 						// 高さ更新
 						nowHeight_ = blockBottom;
 						// パーティクル
@@ -319,13 +320,24 @@ void Player::move() {
 						}
 					}
 					else {
-						field_->BreakBlock(blockRight, blockBottom);
+						isRightHit = true;
 						// 高さ更新
 						nowHeight_ = blockBottom;
 						// パーティクル
 						CreateParticle(blockRight, blockBottom);
 					}
 				}
+				if (isRightHit && isLeftHit) {
+					field_->BreakBlock(blockMidX, blockBottom);
+				}
+				else if (isRightHit) {
+					field_->BreakBlock(blockRight, blockBottom);
+				}
+				else if (isLeftHit) {
+					field_->BreakBlock(blockLeft, blockBottom);
+				}
+
+
 				tempPosition.y += blockTopPosition - bottom;
 				// コンボアップデート
 				ComboUpdate(bottom, blockLeft, blockBottom);
