@@ -112,7 +112,6 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
             if (!field.GetIsInGameOver()) {
                 gameTime->Draw();
             }
-            
 
             field.Edit();
             break;
@@ -130,6 +129,15 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
             player.Draw();
             if (player.GetIsEndGameClearEasing()) {
                 field.DrawScore();
+            }
+            if (TOMATOsEngine::IsKeyTrigger(DIK_SPACE)) {
+                gameScene = title;
+                backGround.Initialize();
+                particleManager.Initialize();
+                field.Initialize();
+                player.Initialize();
+                player.SetPosition({ field.GetSize().x * 0.5f, field.GetSize().y - 100.0f });
+                gameTime->Initialize();
             }
             break;
         default:

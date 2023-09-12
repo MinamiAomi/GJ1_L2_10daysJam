@@ -106,4 +106,8 @@ private:
     bool isHorizontal_;
     bool isEndGameClearEasing_;
 
+    const int32_t kGameClearMoveCoolTime_ = 40;
+    int32_t gameClearMoveCoolTime_;
+
+
 };

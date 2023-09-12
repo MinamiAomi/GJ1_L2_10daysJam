@@ -27,6 +27,7 @@ GameTime* GameTime::GetInstance() {
 void GameTime::Initialize()
 {
     ResetTime();
+    isFinish_ = false;
     bgmPlayHandle_ = TOMATOsEngine::PlayAudio(bgmSoundHandle_, true);
     TOMATOsEngine::SetVolume(bgmPlayHandle_, 1.1f);
 }
