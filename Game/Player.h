@@ -15,6 +15,7 @@ public:
     void Update();
     void move();
     void Draw();
+    void ComboDraw();
 
     void SetPosition(const Vector2& position) { position_ = position; }
     void SetField(Field* field) { field_ = field; }
@@ -31,11 +32,10 @@ private:
     static const int32_t kAnimationSwitchNum = 10;
 
     void ComboUpdate(float floor, uint32_t x, uint32_t y);
-    void ComboDraw();
     void SetBlockColor(int32_t y);
     void SetBlockParticleColor(int32_t y);
-    void CreateUpdate(uint32_t x, uint32_t y);
-
+    void CreateParticle(uint32_t x, uint32_t y);
+    void SetColorChange(const Vector2& position, uint32_t nowHeight);
     void GameOverUpdate();
     void GameClearUpdate();
     // 真ん中
@@ -76,6 +76,8 @@ private:
     uint32_t sameHeight_;
     int32_t sameHeightCount_;
     float sameHeightColorH_;
+    Vector2 sameHeightColorChangePosition_;
+    Vector2 sameHeightColorChangeVelocity_;
 
     bool isComboed_ = false;
 
@@ -94,7 +96,6 @@ private:
     //gameover
     Vector2 gameOverVelocity_;
     float gameOverAngle_;
-    bool isGameOver_;
     //gameClear
     bool isSaveClearPos_;
     float gameClearT_;
@@ -103,6 +104,9 @@ private:
     float gameClearRadian_;
     bool isHorizontal_;
     bool isEndGameClearEasing_;
+
+    const int32_t kGameClearMoveCoolTime_ = 40;
+    int32_t gameClearMoveCoolTime_;
 
     Field* field_;
     ParticleManager* particleManager_;

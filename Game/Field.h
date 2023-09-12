@@ -18,7 +18,9 @@ public:
     static const uint32_t kGrowInterval = 120;
     static const uint32_t kNumGrowingBlocks = 4;
     static const uint32_t kFrashTime = 10;
-    static const uint32_t kDangerousBlockHeight = 7;
+	static const uint32_t kDangerousBlockHeight = 7;
+    static const uint32_t kScoreStepMultiply = 20;
+    static const uint32_t kScoreHorizonMultiply = 10;
 
     enum BlockType {
         None,
@@ -102,6 +104,7 @@ private:
     std::vector<uint32_t> GetGrowField(uint32_t numBlocks);
     void SetGrow(std::vector<uint32_t> horizontalIndex, uint32_t numBlocks);
     void DrawBlock();
+    void DrawScoreNum(uint32_t num, Vector2 centerPos, Vector2 size, Vector2 textureSize, TextureHandle textureHandle);
     void DrawGrow();
     int32_t GetHeightestIndex();
     void HarryEffect();
@@ -144,7 +147,7 @@ private:
     size_t lineBreakSoundHandle_ = 0;
 
     // デットライン
-    TextureHandle dangerousBlockTextureHandle_; // 危険なブロックに表示する
+  	TextureHandle dangerousBlockTextureHandle_; // 危険なブロックに表示する
     Vector2 deadLinePosition_;
     Vector2 deadLineSize_;
     float deadLineAnimationFront_;
@@ -156,13 +159,7 @@ private:
     uint32_t blockBleakAnimationCount_;
     int32_t heightCount_;
 
-    //　ゲームクリア
-    uint32_t clearLine_;
-    bool isVanish_;
-    uint32_t breakedBlockNum_;
-    uint32_t combedStepNum_;
-    uint32_t combedHrizonNum_;
-
+   
     // マップチップの位置を保存
     std::vector<std::unique_ptr<GameOver>> gameOverBlocks_;
     Vector2 gameOverPosition_;
@@ -171,12 +168,22 @@ private:
     uint32_t dropTextCount_;
     uint32_t gameOverBlockCount_;
 
+    //　ゲームクリア
+    uint32_t clearLine_;
+    bool isVanish_;
+    uint32_t breakedBlockNum_;
+    uint32_t combedStepNum_;
+    uint32_t combedHrizonNum_;
+
     //score
     float scoreT;
+    // テクスチャハンドル
+    TextureHandle numTextureHandle_;
     TextureHandle scoreTextureHandle_;
 
     bool isBlockBreaking_;
     bool isTextDropping_;
     bool isInGameOver_;
     bool isGameOver_;
+
 };

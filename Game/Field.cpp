@@ -6,76 +6,79 @@
 #include "Particle/ParticleManager.h"
 #include "Math/Color.h"
 
+#include "FeverManager.h"
 #include "GameTime.h"
 #include "Easing.h"
 
 void Field::Initialize() {
-    memset(blocks_, BlockType::None, sizeof(blocks_));
+	memset(blocks_, BlockType::None, sizeof(blocks_));
 
-    fieldSize_ = { float(kBlockSize * kNumHorizontalBlocks), float(kBlockSize * kNumVerticalBlocks) };
+	fieldSize_ = { float(kBlockSize * kNumHorizontalBlocks), float(kBlockSize * kNumVerticalBlocks) };
 
-    GrowField(5);
-    GrowField(5);
-    GrowField(5);
-    GrowField(5);
-    GrowField(5);
-    GrowField(5);
-    GrowField(5);
-    GrowField(5);
-    GrowField(5);
-    GrowField(5);
-    GrowField(5);
-    // 次成長するところをセット
-    nextBlockIndices_ = GetGrowField(numGrowingBlocks_);
-    // 色
-    initializeColor_ = Vector4(1.0f, 1.0f, 1.0f, 1.0f);
-    ColorClearBlock();
+    const uint32_t kHeight = 2;
+    for (uint32_t y = 0; y < kHeight; y++) {
+        for (uint32_t x = 0; x < kNumHorizontalBlocks; x++) {
+            blocks_[x][y] = BlockType::Normal;
+        }
+    }
+	GrowField(5);
+	GrowField(5);
+	// 次成長するところをセット
+	nextBlockIndices_ = GetGrowField(numGrowingBlocks_);
+	// 色
+	initializeColor_ = Vector4(1.0f, 1.0f, 1.0f, 1.0f);
+	ColorClearBlock();
+	growCoolTime_ = 0;
+
+	growAnimationCount_ = 0;
+	growAnimationFrame_ = 0;
+	growAnimationFrameSize_ = 4;
+
+	breakTime_ = 0;
+	downBlockIndex_ = 0;
+	isFlash_ = false;
+
+	textureHandles_.at(Texture::kBlock) = TOMATOsEngine::LoadTexture("Resources/block.png");
+	textureHandles_.at(Texture::kGrow) = TOMATOsEngine::LoadTexture("Resources/grow.png");
+	textureHandles_.at(Texture::kGameOverBlock) = TOMATOsEngine::LoadTexture("Resources/gameOverBlock.png");
+	textureHandles_.at(Texture::kGameOver) = TOMATOsEngine::LoadTexture("Resources/gameOver.png");
+	textureHandles_.at(Texture::kDeadLine) = TOMATOsEngine::LoadTexture("Resources/deadLine_1.png");
+
+   dangerousBlockTextureHandle_ = TOMATOsEngine::LoadTexture("Resources/dangerousBlock.png");
+	deadLinePosition_ = { float(TOMATOsEngine::kMonitorWidth) * 0.5f ,float(Field::kBlockSize) * float(kDeathLine_)/* + float(Field::kBlockSize) * 0.5f*/ };
+	deadLineSize_ = { 630.0f ,16.0f };
+	deadLineAnimationFront_ = 0.0f;
+	deadLineAnimationBack_ = deadLineSize_.x;
+	deadLineColorH_ = 0.0f;
+
+	heightCount_ = kDeathLine_;
+	blockBleakAnimationCount_ = 0;
+	gameOverBlocks_.clear();
+
+	gameOverPosition_ = { float(TOMATOsEngine::kMonitorWidth) * 0.5f,float(TOMATOsEngine::kMonitorHeight) + float(TOMATOsEngine::kMonitorHeight) * 0.5f };
+	gameOverPositionStart_ = gameOverPosition_;
+	gameOverPositionEnd_ = { gameOverPosition_.x,float(TOMATOsEngine::kMonitorHeight) * 0.5f };
+	dropTextCount_ = 0;
+	gameOverBlockCount_ = 0;
+
+	isBlockBreaking_ = false;
+	isTextDropping_ = false;
+	isGameOver_ = false;
+	isInGameOver_ = false;
+	isVanish_ = false;
+
+	breakedBlockNum_ = 0;
+	combedStepNum_ = 0;
+	combedHrizonNum_ = 0;
+	breakSoundHandle_ = TOMATOsEngine::LoadAudio("Resources/Audio/break.wav");
+	lineBreakSoundHandle_ = TOMATOsEngine::LoadAudio("Resources/Audio/lineBreak.wav");
+	scoreTextureHandle_ = TOMATOsEngine::LoadTexture("Resources/score.png");
+	numTextureHandle_ = TOMATOsEngine::LoadTexture("Resources/dekisokonai36.png");
+	scoreT = 0.0f;
+
     growCoolTime_ = 0;
-
-    growAnimationCount_ = 0;
-    growAnimationFrame_ = 0;
-    growAnimationFrameSize_ = 4;
-
-    breakTime_ = 0;
-    downBlockIndex_ = 0;
-    isFlash_ = false;
-
-    textureHandles_.at(Texture::kBlock) = TOMATOsEngine::LoadTexture("Resources/block.png");
-    textureHandles_.at(Texture::kGrow) = TOMATOsEngine::LoadTexture("Resources/grow.png");
-    textureHandles_.at(Texture::kGameOverBlock) = TOMATOsEngine::LoadTexture("Resources/gameOverBlock.png");
-    textureHandles_.at(Texture::kGameOver) = TOMATOsEngine::LoadTexture("Resources/gameOver.png");
-    textureHandles_.at(Texture::kDeadLine) = TOMATOsEngine::LoadTexture("Resources/deadLine_1.png");
-
-    dangerousBlockTextureHandle_ = TOMATOsEngine::LoadTexture("Resources/dangerousBlock.png");
-    deadLinePosition_ = { float(TOMATOsEngine::kMonitorWidth) * 0.5f ,float(Field::kBlockSize) * float(kDeathLine_)/* + float(Field::kBlockSize) * 0.5f*/ };
-    deadLineSize_ = { 630.0f ,16.0f };
-    deadLineAnimationFront_ = 0.0f;
-    deadLineAnimationBack_ = deadLineSize_.x;
-    deadLineColorH_ = 0.0f;
-
-    heightCount_ = kDeathLine_;
-    blockBleakAnimationCount_ = 0;
-    gameOverBlocks_.clear();
-
-    gameOverPosition_ = { float(TOMATOsEngine::kMonitorWidth) * 0.5f,float(TOMATOsEngine::kMonitorHeight) + float(TOMATOsEngine::kMonitorHeight) * 0.5f };
-    gameOverPositionStart_ = gameOverPosition_;
-    gameOverPositionEnd_ = { gameOverPosition_.x,float(TOMATOsEngine::kMonitorHeight) * 0.5f };
-    dropTextCount_ = 0;
-    gameOverBlockCount_ = 0;
-
-    isBlockBreaking_ = false;
-    isTextDropping_ = false;
-    isGameOver_ = false;
-    isInGameOver_ = false;
-    isVanish_ = false;
-
-    breakedBlockNum_ = 0;
-    combedStepNum_ = 0;
-    combedHrizonNum_ = 0;
-    breakSoundHandle_ = TOMATOsEngine::LoadAudio("Resources/Audio/break.wav");
-    lineBreakSoundHandle_ = TOMATOsEngine::LoadAudio("Resources/Audio/lineBreak.wav");
-    scoreTextureHandle_ = TOMATOsEngine::LoadTexture("Resources/score.png");
-    scoreT = 0.0f;
+    growInterval_ = 120;
+    numGrowingBlocks_ = 4;
 }
 
 void Field::Update() {
@@ -138,30 +141,71 @@ void Field::Update() {
 }
 
 void Field::Draw() {
-    TOMATOsEngine::SetBlendMode(kBlendModeNormal);
-    // でっとライン
-    const float kDeadLineAnimationCount = 2.0f;
-    if (deadLineAnimationFront_ >= deadLineSize_.x) {
-        deadLineAnimationFront_ = 0.0f;
-        deadLineAnimationBack_ = deadLineSize_.x;
-    }
-    deadLineAnimationFront_ += kDeadLineAnimationCount;
-    deadLineAnimationBack_ += kDeadLineAnimationCount;
+	TOMATOsEngine::SetBlendMode(kBlendModeNormal);
+	// でっとライン
+	const float kDeadLineAnimationCount = 2.0f;
+	if (deadLineAnimationFront_>= deadLineSize_.x) {
+		deadLineAnimationFront_ = 0.0f;
+		deadLineAnimationBack_ = deadLineSize_.x;
+	}
+	deadLineAnimationFront_ += kDeadLineAnimationCount;
+	deadLineAnimationBack_ += kDeadLineAnimationCount;
 
-    TOMATOsEngine::DrawSpriteRectAngle(deadLinePosition_, deadLineSize_, { 0.5f,0.5f }, 0.0f, { deadLineAnimationFront_ ,16.0f }, deadLineSize_, textureHandles_.at(Texture::kDeadLine), Color::HSVA(deadLineColorH_, 0.8f, 0.8f));
-    DrawBlock();
-    DrawGrow();
+	TOMATOsEngine::DrawSpriteRectAngle(deadLinePosition_, deadLineSize_, { 0.5f,0.5f }, 0.0f, { deadLineAnimationFront_ ,16.0f }, deadLineSize_, textureHandles_.at(Texture::kDeadLine), Color::HSVA(deadLineColorH_, 0.8f, 0.8f));
+	DrawBlock();
+	GameTime* gameTime = GameTime::GetInstance();
+	if (!gameTime->GetIsFinish()) {
+		DrawGrow();
+	}
 }
 
 void Field::DrawScore()
 {
-    Vector2 pos = Easing::easing(scoreT,
-        { (float)TOMATOsEngine::kMonitorWidth - TOMATOsEngine::kMonitorWidth * 0.5f,(float)TOMATOsEngine::kMonitorHeight * 0.5f },
-        { TOMATOsEngine::kMonitorWidth * 0.5f,(float)TOMATOsEngine::kMonitorHeight * 0.5f }, 0.005f, Easing::easeOutQuint, true);
-    Vector2 minPos = { pos.x - TOMATOsEngine::kMonitorWidth * 0.5f,pos.y - TOMATOsEngine::kMonitorHeight * 0.5f - 40.0f };
-    Vector2 maxPos = { pos.x + TOMATOsEngine::kMonitorWidth * 0.5f,pos.y + TOMATOsEngine::kMonitorHeight * 0.5f - 40.0f };
-    TOMATOsEngine::DrawSpriteRect(minPos, maxPos, { 0.0f,0.0f }, { (float)TOMATOsEngine::kMonitorWidth ,(float)TOMATOsEngine::kMonitorHeight }, scoreTextureHandle_, 0xFFFFFFFF);
+	Vector2 startPos = { (float)TOMATOsEngine::kMonitorWidth + TOMATOsEngine::kMonitorWidth * 0.5f,(float)TOMATOsEngine::kMonitorHeight * 0.5f };
+	Vector2 endPos = { TOMATOsEngine::kMonitorWidth * 0.5f,(float)TOMATOsEngine::kMonitorHeight * 0.5f };
+	Vector2 pos = Easing::easing(scoreT,startPos,endPos, 0.01f, Easing::easeOutQuint, true);
+	Vector2 minPos = { pos.x - TOMATOsEngine::kMonitorWidth * 0.5f,pos.y - TOMATOsEngine::kMonitorHeight * 0.5f - 40.0f };
+	Vector2 maxPos = { pos.x + TOMATOsEngine::kMonitorWidth * 0.5f,pos.y + TOMATOsEngine::kMonitorHeight * 0.5f - 40.0f };
+	TOMATOsEngine::DrawSpriteRect(minPos, maxPos, { 0.0f,0.0f }, { (float)TOMATOsEngine::kMonitorWidth ,(float)TOMATOsEngine::kMonitorHeight }, scoreTextureHandle_, 0xFFFFFFFF);
+	if (scoreT >= 1.0f) {
+		DrawScoreNum(breakedBlockNum_, { 421.0f,357.0f - 40.0f }, { 36.0f,36.0f }, { 36.0f,36.0f }, numTextureHandle_);
+		DrawScoreNum(combedHrizonNum_, { 324.0f,244.0f - 40.0f }, { 36.0f,36.0f }, { 36.0f,36.0f }, numTextureHandle_);
+		DrawScoreNum(combedStepNum_, { 516.0f,244.0f - 40.0f }, { 36.0f,36.0f }, { 36.0f,36.0f }, numTextureHandle_);
+		uint32_t score = breakedBlockNum_ + combedHrizonNum_ * kScoreHorizonMultiply + combedStepNum_ * kScoreStepMultiply;
+		DrawScoreNum(score, { 503.0f,129.0f - 40.0f }, { 36.0f,36.0f }, { 36.0f,36.0f }, numTextureHandle_);
+	}
+	else {
+		uint32_t randomNum = randomNumberGenerator_.NextUIntRange(100,999);
+		DrawScoreNum(randomNum, { 421.0f,357.0f - 40.0f }, { 36.0f,36.0f }, { 36.0f,36.0f }, numTextureHandle_);
+		randomNum = randomNumberGenerator_.NextUIntRange(10, 99);
+		DrawScoreNum(randomNum, { 324.0f,244.0f - 40.0f }, { 36.0f,36.0f }, { 36.0f,36.0f }, numTextureHandle_);
+		randomNum = randomNumberGenerator_.NextUIntRange(10, 999);
+		DrawScoreNum(randomNum, { 516.0f,244.0f - 40.0f }, { 36.0f,36.0f }, { 36.0f,36.0f }, numTextureHandle_);
+		randomNum = randomNumberGenerator_.NextUIntRange(1000, 9999);
+		DrawScoreNum(randomNum, { 503.0f,129.0f - 40.0f }, { 36.0f,36.0f }, { 36.0f,36.0f }, numTextureHandle_);
+	}
+}
 
+void Field::DrawScoreNum(uint32_t num, Vector2 centerPos,Vector2 size,Vector2 textureSize,TextureHandle textureHandle) {
+	uint32_t digit = Math::Digit(num);
+	if (digit % 2 == 0) {
+		int tmp = num;
+		for (size_t i = 0; i < digit; i++) {
+			Vector2 pos = { centerPos.x - size.x / 2.0f + size.x * i - (digit / 2.0f - 1) * size.x,  centerPos.y };
+			int oneNum = static_cast<int>(tmp / (1 * std::pow(10, digit - i - 1)));
+			tmp = tmp % static_cast<int>(1 * std::pow(10, digit - i - 1));
+			TOMATOsEngine::DrawSpriteRectCenter(pos,size, { 36.0f * oneNum  ,0.0f }, textureSize, textureHandle, 0xFFFFFFFF);
+		}
+	}
+	else {
+		int tmp = num;
+		for (size_t i = 0; i < digit; i++) {
+			Vector2 pos = { centerPos.x + size.x * i - static_cast<int>(digit / 2.0f) * size.x, centerPos.y };
+			int oneNum = static_cast<int>(tmp / (1 * std::pow(10, digit - i - 1)));
+			tmp = tmp % static_cast<int>(1 * std::pow(10, digit - i - 1));
+			TOMATOsEngine::DrawSpriteRectCenter(pos, size, { textureSize.x * oneNum ,0.0f }, textureSize, textureHandle, 0xFFFFFFFF);
+		}
+	}
 }
 
 void Field::DrawBlock() {
@@ -218,7 +262,7 @@ void Field::DrawBlock() {
         TOMATOsEngine::DrawSpriteRectAngle(blockPos, Vector2(32.0f, 32.0f), Vector2(0.5f, 0.5f), block->angle_, {}, Vector2(32.0f, 32.0f), textureHandles_.at(Texture::kGameOverBlock), Color(0.5f, 0.5f, 0.5f, 0.5f));
     }
     if (isTextDropping_) {
-        TOMATOsEngine::DrawSpriteRectAngle(gameOverPosition_, Vector2(320.0f, 240.0f), Vector2(0.5f, 0.5f), 0.0f, {}, Vector2(320.0f, 240.0f), textureHandles_.at(Texture::kGameOver), Color(0.5f, 0.5f, 0.5f, 0.5f));
+        //TOMATOsEngine::DrawSpriteRectAngle(gameOverPosition_, Vector2(320.0f, 240.0f), Vector2(0.5f, 0.5f), 0.0f, {}, Vector2(320.0f, 240.0f), textureHandles_.at(Texture::kGameOver), Color(0.5f, 0.5f, 0.5f, 0.5f));
 
     }
 }
@@ -285,7 +329,7 @@ void Field::GameOverUpdate() {
             // 高さを一段下げる
             heightCount_--;
             // アニメーションカウントリセット
-            const uint32_t kCoolTime = 15;
+            const uint32_t kCoolTime = 10;
             blockBleakAnimationCount_ = kCoolTime;
         }
         else {
@@ -293,24 +337,12 @@ void Field::GameOverUpdate() {
         }
     }
     else if (isTextDropping_) {
-        const uint32_t kDropTextTime = 120;
+        /*const uint32_t kDropTextTime = 120;*/
         const float kGravity = -1.0f;
-        float t = std::clamp(float(dropTextCount_) / float(kDropTextTime), 0.0f, 1.0f);
-        if (gameOverBlockCount_ >= gameOverBlocks_.size() - 1 && dropTextCount_ >= kDropTextTime) {
-            isGameOver_ = true;
+        gameOverPosition_.y -= 10.0f;
+        if (gameOverBlockCount_>= gameOverBlocks_.size() && gameOverPosition_.y <= 0.0f) {
+            isVanish_ = true;
         }
-        dropTextCount_++;
-        const float c1 = 1.70158f;
-        const float c2 = c1 * 1.525f;
-
-        if (t < 0.5f) {
-            t = ((2.0f * t) * (2.0f * t) * ((c2 + 1.0f) * 2.0f * t - c2)) / 2.0f;
-        }
-        else {
-            t = ((2.0f * t - 2.0f) * (2.0f * t - 2.0f) * ((c2 + 1.0f) * (t * 2.0f - 2.0f) + c2) + 2.0f) / 2.0f;
-        }
-        gameOverPosition_.y = Math::Lerp(t, gameOverPositionStart_.y, gameOverPositionEnd_.y);
-
         for (auto& block : gameOverBlocks_) {
             if (!block->isDrop_ && block->position_.y > gameOverPosition_.y - float(TOMATOsEngine::kMonitorHeight) * 0.5f) {
                 block->isDrop_ = true;
@@ -323,10 +355,12 @@ void Field::GameOverUpdate() {
                 block->angle_ += block->addAngle_;
                 if (!block->isCount_ && block->position_.y < 0.0f - 32.0f) {
                     block->isCount_ = true;
+                   
                     gameOverBlockCount_++;
                 }
             }
         }
+       
     }
 }
 
@@ -349,9 +383,14 @@ void Field::SetColorBlock(uint32_t blockIndexX, uint32_t blockIndexY, const Vect
 }
 void Field::BreakBlock(uint32_t blockIndexX, uint32_t blockIndexY) {
     assert(IsInField(blockIndexX, blockIndexY));
+    FeverManager* fever = FeverManager::GetInstance();
     if (blocks_[blockIndexX][blockIndexY] == BlockType::Normal) {
         blocks_[blockIndexX][blockIndexY] = BlockType::None;
         breakedBlockNum_++;
+        // フィーバー用の壊れたブロックを取得
+        if (!fever->GetIsFever()) {
+            fever->IncreaseBlock(1);
+        }
     }
 
     // 音
@@ -362,10 +401,15 @@ void Field::BreakBlock(uint32_t blockIndexX, uint32_t blockIndexY) {
 void Field::BreakBlockHorizon(uint32_t blockIndexX, uint32_t blockIndexY, bool isHorizontal) {
     assert(IsInField(blockIndexX, blockIndexY));
     blockIndexX;
+    FeverManager* fever = FeverManager::GetInstance();
     for (size_t x = 0; x < kNumHorizontalBlocks; x++) {
         breakTime_ = kFrashTime;
         if (blocks_[static_cast<uint32_t>(x)][blockIndexY] == BlockType::Normal) {
             breakedBlockNum_++;
+            // フィーバー用の壊れたブロックを取得
+            if (!fever->GetIsFever()) {
+                fever->IncreaseBlock(1);
+            }
         }
         blocks_[static_cast<uint32_t>(x)][blockIndexY] = BlockType::Frash;
     }
@@ -401,7 +445,9 @@ void Field::ClearBreakBlockHorizon() {
         }
     }
     else {
-        isVanish_ = true;
+		if (isClearFlash_ == false) {
+			isVanish_ = true;
+		}
     }
 }
 
@@ -543,6 +589,7 @@ void Field::Grow(uint32_t horizontalIndex) {
         }
     }
     block[0] = BlockType::Normal;
+    
     blocksColor_[horizontalIndex][0] = initializeColor_;
 }
 

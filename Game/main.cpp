@@ -54,8 +54,8 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
     backGround.SetPlayer(&player);
 
     LevelManager levelManager;
-    levelManager.Initialize();
     levelManager.GetFild(&field);
+    levelManager.Initialize();
     
     FeverManager* feverManager = FeverManager::GetInstance();
 
@@ -106,10 +106,16 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
             levelManager.Update();
             feverManager->Update();
 
-            feverManager->Draw();
-            backGround.Draw();
+            if (!field.GetIsInGameOver()) {
+                    feverManager->Draw();
+                backGround.Draw();
+                particleManager.Draw();
+                player.ComboDraw();
+            }
+            else {
+                backGround.FrameDraw();
+            }
             field.Draw();
-            particleManager.Draw();
             player.Draw();
             if (!field.GetIsInGameOver()) {
                 gameTime->Draw();
@@ -134,6 +140,16 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
             player.Draw();
             if (player.GetIsEndGameClearEasing()) {
                 field.DrawScore();
+            }
+            if (TOMATOsEngine::IsKeyTrigger(DIK_SPACE)) {
+                gameScene = title;
+                backGround.Initialize();
+                particleManager.Initialize();
+                field.Initialize();
+                player.Initialize();
+                player.SetPosition({ field.GetSize().x * 0.5f, field.GetSize().y - 100.0f });
+                gameTime->Initialize();
+                levelManager.Initialize();
             }
             break;
         default:
