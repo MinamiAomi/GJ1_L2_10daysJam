@@ -34,6 +34,7 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 
     TextureHandle titleHandle = TOMATOsEngine::LoadTexture("Resources/BBtitle.png");
     TextureHandle gameOverHandle = TOMATOsEngine::LoadTexture("Resources/gameOver.png");
+    TextureHandle floorHandle = TOMATOsEngine::LoadTexture("Resources/floor.png");
     Vector2 gameOverPosition = { static_cast<float>(TOMATOsEngine::kMonitorWidth) * 0.5f,static_cast<float>(TOMATOsEngine::kMonitorHeight) * 0.5f };
     Vector2 gameOverSize = { 320.0f,240.0f };
     ParticleManager particleManager;
@@ -107,7 +108,8 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
             feverManager->Update();
 
             if (!field.GetIsInGameOver()) {
-                    feverManager->Draw();
+                TOMATOsEngine::DrawSpriteRectCenter({ TOMATOsEngine::kMonitorWidth * 0.5f , TOMATOsEngine::kMonitorHeight * 0.5f - 10.0f}, { TOMATOsEngine::kMonitorWidth * 1.0f , TOMATOsEngine::kMonitorHeight * 1.0f }, { 0.0f,0.0f }, { TOMATOsEngine::kMonitorWidth * 1.0f , TOMATOsEngine::kMonitorHeight * 1.0f }, floorHandle, 0xFFFFFFFF);
+                feverManager->Draw();
                 backGround.Draw();
                 particleManager.Draw();
                 player.ComboDraw();
