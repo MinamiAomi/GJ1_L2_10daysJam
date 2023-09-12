@@ -15,7 +15,6 @@ GameTime::GameTime() {
         tmp = tmp / 10;
         digit_++;
     }
-
     bgmSoundHandle_ = TOMATOsEngine::LoadAudio("Resources/Audio/ingameBGM.wav");
 }
 
@@ -39,12 +38,6 @@ void GameTime::Update()
         frameTime_ = 60;
         time_++;
     }
-    /*if (time_ == 0) {
-        isFinish_ = true;
-    }*/
-   /* if (time_ == kHurryStartTime) {
-        RaiseTheBGMPitch();
-    }*/
     digit_ = 1;
     int tmp = time_;
     while (!(tmp < 10)) {
