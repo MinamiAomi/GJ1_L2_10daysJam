@@ -34,6 +34,10 @@ void Player::Initialize() {
 	sameHeightCount_ = -1;
 	textureHandle_ = TOMATOsEngine::LoadTexture("Resources/player.png");
 	sameHeightColorH_ = 63.0f / 360.0f;
+	sameHeightColorChangePositionRight_ = { 0.0f,0.0f };
+	sameHeightColorChangePositionLeft_ = { 0.0f,0.0f };
+	sameHeightColorChangeVelocity_ = { 0.0f,0.0f };
+	sameHeightStart_ = false;
 
 	preHeight_ = -1;
 	nowHeight_ = -1;
@@ -292,8 +296,6 @@ void Player::move() {
 						nowHeight_ = blockBottom;
 						// パーティクル
 						CreateParticle(blockLeft, blockBottom);
-						// セットカラーチェンジポジション
-						/*sameHeightColorChangePosition_ = { ,nowHeight_ }*/
 					}
 				}
 				if (blockRightBottomType != Field::None &&
@@ -424,8 +426,12 @@ void Player::CreateParticle(uint32_t x, uint32_t y) {
 void Player::SetColorChange(const Vector2& position, uint32_t nowHeight) {
 	// 地面だったら入らない
 	if (nowHeight != -1) {
-		sameHeightColorChangePosition_ = position;
-		//uint32_t y = sameHeightColorChangePosition_.y - Field::kBlockSize;
+		sameHeightColorChangePositionRight_ = position;
+		sameHeightColorChangePositionLeft_ = position;
+		// Yをプレイヤーの1ブロックしたの真ん中に設置
+		sameHeightColorChangePositionRight_.y = float(uint32_t(sameHeightColorChangePositionRight_.y) / Field::kBlockSize) * float(Field::kBlockSize) - float(Field::kBlockSize) * 0.5f;
+		sameHeightColorChangePositionLeft_.y = float(uint32_t(sameHeightColorChangePositionLeft_.y) / Field::kBlockSize) * float(Field::kBlockSize) - float(Field::kBlockSize) * 0.5f;
+		sameHeightStart_ = true;
 	}
 
 }
@@ -582,26 +588,30 @@ void Player::SetBlockColor(int32_t blockIndexY) {
 			}
 			// コンボ達成しているか
 			else if (stepCount_ < kCombo_ && sameHeightCount_ < kCombo_) {
-				// 階段
-				if (field_->GetBlock(x, static_cast<uint32_t>(blockIndexY + 2)) == Field::None && field_->GetBlock(static_cast<uint32_t>(x), static_cast<uint32_t>(blockIndexY + 1)) == Field::Normal) {
-					if (stepCount_ == 0) {
-						// 色
-						field_->SetColorBlock(x, static_cast<uint32_t>(blockIndexY + 1), Color::HSVA(stepColorH_, kCombo1S_, kCombo1V_));
+				// 
+				if (uint32_t(sameHeightColorChangePositionRight_.x) > x * Field::kBlockSize + (Field::kBlockSize / 2) &&
+					uint32_t(sameHeightColorChangePositionLeft_.x) < x * Field::kBlockSize + (Field::kBlockSize / 2)) {
+					// 階段
+					if (field_->GetBlock(x, static_cast<uint32_t>(blockIndexY + 2)) == Field::None && field_->GetBlock(static_cast<uint32_t>(x), static_cast<uint32_t>(blockIndexY + 1)) == Field::Normal) {
+						if (stepCount_ == 0) {
+							// 色
+							field_->SetColorBlock(x, static_cast<uint32_t>(blockIndexY + 1), Color::HSVA(stepColorH_, kCombo1S_, kCombo1V_));
+						}
+						else {
+							// 色
+							field_->SetColorBlock(x, static_cast<uint32_t>(blockIndexY + 1), Color::HSVA(stepColorH_, kCombo2S_, kCombo2V_));
+						}
 					}
-					else {
-						// 色
-						field_->SetColorBlock(x, static_cast<uint32_t>(blockIndexY + 1), Color::HSVA(stepColorH_, kCombo2S_, kCombo2V_));
-					}
-				}
-				// 平行
-				if (field_->GetBlock(x, static_cast<uint32_t>(blockIndexY + 1)) == Field::None && field_->GetBlock(static_cast<uint32_t>(x), static_cast<uint32_t>(blockIndexY)) == Field::Normal) {
-					if (sameHeightCount_ == 0) {
-						// 色
-						field_->SetColorBlock(x, static_cast<uint32_t>(blockIndexY), Color::HSVA(sameHeightColorH_, kCombo1S_, kCombo1V_));
-					}
-					else {
-						// 色
-						field_->SetColorBlock(x, static_cast<uint32_t>(blockIndexY), Color::HSVA(sameHeightColorH_, kCombo2S_, kCombo2V_));
+					// 平行
+					if (field_->GetBlock(x, static_cast<uint32_t>(blockIndexY + 1)) == Field::None && field_->GetBlock(static_cast<uint32_t>(x), static_cast<uint32_t>(blockIndexY)) == Field::Normal) {
+						if (sameHeightCount_ == 0) {
+							// 色
+							field_->SetColorBlock(x, static_cast<uint32_t>(blockIndexY), Color::HSVA(sameHeightColorH_, kCombo1S_, kCombo1V_));
+						}
+						else {
+							// 色
+							field_->SetColorBlock(x, static_cast<uint32_t>(blockIndexY), Color::HSVA(sameHeightColorH_, kCombo2S_, kCombo2V_));
+						}
 					}
 				}
 			}
