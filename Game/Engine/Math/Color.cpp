@@ -15,6 +15,7 @@ const Color Color::gray(0.5f, 0.5f, 0.5f, 0.5f);
 Color Color::HSVA(float h, float s, float v, float a) {
     float r = v, g = v, b = v;
     if (s > 0.0f) {
+        h = std::fmod(h, 1.0f);
         h *= 6.0f;
         int32_t i = int32_t(h);
         float f = h - float(i);

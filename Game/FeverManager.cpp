@@ -42,30 +42,34 @@ void FeverManager::Draw() {
     const uint32_t kNumWaveDivisions = 32;
     const float kWaveHeight = 10.0f;
     const float kNumWavesInMonitor = 5.0f;
+    // フィーバー発動時の波の高さ
+    const float kFeverStartWaveHeight = TOMATOsEngine::kMonitorHeight - 40.0f;
 
     // ゲージの割合
-    float gaugeRatio = 0.5f;
+    float gaugeRatio = float(gaugePoints_) / kFeverGaugeMax_;
     // 波の基準の高さ
-    float waveBaseHeight = TOMATOsEngine::kMonitorHeight * gaugeRatio;
+    float waveBaseHeight = kFeverStartWaveHeight * gaugeRatio;
+    float frameT = frame_ / float(kFrameCycle);
     // 角度のオフセット
-    float angleOffset = Math::TwoPi * frame_ / kFrameCycle;
+    float angleOffset = Math::TwoPi * frameT;
+
     // 一つの波の角度
     float angleSlice = kNumWavesInMonitor * Math::TwoPi / kNumWaveDivisions;
     // 一つのHの増加量
     float colorHSlice = 1.0f / kNumWaveDivisions;
     // 高さ
-    float heights[kNumWaveDivisions]{};
-    uint32_t colors[kNumWaveDivisions]{};
-    for (uint32_t i = 0; i < kNumWaveDivisions; ++i) {
+    float heights[kNumWaveDivisions + 1]{};
+    uint32_t colors[kNumWaveDivisions + 1]{};
+    for (uint32_t i = 0; i < kNumWaveDivisions + 1; ++i) {
         float angle = i * angleSlice + angleOffset;
         heights[i] = std::sin(angle) * kWaveHeight + waveBaseHeight;
-        colors[i] = Color::HSVA(colorHSlice * i, 1.0f, 1.0f, 0.2f);
+        colors[i] = Color::HSVA(colorHSlice * i + frameT, 1.0f, 1.0f, 0.2f);
         //colors[i] = 0x222222FF;
     }
 
     const float xSlice = 1.0f / kNumWaveDivisions * TOMATOsEngine::kMonitorWidth;
     const float waveWidth = 10.0f;
-    for (uint32_t i = 0; i < kNumWaveDivisions - 1; ++i) {
+    for (uint32_t i = 0; i < kNumWaveDivisions; ++i) {
         float left = xSlice * i;
         float right = left + xSlice;
         float top0 = heights[i];
