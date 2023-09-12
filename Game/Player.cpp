@@ -291,6 +291,8 @@ void Player::move() {
 						nowHeight_ = blockBottom;
 						// パーティクル
 						CreateParticle(blockLeft, blockBottom);
+						// セットカラーチェンジポジション
+						/*sameHeightColorChangePosition_ = { ,nowHeight_ }*/
 					}
 				}
 				if (blockRightBottomType != Field::None &&
@@ -329,6 +331,7 @@ void Player::move() {
 				if (bottom <= 0.0f) {
 					nowHeight_ = -1;
 				}
+				SetColorChange(tempPosition, nowHeight_);
 				SetBlockParticleColor(nowHeight_);
 			}
 		}
@@ -406,6 +409,11 @@ void Player::CreateParticle(uint32_t x, uint32_t y) {
 		Vector4(1.0f, 1.0f, 1.0f, 1.0f),
 		static_cast<uint32_t>(Pop::Texture::kBlock),
 		10);
+}
+
+void Player::SetColorChange(const Vector2& position, uint32_t nowHeight) {
+	sameHeightColorChangePosition_ = position;
+
 }
 
 void Player::GameOverUpdate() {

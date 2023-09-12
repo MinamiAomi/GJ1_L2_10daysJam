@@ -35,7 +35,7 @@ private:
     void SetBlockColor(int32_t y);
     void SetBlockParticleColor(int32_t y);
     void CreateParticle(uint32_t x, uint32_t y);
-
+    void SetColorChange(const Vector2& position,uint32_t nowHeight);
     void GameOverUpdate();
     void GameClearUpdate();
     // 真ん中
@@ -76,6 +76,8 @@ private:
     uint32_t sameHeight_;
     int32_t sameHeightCount_;
     float sameHeightColorH_;
+    Vector2 sameHeightColorChangePosition_;
+    Vector2 sameHeightColorChangeVelocity_;
 
     bool isComboed_ = false;
 
