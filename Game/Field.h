@@ -18,7 +18,7 @@ public:
     static const uint32_t kGrowInterval = 120;
     static const uint32_t kNumGrowingBlocks = 4;
     static const uint32_t kFrashTime = 10;
-    static const uint32_t kHarryEffectBlockHeight = 7;
+    static const uint32_t kDangerousBlockHeight = 7;
 
     enum BlockType {
         None,
@@ -144,6 +144,7 @@ private:
     size_t lineBreakSoundHandle_ = 0;
 
     // デットライン
+    TextureHandle dangerousBlockTextureHandle_; // 危険なブロックに表示する
     Vector2 deadLinePosition_;
     Vector2 deadLineSize_;
     float deadLineAnimationFront_;

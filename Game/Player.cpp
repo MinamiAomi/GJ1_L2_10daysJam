@@ -92,7 +92,7 @@ void Player::Update() {
 		GameOverUpdate();
 	}
 
-
+#ifdef _DEBUG
 	ImGui::Begin("Player");
 	ImGui::Text("preStep_:%d", preStep_);
 	ImGui::Text("step_:%d", step_);
@@ -106,6 +106,7 @@ void Player::Update() {
 	ImGui::SliderFloat("size", &size, 0.0f, 300.0f);
 	comboSize_ = { size,size };
 	ImGui::End();
+#endif // _DEBUG
 
 }
 
