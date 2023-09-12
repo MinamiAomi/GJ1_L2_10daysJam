@@ -108,11 +108,18 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
             levelManager.Update();
             feverManager->Update();
 
-            backGround.Draw();
+
+            if (!field.GetIsInGameOver()) {
+                backGround.Draw();
+                particleManager.Draw();
+                feverManager->Draw();
+                player.ComboDraw();
+            }
+            else {
+                backGround.FrameDraw();
+            }
             field.Draw();
-            particleManager.Draw();
             player.Draw();
-            feverManager->Draw();
             if (!field.GetIsInGameOver()) {
                 gameTime->Draw();
             }

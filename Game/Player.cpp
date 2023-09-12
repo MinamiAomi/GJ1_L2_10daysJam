@@ -49,7 +49,6 @@ void Player::Initialize() {
 
 	gameOverVelocity_ = { 0.0f,0.0f };
 	gameOverAngle_ = 0.0f;
-	isGameOver_ = false;
 
 	clearTextureHandle_ = TOMATOsEngine::LoadTexture("Resources/clearPlayer.png");
 
@@ -346,9 +345,7 @@ void Player::move() {
 
 void Player::Draw() {
 
-	GameTime* gameTime = GameTime::GetInstance();
-	if (!field_->GetIsInGameOver()) {
-		if (!gameTime->GetIsFinish()) {
+		if (!field_->GetIsVanish()) {
 
 			Vector2 rectMinPos = position_ - size_ * 0.5f;
 			Vector2 rectMaxPos = position_ + size_ * 0.5f;
@@ -362,11 +359,9 @@ void Player::Draw() {
 			else {
 				TOMATOsEngine::DrawSpriteRect(rectMinPos, rectMaxPos, {}, Vector2(30.0f, 60.0f), textureHandle_, 0xFFFFFFFF);
 			}
-			// コンボ数描画
-			ComboDraw();
 		}
 		else {
-			if (field_->GetIsVanish()) {
+			
 				gameClearMoveCoolTime_--;
 				if (gameClearMoveCoolTime_ <= 0) {
 					gameClearRadian_ = Easing::easing(gameClearT_, 0.0f, (20.0f + 360.0f * 3) * Math::ToRadian, 0.005f, Easing::easeOutQuint, false);
@@ -378,27 +373,13 @@ void Player::Draw() {
 					gameClearSize_ = Easing::easing(gameClearT_, Vector2{ 30.0f,60.0f }, Vector2{ 30.0f * 10.0f,60.0f * 10.0f }, 0.005f, Easing::easeOutQuint, false);
 					gameClearPos_ = Easing::easing(gameClearT_, position_, Vector2{ TOMATOsEngine::kMonitorWidth / 4.0f + 50.0f, TOMATOsEngine::kMonitorHeight / 2.0f - 100.0f }, 0.01f, Easing::easeOutQuint, false);
 				}
-			}
-			else {
-				gameClearMoveCoolTime_ = kGameClearMoveCoolTime_;
-				gameClearRadian_ = Easing::easing(gameClearT_, 0.0f, (20.0f + 360.0f * 3) * Math::ToRadian, 0.005f, Easing::easeOutQuint, false);
-				gameClearSize_ = Easing::easing(gameClearT_, Vector2{ 30.0f,60.0f }, Vector2{ 30.0f * 10.0f,60.0f * 10.0f }, 0.005f, Easing::easeOutQuint, false);
-				gameClearPos_ = Easing::easing(gameClearT_, position_, Vector2{ TOMATOsEngine::kMonitorWidth / 4.0f + 50.0f, TOMATOsEngine::kMonitorHeight / 2.0f - 100.0f }, 0.01f, Easing::easeOutQuint, false);
-			}
+			
+			
 			if (gameClearT_ >= 1.0f) {
 				isEndGameClearEasing_ = true;
 			}
 			TOMATOsEngine::DrawSpriteRectAngle(gameClearPos_, gameClearSize_, Vector2(0.5f, 0.5f), gameClearRadian_, {}, Vector2(270.0f, 540.0f), clearTextureHandle_, 0xFFFFFFFF);
 		}
-	}
-	else {
-		Random::RandomNumberGenerator rnd{};
-		float distance = 2.0f;
-		Vector2 playerPosition{};
-		playerPosition.x += position_.x + rnd.NextFloatRange(-distance, distance);
-		playerPosition.y += position_.y + rnd.NextFloatRange(-distance, distance);
-		TOMATOsEngine::DrawSpriteRectAngle(playerPosition, size_, Vector2(0.5f, 0.5f), gameOverAngle_, {}, Vector2(30.0f, 60.0f), textureHandle_, 0xFFFFFFFF);
-	}
 }
 
 void Player::CreateParticle(uint32_t x, uint32_t y) {
@@ -431,7 +412,7 @@ void Player::SetColorChange(const Vector2& position, uint32_t nowHeight) {
 }
 
 void Player::GameOverUpdate() {
-	if (!isGameOver_ && position_.y > field_->GetGameOverPosition().y - float(TOMATOsEngine::kMonitorHeight) * 0.5f) {
+	/*if (position_.y > field_->GetGameOverPosition().y) {
 		Vector2 move{};
 		const float kSpeed = 15.0f;
 		Random::RandomNumberGenerator rnd{};
@@ -439,13 +420,7 @@ void Player::GameOverUpdate() {
 		gameOverVelocity_.y = std::sin(rnd.NextFloatRange(-1.0f, 1.0f));
 		gameOverVelocity_.Normalized();
 		gameOverVelocity_ *= kSpeed;
-		isGameOver_ = true;
-	}
-	else if (isGameOver_) {
-		const float kAddAngle = 30.0f * Math::ToRadian;
-		position_ += gameOverVelocity_;
-		gameOverAngle_ += kAddAngle;
-	}
+	}*/
 }
 
 void Player::GameClearUpdate() {

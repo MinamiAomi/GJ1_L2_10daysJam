@@ -262,7 +262,7 @@ void Field::DrawBlock() {
         TOMATOsEngine::DrawSpriteRectAngle(blockPos, Vector2(32.0f, 32.0f), Vector2(0.5f, 0.5f), block->angle_, {}, Vector2(32.0f, 32.0f), textureHandles_.at(Texture::kGameOverBlock), Color(0.5f, 0.5f, 0.5f, 0.5f));
     }
     if (isTextDropping_) {
-        TOMATOsEngine::DrawSpriteRectAngle(gameOverPosition_, Vector2(320.0f, 240.0f), Vector2(0.5f, 0.5f), 0.0f, {}, Vector2(320.0f, 240.0f), textureHandles_.at(Texture::kGameOver), Color(0.5f, 0.5f, 0.5f, 0.5f));
+        //TOMATOsEngine::DrawSpriteRectAngle(gameOverPosition_, Vector2(320.0f, 240.0f), Vector2(0.5f, 0.5f), 0.0f, {}, Vector2(320.0f, 240.0f), textureHandles_.at(Texture::kGameOver), Color(0.5f, 0.5f, 0.5f, 0.5f));
 
     }
 }
@@ -329,7 +329,7 @@ void Field::GameOverUpdate() {
             // 高さを一段下げる
             heightCount_--;
             // アニメーションカウントリセット
-            const uint32_t kCoolTime = 15;
+            const uint32_t kCoolTime = 10;
             blockBleakAnimationCount_ = kCoolTime;
         }
         else {
@@ -337,24 +337,12 @@ void Field::GameOverUpdate() {
         }
     }
     else if (isTextDropping_) {
-        const uint32_t kDropTextTime = 120;
+        /*const uint32_t kDropTextTime = 120;*/
         const float kGravity = -1.0f;
-        float t = std::clamp(float(dropTextCount_) / float(kDropTextTime), 0.0f, 1.0f);
-        if (gameOverBlockCount_ >= gameOverBlocks_.size() - 1 && dropTextCount_ >= kDropTextTime) {
-            isGameOver_ = true;
+        gameOverPosition_.y -= 10.0f;
+        if (gameOverBlockCount_>= gameOverBlocks_.size() && gameOverPosition_.y <= 0.0f) {
+            isVanish_ = true;
         }
-        dropTextCount_++;
-        const float c1 = 1.70158f;
-        const float c2 = c1 * 1.525f;
-
-        if (t < 0.5f) {
-            t = ((2.0f * t) * (2.0f * t) * ((c2 + 1.0f) * 2.0f * t - c2)) / 2.0f;
-        }
-        else {
-            t = ((2.0f * t - 2.0f) * (2.0f * t - 2.0f) * ((c2 + 1.0f) * (t * 2.0f - 2.0f) + c2) + 2.0f) / 2.0f;
-        }
-        gameOverPosition_.y = Math::Lerp(t, gameOverPositionStart_.y, gameOverPositionEnd_.y);
-
         for (auto& block : gameOverBlocks_) {
             if (!block->isDrop_ && block->position_.y > gameOverPosition_.y - float(TOMATOsEngine::kMonitorHeight) * 0.5f) {
                 block->isDrop_ = true;
@@ -367,10 +355,12 @@ void Field::GameOverUpdate() {
                 block->angle_ += block->addAngle_;
                 if (!block->isCount_ && block->position_.y < 0.0f - 32.0f) {
                     block->isCount_ = true;
+                   
                     gameOverBlockCount_++;
                 }
             }
         }
+       
     }
 }
 

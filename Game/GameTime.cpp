@@ -37,15 +37,15 @@ void GameTime::Update()
     frameTime_--;
     if (frameTime_ <= 0) {
         frameTime_ = 60;
-        time_--;
+       /* time_--;*/
     }
     time_ = std::clamp(time_, 0, kMaxTime);
     if (time_ == 0) {
         isFinish_ = true;
     }
-    if (time_ == kHurryStartTime) {
+   /* if (time_ == kHurryStartTime) {
         RaiseTheBGMPitch();
-    }
+    }*/
     digit_ = 1;
     int tmp = time_;
     while (!(tmp < 10)) {
@@ -56,7 +56,7 @@ void GameTime::Update()
 
 void GameTime::Draw()
 {
-    Vector2 min;
+   /* Vector2 min;
     Vector2 max;
 
     if (digit_ % 2 == 0) {
@@ -80,7 +80,7 @@ void GameTime::Draw()
             tmp = tmp % static_cast<int>(1 * std::pow(10, digit_ - i - 1));
             TOMATOsEngine::DrawSpriteRect(min, max, { 36.0f * num ,0.0f }, { 36.0f,36.0f }, textureHandle_, 0xFFFFFFFF);
         }
-    }
+    }*/
 }
 
 void GameTime::RaiseTheBGMPitch() {
