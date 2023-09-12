@@ -4,6 +4,7 @@
 
 #include "BackGround.h"
 #include "Field.h"
+#include "FeverManager.h"
 #include "Particle/ParticleManager.h"
 #include "Player.h"
 
@@ -56,6 +57,8 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
     LevelManager levelManager;
     levelManager.Initialize();
     levelManager.GetFild(&field);
+
+    FeverManager feverManager;
 
     GameTime* gameTime = GameTime::GetInstance();
 

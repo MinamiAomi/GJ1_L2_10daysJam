@@ -21,6 +21,7 @@ void Player::Initialize() {
 	comboDrawCount_ = 0;
 	comboDrawAngle_ = 0.0f;
 	comboDrawSize_ = { 0.0f ,0.0f };
+	isComboed_ = false;
 	// 階段;
 	preStep_ = 0;
 	step_ = 0;
@@ -266,7 +267,7 @@ void Player::move() {
 					// ブロック破壊
 					if (stepCount_ >= kCombo_ || sameHeightCount_ >= kCombo_) {
 						field_->BreakBlockHorizon(blockLeft, blockBottom, isHorizontal_);
-						isComboed_ = true;
+						isComboed_ = false;
 						// 高さ更新
 						nowHeight_ = blockBottom;
 						// コンボカウントリセット
@@ -294,6 +295,7 @@ void Player::move() {
 					// ブロック破壊
 					if (stepCount_ >= kCombo_ || sameHeightCount_ >= kCombo_) {
 						field_->BreakBlockHorizon(blockRight, blockBottom , isHorizontal_);
+						isComboed_ = false;
 						// 高さ更新
 						nowHeight_ = blockBottom;
 						// コンボカウントリセット
@@ -432,6 +434,7 @@ void Player::ComboUpdate(float  floor, uint32_t blockIndexX, uint32_t blockIndex
 #pragma region 階段
 			step_ = blockIndexY;
 			if (step_ - 1 == preStep_) {
+				isComboed_ = false;
 				stepCount_++;
 				comboDrawCount_ = 0;
 				isHorizontal_ = false;
@@ -441,6 +444,7 @@ void Player::ComboUpdate(float  floor, uint32_t blockIndexX, uint32_t blockIndex
 				}
 			}
 			else {
+				isComboed_ = false;
 				stepCount_ = 0;
 				comboDrawCount_ = 0;
 			}
@@ -449,6 +453,7 @@ void Player::ComboUpdate(float  floor, uint32_t blockIndexX, uint32_t blockIndex
 #pragma region 平行
 			sameHeight_ = blockIndexY;
 			if (sameHeight_ == preSameHeight_) {
+				isComboed_ = true;
 				sameHeightCount_++;
 				stepCount_ = 0;
 				isHorizontal_ = true;
@@ -459,6 +464,7 @@ void Player::ComboUpdate(float  floor, uint32_t blockIndexX, uint32_t blockIndex
 				}
 			}
 			else {
+				isComboed_ = true;
 				sameHeightCount_ = 0;
 				comboDrawCount_ = 0;
 			}
@@ -576,7 +582,7 @@ void Player::SetBlockColor(int32_t blockIndexY) {
 
 void Player::SetBlockParticleColor(int32_t blockIndexY) {
 	if (blockIndexY != -1) {
-		if (!isComboed_) {
+		if (isComboed_) {
 			for (uint32_t x = 0; x < Field::kNumHorizontalBlocks; x++) {
 				// コンボ達成しているか
 				if (stepCount_ < kCombo_ && sameHeightCount_ < kCombo_) {
@@ -611,13 +617,8 @@ void Player::SetBlockParticleColor(int32_t blockIndexY) {
 							particleManager_->GetCircle()->Create(Vector2(float(x * Field::kBlockSize) + (Field::kBlockSize / 2), float(blockIndexY * Field::kBlockSize) + (Field::kBlockSize / 2)), Color::HSVA(sameHeightColorH_, kS, kV), static_cast<uint32_t>(Circle::Texture::kSquare));
 						}
 					}
-
-
 				}
 			}
-		}
-		else {
-			isComboed_ = true;
 		}
 	}
 }

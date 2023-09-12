@@ -49,6 +49,18 @@ BackGround::BackGround() {
 		square->isAlive_ = false;
 	}
 	square_TextureHandle_ = TOMATOsEngine::LoadTexture("Resources/Particle/square.png");
+	// 縦のライン
+	for (auto& verticalLine : verticalLines_) {
+		verticalLine = std::make_unique<VerticalLine>();
+		verticalLine->position_ = { 0.0f,0.0f };
+		verticalLine->velocity_ = { 0.0f,0.0f };
+		/*verticalLine->size_ = { 0.0f,0.0f };
+		verticalLine->size_Original_ = { 0.0f,0.0f };
+		verticalLine->angle_ = 0.0f;*/
+		verticalLine->colorH_ = 0.0f;
+		verticalLine->death_Time_ = 0;
+		verticalLine->isAlive_ = false;
+	}
 	Initialize();
 }
 
@@ -57,6 +69,8 @@ BackGround::~BackGround() {}
 void BackGround::Initialize() {
 	// 四角
 	SquareInitialize();
+	// 縦のライン
+
 }
 
 void BackGround::Update() {
@@ -155,6 +169,12 @@ void BackGround::SquareDraw() {
 		}
 	}
 }
+
+void BackGround::VerticalLineInitialize() {}
+
+void BackGround::VerticalLineUpdate() {}
+
+void BackGround::VerticalLineDraw() {}
 
 void BackGround::SetColorH(float& h, float& s, float& v) {
 	// 地面だったら白
