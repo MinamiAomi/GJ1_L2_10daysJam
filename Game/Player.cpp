@@ -332,7 +332,7 @@ void Player::move() {
 				if (bottom <= 0.0f) {
 					nowHeight_ = -1;
 				}
-				SetColorChange(tempPosition, nowHeight_);
+				SetColorChange(tempPosition);
 				SetBlockParticleColor(nowHeight_);
 			}
 		}
