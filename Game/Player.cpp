@@ -38,6 +38,9 @@ void Player::Initialize() {
 	sameHeightColorChangePositionLeft_ = { 0.0f,0.0f };
 	sameHeightColorChangeVelocity_ = { 0.0f,0.0f };
 	sameHeightStart_ = false;
+	for (auto& particle : sameHeightParticleFlag_) {
+		particle = false;
+	}
 
 	preHeight_ = -1;
 	nowHeight_ = -1;
@@ -413,6 +416,9 @@ void Player::SetColorChange(const Vector2& position, uint32_t nowHeight) {
 		sameHeightColorChangePositionRight_.y = float(uint32_t(sameHeightColorChangePositionRight_.y) / Field::kBlockSize) * float(Field::kBlockSize) - float(Field::kBlockSize) * 0.5f;
 		sameHeightColorChangePositionLeft_.y = float(uint32_t(sameHeightColorChangePositionLeft_.y) / Field::kBlockSize) * float(Field::kBlockSize) - float(Field::kBlockSize) * 0.5f;
 		sameHeightStart_ = true;
+		for (auto& particle : sameHeightParticleFlag_) {
+			particle = false;
+		}
 	}
 
 }
@@ -560,21 +566,22 @@ void Player::SetBlockColor(int32_t blockIndexY) {
 					uint32_t(sameHeightColorChangePositionLeft_.x) < x * Field::kBlockSize + (Field::kBlockSize / 2)) {
 
 					// 平行(パーティクル)
-					if (field_->GetBlock(static_cast<uint32_t>(x), static_cast<uint32_t>(blockIndexY)) == Field::Normal) {
+					if (!sameHeightParticleFlag_.at(x)) {
 						if (sameHeightCount_ == 0) {
 							// 色
 							const float kS = 0.5f;
 							const float kV = 0.3f;
 							particleManager_->GetCircle()->Create(Vector2(float(x * Field::kBlockSize) + (Field::kBlockSize / 2), float(blockIndexY * Field::kBlockSize) + (Field::kBlockSize / 2)), Color::HSVA(sameHeightColorH_, kS, kV), static_cast<uint32_t>(Circle::Texture::kSquare));
+							sameHeightParticleFlag_.at(x) = true;
 						}
-						else {
+						else if(sameHeightCount_ == 1) {
 							// 色
 							const float kS = 0.5f;
 							const float kV = 0.3f;
 							particleManager_->GetCircle()->Create(Vector2(float(x * Field::kBlockSize) + (Field::kBlockSize / 2), float(blockIndexY * Field::kBlockSize) + (Field::kBlockSize / 2)), Color::HSVA(sameHeightColorH_, kS, kV), static_cast<uint32_t>(Circle::Texture::kSquare));
+							sameHeightParticleFlag_.at(x) = true;
 						}
 					}
-
 					//// 平行(ブロックの色)
 					//if (field_->GetBlock(static_cast<uint32_t>(x), static_cast<uint32_t>(blockIndexY)) == Field::Normal) {
 					//	if (sameHeightCount_ == 0) {

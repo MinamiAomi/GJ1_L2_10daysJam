@@ -79,6 +79,7 @@ private:
     Vector2 sameHeightColorChangePositionRight_;
     Vector2 sameHeightColorChangePositionLeft_;
     Vector2 sameHeightColorChangeVelocity_;
+    std::array<bool,16>  sameHeightParticleFlag_;
     bool sameHeightStart_;
 
     bool isComboed_ = false;
