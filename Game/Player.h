@@ -76,8 +76,10 @@ private:
     uint32_t sameHeight_;
     int32_t sameHeightCount_;
     float sameHeightColorH_;
-    Vector2 sameHeightColorChangePosition_;
+    Vector2 sameHeightColorChangePositionRight_;
+    Vector2 sameHeightColorChangePositionLeft_;
     Vector2 sameHeightColorChangeVelocity_;
+    bool sameHeightStart_;
 
     bool isComboed_ = false;
 
