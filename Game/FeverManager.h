@@ -10,16 +10,26 @@ public:
 	void Update();
 	void Draw();
 
-	void SetBlockCount(uint32_t block) { blockCount_ += block; }
-	void SetComboCount(uint32_t combo) { blockCount_ += combo; }
+	void IncreaseGaugePoints(uint32_t points) { gaugePoints_ += points; }
+	void IncreaseBlock(uint32_t blockCount) { gaugePoints_ += blockCount; }
+	void IncreaseCombo(uint32_t comboCount) { gaugePoints_ += comboCount * kComboPoints_; }
+
 	bool GetIsFever() {	return isFever_;}
+
 private:
-	const uint32_t kComboMax_ = 80;
-	const uint32_t kTripleConbo_ = 8;
-	const uint32_t kFeverMax_ = 360;
+	// ゲージの最大値
+	static const uint32_t kFeverGaugeMax_ = 80;
+	// コンボ時の上昇量
+	static const uint32_t kComboPoints_ = 8;
+	// フィーバーの時間
+	static const uint32_t kFeverMaxFrame_ = 360;
+	// 周期のリセット時間
+	static const uint32_t kFrameCycle = 60;
 	
-	uint32_t blockCount_;
-	uint32_t feverCount_;
+	// ゲージの量
+	uint32_t gaugePoints_;
+	// 周期(いろいろ使う)
+	uint32_t frame_;
 	bool isFever_;
 
 };
