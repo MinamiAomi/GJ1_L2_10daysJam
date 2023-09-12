@@ -3,31 +3,37 @@
 #include "TOMATOsEngine.h"
 
 FeverManager* FeverManager::GetInstance() {
-	static FeverManager instance;
-	return &instance;
+    static FeverManager instance;
+    return &instance;
 }
 
 void FeverManager::Initialize() {
-	blockCount_ = 0;
-	feverCount_ = 0;
+    gaugePoints_ = 0;
 }
 
 void FeverManager::Update() {
-	if (isFever_) {
-		feverCount_++;
-		if (feverCount_ >= kFeverMax_) {
-			// リセット
-			feverCount_ = 0;
-			// フィーバーオン
-			isFever_ = false;
-		}
-	}
-	else if (blockCount_ >= kComboMax_) {
-		// リセット
-		blockCount_ = 0;
-		// フィーバーオン
-		isFever_ = true;
-	}
+    ++frame_;
+    if (frame_ >= kFrameCycle) {
+        frame_ = 0;
+    }
+
+    if (isFever_) {
+        if ((frame_ % uint32_t(kFeverMaxFrame_ / kFeverGaugeMax_)) == 0) {
+            --gaugePoints_;
+        }
+        if (gaugePoints_ <= 0) {
+            // リセット
+            gaugePoints_ = 0;
+            // フィーバーOFF
+            isFever_ = false;
+        }
+    }
+    else if (gaugePoints_ >= kFeverGaugeMax_) {
+        // リセット
+        gaugePoints_ = kFeverGaugeMax_;
+        // フィーバーオン
+        isFever_ = true;
+    }
 
 }
 
