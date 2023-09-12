@@ -27,13 +27,13 @@ void Player::Initialize() {
 	preStep_ = 0;
 	step_ = 0;
 	stepCount_ = -1;
-	stepColorH_ = 307.0f / 360.0f;
+	stepColorH_ = 63.0f / 360.0f;
 	// 平行
 	preSameHeight_ = 0;
 	sameHeight_ = 0;
 	sameHeightCount_ = -1;
 	textureHandle_ = TOMATOsEngine::LoadTexture("Resources/player.png");
-	sameHeightColorH_ = 63.0f / 360.0f;
+	sameHeightColorH_ = 307.0f / 360.0f;
 	sameHeightColorChangePositionRight_ = { 0.0f,0.0f };
 	sameHeightColorChangePositionLeft_ = { 0.0f,0.0f };
 	sameHeightColorChangeVelocity_ = { 0.0f,0.0f };
@@ -347,41 +347,41 @@ void Player::move() {
 
 void Player::Draw() {
 
-		if (!field_->GetIsVanish()) {
+	if (!field_->GetIsVanish()) {
 
-			Vector2 rectMinPos = position_ - size_ * 0.5f;
-			Vector2 rectMaxPos = position_ + size_ * 0.5f;
-			animationFrame_--;
+		Vector2 rectMinPos = position_ - size_ * 0.5f;
+		Vector2 rectMaxPos = position_ + size_ * 0.5f;
+		animationFrame_--;
 
-			if (animationFrame_ > 0) {
-				Vector2 texBase = { 0.0f,0.0f };
-				texBase.x = (continueTextureNum_ - 1 - (animationFrame_ / kAnimationSwitchNum)) * 30.0f;
-				TOMATOsEngine::DrawSpriteRect(rectMinPos, rectMaxPos, texBase, Vector2(30.0f, 60.0f), textureHandle_, 0xFFFFFFFF);
-			}
-			else {
-				TOMATOsEngine::DrawSpriteRect(rectMinPos, rectMaxPos, {}, Vector2(30.0f, 60.0f), textureHandle_, 0xFFFFFFFF);
-			}
+		if (animationFrame_ > 0) {
+			Vector2 texBase = { 0.0f,0.0f };
+			texBase.x = (continueTextureNum_ - 1 - (animationFrame_ / kAnimationSwitchNum)) * 30.0f;
+			TOMATOsEngine::DrawSpriteRect(rectMinPos, rectMaxPos, texBase, Vector2(30.0f, 60.0f), textureHandle_, 0xFFFFFFFF);
 		}
 		else {
-			
-				gameClearMoveCoolTime_--;
-				if (gameClearMoveCoolTime_ <= 0) {
-					gameClearRadian_ = Easing::easing(gameClearT_, 0.0f, (20.0f + 360.0f * 3) * Math::ToRadian, 0.005f, Easing::easeOutQuint, false);
-					gameClearSize_ = Easing::easing(gameClearT_, Vector2{ 30.0f,60.0f }, Vector2{ 30.0f * 10.0f,60.0f * 10.0f }, 0.005f, Easing::easeOutQuint, false);
-					gameClearPos_ = Easing::easing(gameClearT_, position_, Vector2{ TOMATOsEngine::kMonitorWidth / 4.0f + 50.0f, TOMATOsEngine::kMonitorHeight / 2.0f - 100.0f }, 0.01f, Easing::easeOutQuint);
-				}
-				else {
-					gameClearRadian_ = Easing::easing(gameClearT_, 0.0f, (20.0f + 360.0f * 3) * Math::ToRadian, 0.005f, Easing::easeOutQuint, false);
-					gameClearSize_ = Easing::easing(gameClearT_, Vector2{ 30.0f,60.0f }, Vector2{ 30.0f * 10.0f,60.0f * 10.0f }, 0.005f, Easing::easeOutQuint, false);
-					gameClearPos_ = Easing::easing(gameClearT_, position_, Vector2{ TOMATOsEngine::kMonitorWidth / 4.0f + 50.0f, TOMATOsEngine::kMonitorHeight / 2.0f - 100.0f }, 0.01f, Easing::easeOutQuint, false);
-				}
-			
-			
-			if (gameClearT_ >= 1.0f) {
-				isEndGameClearEasing_ = true;
-			}
-			TOMATOsEngine::DrawSpriteRectAngle(gameClearPos_, gameClearSize_, Vector2(0.5f, 0.5f), gameClearRadian_, {}, Vector2(270.0f, 540.0f), clearTextureHandle_, 0xFFFFFFFF);
+			TOMATOsEngine::DrawSpriteRect(rectMinPos, rectMaxPos, {}, Vector2(30.0f, 60.0f), textureHandle_, 0xFFFFFFFF);
 		}
+	}
+	else {
+
+		gameClearMoveCoolTime_--;
+		if (gameClearMoveCoolTime_ <= 0) {
+			gameClearRadian_ = Easing::easing(gameClearT_, 0.0f, (20.0f + 360.0f * 3) * Math::ToRadian, 0.005f, Easing::easeOutQuint, false);
+			gameClearSize_ = Easing::easing(gameClearT_, Vector2{ 30.0f,60.0f }, Vector2{ 30.0f * 10.0f,60.0f * 10.0f }, 0.005f, Easing::easeOutQuint, false);
+			gameClearPos_ = Easing::easing(gameClearT_, position_, Vector2{ TOMATOsEngine::kMonitorWidth / 4.0f + 50.0f, TOMATOsEngine::kMonitorHeight / 2.0f - 100.0f }, 0.01f, Easing::easeOutQuint);
+		}
+		else {
+			gameClearRadian_ = Easing::easing(gameClearT_, 0.0f, (20.0f + 360.0f * 3) * Math::ToRadian, 0.005f, Easing::easeOutQuint, false);
+			gameClearSize_ = Easing::easing(gameClearT_, Vector2{ 30.0f,60.0f }, Vector2{ 30.0f * 10.0f,60.0f * 10.0f }, 0.005f, Easing::easeOutQuint, false);
+			gameClearPos_ = Easing::easing(gameClearT_, position_, Vector2{ TOMATOsEngine::kMonitorWidth / 4.0f + 50.0f, TOMATOsEngine::kMonitorHeight / 2.0f - 100.0f }, 0.01f, Easing::easeOutQuint, false);
+		}
+
+
+		if (gameClearT_ >= 1.0f) {
+			isEndGameClearEasing_ = true;
+		}
+		TOMATOsEngine::DrawSpriteRectAngle(gameClearPos_, gameClearSize_, Vector2(0.5f, 0.5f), gameClearRadian_, {}, Vector2(270.0f, 540.0f), clearTextureHandle_, 0xFFFFFFFF);
+	}
 }
 
 void Player::CreateParticle(uint32_t x, uint32_t y) {
@@ -544,9 +544,53 @@ void Player::SetBlockColor(int32_t blockIndexY) {
 	// 色
 	field_->ColorClearBlock();
 	if (blockIndexY != -1) {
+		const float AddX = 40.0f;
+		if (sameHeightStart_) {
+			sameHeightColorChangePositionRight_.x += AddX;
+			sameHeightColorChangePositionLeft_.x -= AddX;
+		}
+		if (sameHeightColorChangePositionRight_.x >= float(Field::kNumHorizontalBlocks * Field::kBlockSize) + float(Field::kBlockSize) &&
+			sameHeightColorChangePositionLeft_.x <= -float(Field::kBlockSize)) {
+			sameHeightStart_ = false;
+		}
 		for (uint32_t x = 0; x < Field::kNumHorizontalBlocks; x++) {
+			// ライン
+			if (sameHeightStart_) {
+				if (uint32_t(sameHeightColorChangePositionRight_.x) > x * Field::kBlockSize + (Field::kBlockSize / 2) &&
+					uint32_t(sameHeightColorChangePositionLeft_.x) < x * Field::kBlockSize + (Field::kBlockSize / 2)) {
+
+					// 平行(パーティクル)
+					if (field_->GetBlock(static_cast<uint32_t>(x), static_cast<uint32_t>(blockIndexY)) == Field::Normal) {
+						if (sameHeightCount_ == 0) {
+							// 色
+							const float kS = 0.5f;
+							const float kV = 0.3f;
+							particleManager_->GetCircle()->Create(Vector2(float(x * Field::kBlockSize) + (Field::kBlockSize / 2), float(blockIndexY * Field::kBlockSize) + (Field::kBlockSize / 2)), Color::HSVA(sameHeightColorH_, kS, kV), static_cast<uint32_t>(Circle::Texture::kSquare));
+						}
+						else {
+							// 色
+							const float kS = 0.5f;
+							const float kV = 0.3f;
+							particleManager_->GetCircle()->Create(Vector2(float(x * Field::kBlockSize) + (Field::kBlockSize / 2), float(blockIndexY * Field::kBlockSize) + (Field::kBlockSize / 2)), Color::HSVA(sameHeightColorH_, kS, kV), static_cast<uint32_t>(Circle::Texture::kSquare));
+						}
+					}
+
+					//// 平行(ブロックの色)
+					//if (field_->GetBlock(static_cast<uint32_t>(x), static_cast<uint32_t>(blockIndexY)) == Field::Normal) {
+					//	if (sameHeightCount_ == 0) {
+					//		// 色
+					//		field_->SetColorBlock(x, static_cast<uint32_t>(blockIndexY), Color::HSVA(sameHeightColorH_, kCombo1S_, kCombo1V_));
+					//	}
+					//	else {
+					//		// 色
+					//		field_->SetColorBlock(x, static_cast<uint32_t>(blockIndexY), Color::HSVA(sameHeightColorH_, kCombo2S_, kCombo2V_));
+					//	}
+					//}
+
+				}
+			}
 			// フィーバーかどうか
-			if (FeverManager::GetInstance()->GetIsFever()) {
+			else if (FeverManager::GetInstance()->GetIsFever()) {
 				// フィーバー中は虹色
 				for (uint32_t y = 0; y < Field::kNumVerticalBlocks; y++) {
 					if (field_->GetBlock(x, y) == Field::Normal) {
@@ -563,30 +607,26 @@ void Player::SetBlockColor(int32_t blockIndexY) {
 			}
 			// コンボ達成しているか
 			else if (stepCount_ < kCombo_ && sameHeightCount_ < kCombo_) {
-				// 
-				if (uint32_t(sameHeightColorChangePositionRight_.x) > x * Field::kBlockSize + (Field::kBlockSize / 2) &&
-					uint32_t(sameHeightColorChangePositionLeft_.x) < x * Field::kBlockSize + (Field::kBlockSize / 2)) {
-					// 階段
-					if (field_->GetBlock(x, static_cast<uint32_t>(blockIndexY + 2)) == Field::None && field_->GetBlock(static_cast<uint32_t>(x), static_cast<uint32_t>(blockIndexY + 1)) == Field::Normal) {
-						if (stepCount_ == 0) {
-							// 色
-							field_->SetColorBlock(x, static_cast<uint32_t>(blockIndexY + 1), Color::HSVA(stepColorH_, kCombo1S_, kCombo1V_));
-						}
-						else {
-							// 色
-							field_->SetColorBlock(x, static_cast<uint32_t>(blockIndexY + 1), Color::HSVA(stepColorH_, kCombo2S_, kCombo2V_));
-						}
+				// 階段
+				if (field_->GetBlock(x, static_cast<uint32_t>(blockIndexY + 2)) == Field::None && field_->GetBlock(static_cast<uint32_t>(x), static_cast<uint32_t>(blockIndexY + 1)) == Field::Normal) {
+					if (stepCount_ == 0) {
+						// 色
+						field_->SetColorBlock(x, static_cast<uint32_t>(blockIndexY + 1), Color::HSVA(stepColorH_, kCombo1S_, kCombo1V_));
 					}
-					// 平行
-					if (field_->GetBlock(x, static_cast<uint32_t>(blockIndexY + 1)) == Field::None && field_->GetBlock(static_cast<uint32_t>(x), static_cast<uint32_t>(blockIndexY)) == Field::Normal) {
-						if (sameHeightCount_ == 0) {
-							// 色
-							field_->SetColorBlock(x, static_cast<uint32_t>(blockIndexY), Color::HSVA(sameHeightColorH_, kCombo1S_, kCombo1V_));
-						}
-						else {
-							// 色
-							field_->SetColorBlock(x, static_cast<uint32_t>(blockIndexY), Color::HSVA(sameHeightColorH_, kCombo2S_, kCombo2V_));
-						}
+					else {
+						// 色
+						field_->SetColorBlock(x, static_cast<uint32_t>(blockIndexY + 1), Color::HSVA(stepColorH_, kCombo2S_, kCombo2V_));
+					}
+				}
+				// 平行
+				if (field_->GetBlock(x, static_cast<uint32_t>(blockIndexY + 1)) == Field::None && field_->GetBlock(static_cast<uint32_t>(x), static_cast<uint32_t>(blockIndexY)) == Field::Normal) {
+					if (sameHeightCount_ == 0) {
+						// 色
+						field_->SetColorBlock(x, static_cast<uint32_t>(blockIndexY), Color::HSVA(sameHeightColorH_, kCombo1S_, kCombo1V_));
+					}
+					else {
+						// 色
+						field_->SetColorBlock(x, static_cast<uint32_t>(blockIndexY), Color::HSVA(sameHeightColorH_, kCombo2S_, kCombo2V_));
 					}
 				}
 			}
@@ -633,7 +673,6 @@ void Player::SetBlockParticleColor(int32_t blockIndexY) {
 			for (uint32_t x = 0; x < Field::kNumHorizontalBlocks; x++) {
 				// コンボ達成しているか
 				if (stepCount_ < kCombo_ && sameHeightCount_ < kCombo_) {
-
 					// 階段
 					if (field_->GetBlock(x, static_cast<uint32_t>(blockIndexY + 2)) == Field::None && field_->GetBlock(static_cast<uint32_t>(x), static_cast<uint32_t>(blockIndexY + 1)) == Field::Normal) {
 						if (stepCount_ == 0) {
