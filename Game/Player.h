@@ -34,7 +34,7 @@ private:
     void ComboDraw();
     void SetBlockColor(int32_t y);
     void SetBlockParticleColor(int32_t y);
-    void CreateUpdate(uint32_t x, uint32_t y);
+    void CreateParticle(uint32_t x, uint32_t y);
 
     void GameOverUpdate();
     void GameClearUpdate();
@@ -82,8 +82,6 @@ private:
     int32_t preHeight_;
     int32_t nowHeight_;
 
-    Field* field_;
-    ParticleManager* particleManager_;
     // テクスチャハンドル
     TextureHandle textureHandle_;
     // テクスチャハンドル
@@ -109,5 +107,6 @@ private:
     const int32_t kGameClearMoveCoolTime_ = 40;
     int32_t gameClearMoveCoolTime_;
 
-
+    Field* field_;
+    ParticleManager* particleManager_;
 };

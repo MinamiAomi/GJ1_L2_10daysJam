@@ -68,6 +68,7 @@
     <ClInclude Include="Engine\RenderManager.h" />
     <ClInclude Include="Engine\TriangleRenderer.h" />
     <ClInclude Include="Engine\Utility.h" />
+    <ClInclude Include="FeverManager.h" />
     <ClInclude Include="Field.h" />
     <ClInclude Include="LevelManager.h" />
     <ClInclude Include="Particle\Circle.h" />
@@ -139,6 +140,7 @@
     <ClCompile Include="Engine\RenderManager.cpp" />
     <ClCompile Include="Engine\TriangleRenderer.cpp" />
     <ClCompile Include="Engine\Utility.cpp" />
+    <ClCompile Include="FeverManager.cpp" />
     <ClCompile Include="Field.cpp" />
     <ClCompile Include="Follow.cpp" />
     <ClCompile Include="LevelManager.cpp" />
@@ -366,7 +368,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
       <AdditionalOptions>/utf-8 </AdditionalOptions>
       <ExceptionHandling>SyncCThrow</ExceptionHandling>
       <AdditionalIncludeDirectories>$(SolutionDir);$(ProjectDir);$(ProjectDir)Engine\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <ForcedIncludeFiles>%(ForcedIncludeFiles)</ForcedIncludeFiles>
     </ClCompile>
     <Link>

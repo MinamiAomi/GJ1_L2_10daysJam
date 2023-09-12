@@ -4,6 +4,7 @@
 
 #include "BackGround.h"
 #include "Field.h"
+#include "FeverManager.h"
 #include "Particle/ParticleManager.h"
 #include "Player.h"
 
@@ -31,7 +32,6 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 
     GameScene gameScene = title;
 
-    auto tex = TOMATOsEngine::LoadTexture("Resources/playgame.png");
     TextureHandle titleHandle = TOMATOsEngine::LoadTexture("Resources/BBtitle.png");
     TextureHandle gameOverHandle = TOMATOsEngine::LoadTexture("Resources/gameOver.png");
     Vector2 gameOverPosition = { static_cast<float>(TOMATOsEngine::kMonitorWidth) * 0.5f,static_cast<float>(TOMATOsEngine::kMonitorHeight) * 0.5f };
@@ -54,8 +54,10 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
     backGround.SetPlayer(&player);
 
     LevelManager levelManager;
-    levelManager.Initialize();
     levelManager.GetFild(&field);
+    levelManager.Initialize();
+    
+    FeverManager* feverManager = FeverManager::GetInstance();
 
     GameTime* gameTime = GameTime::GetInstance();
 
@@ -98,22 +100,27 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
             field.Update();
             backGround.Update();
             player.Update();
-            
+
             if (!field.GetIsInGameOver()) {
                 gameTime->Update();
             }
             particleManager.Update();
             levelManager.Update();
+            feverManager->Update();
 
             backGround.Draw();
             field.Draw();
             particleManager.Draw();
             player.Draw();
+            feverManager->Draw();
             if (!field.GetIsInGameOver()) {
                 gameTime->Draw();
             }
 
+#ifdef _DEBUG
             field.Edit();
+#endif // _DEBUG
+
             break;
         case gameOver:
             if (TOMATOsEngine::IsKeyTrigger(DIK_SPACE)) {
@@ -121,7 +128,7 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
             }
             backGround.Update();
             backGround.Draw();
-            TOMATOsEngine::DrawSpriteRectAngle(gameOverPosition, gameOverSize, { 0.5f,0.5f }, 0.0f, {0.0f,0.0f}, gameOverSize, gameOverHandle,Color(0.5f, 0.5f, 0.5f, 0.5f));
+            TOMATOsEngine::DrawSpriteRectAngle(gameOverPosition, gameOverSize, { 0.5f,0.5f }, 0.0f, { 0.0f,0.0f }, gameOverSize, gameOverHandle, Color(0.5f, 0.5f, 0.5f, 0.5f));
             break;
         case gameClear:
             player.Update();

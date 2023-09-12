@@ -3,6 +3,7 @@
 #include "TOMATOsEngine.h"
 #include "Math/Color.h"
 #include "Field.h"
+#include "FeverManager.h"
 #include "Particle/ParticleManager.h"
 #include "Math/Random.h"
 #include "GameTime.h"
@@ -21,6 +22,7 @@ void Player::Initialize() {
 	comboDrawCount_ = 0;
 	comboDrawAngle_ = 0.0f;
 	comboDrawSize_ = { 0.0f ,0.0f };
+	isComboed_ = false;
 	// 階段;
 	preStep_ = 0;
 	step_ = 0;
@@ -92,7 +94,7 @@ void Player::Update() {
 		GameOverUpdate();
 	}
 
-
+#ifdef _DEBUG
 	ImGui::Begin("Player");
 	ImGui::Text("preStep_:%d", preStep_);
 	ImGui::Text("step_:%d", step_);
@@ -106,6 +108,7 @@ void Player::Update() {
 	ImGui::SliderFloat("size", &size, 0.0f, 300.0f);
 	comboSize_ = { size,size };
 	ImGui::End();
+#endif // _DEBUG
 
 }
 
@@ -116,7 +119,7 @@ void Player::move() {
 #pragma region 移動
 	velocity_.x = 0.0f;
 	const auto& xInputState = TOMATOsEngine::GetGamePadState();
-	
+
 	if (TOMATOsEngine::IsKeyPressed(DIK_D) ||
 		xInputState.Gamepad.sThumbLX > XINPUT_GAMEPAD_LEFT_THUMB_DEADZONE) {
 		velocity_.x += 3.5f;
@@ -265,9 +268,10 @@ void Player::move() {
 				if (blockLeftBottomType != Field::None &&
 					field_->IsInField(blockLeft, blockBottom)) {
 					// ブロック破壊
-					if (stepCount_ >= kCombo_ || sameHeightCount_ >= kCombo_) {
+					if (FeverManager::GetInstance()->GetIsFever() ||
+						stepCount_ >= kCombo_ || sameHeightCount_ >= kCombo_) {
 						field_->BreakBlockHorizon(blockLeft, blockBottom, isHorizontal_);
-						isComboed_ = true;
+						isComboed_ = false;
 						// 高さ更新
 						nowHeight_ = blockBottom;
 						// コンボカウントリセット
@@ -278,7 +282,7 @@ void Player::move() {
 						// パーティクル
 						for (size_t x = 0; x < Field::kNumHorizontalBlocks; x++) {
 							if (field_->GetBlock(static_cast<uint32_t>(x), blockBottom) == Field::Frash) {
-								CreateUpdate(static_cast<uint32_t>(x), blockBottom);
+								CreateParticle(static_cast<uint32_t>(x), blockBottom);
 							}
 						}
 					}
@@ -287,14 +291,16 @@ void Player::move() {
 						// 高さ更新
 						nowHeight_ = blockBottom;
 						// パーティクル
-						CreateUpdate(blockLeft, blockBottom);
+						CreateParticle(blockLeft, blockBottom);
 					}
 				}
 				if (blockRightBottomType != Field::None &&
 					field_->IsInField(blockRight, blockBottom)) {
 					// ブロック破壊
-					if (stepCount_ >= kCombo_ || sameHeightCount_ >= kCombo_) {
-						field_->BreakBlockHorizon(blockRight, blockBottom , isHorizontal_);
+					if (FeverManager::GetInstance()->GetIsFever() ||
+						stepCount_ >= kCombo_ || sameHeightCount_ >= kCombo_) {
+						field_->BreakBlockHorizon(blockRight, blockBottom, isHorizontal_);
+						isComboed_ = false;
 						// 高さ更新
 						nowHeight_ = blockBottom;
 						// コンボカウントリセット
@@ -305,7 +311,7 @@ void Player::move() {
 						// パーティクル
 						for (size_t x = 0; x < Field::kNumHorizontalBlocks; x++) {
 							if (field_->GetBlock(static_cast<uint32_t>(x), blockBottom) == Field::Frash) {
-								CreateUpdate(static_cast<uint32_t>(x), blockBottom);
+								CreateParticle(static_cast<uint32_t>(x), blockBottom);
 							}
 						}
 					}
@@ -314,7 +320,7 @@ void Player::move() {
 						// 高さ更新
 						nowHeight_ = blockBottom;
 						// パーティクル
-						CreateUpdate(blockRight, blockBottom);
+						CreateParticle(blockRight, blockBottom);
 					}
 				}
 				tempPosition.y += blockTopPosition - bottom;
@@ -374,7 +380,7 @@ void Player::Draw() {
 				gameClearMoveCoolTime_ = kGameClearMoveCoolTime_;
 				gameClearRadian_ = Easing::easing(gameClearT_, 0.0f, (20.0f + 360.0f * 3) * Math::ToRadian, 0.005f, Easing::easeOutQuint, false);
 				gameClearSize_ = Easing::easing(gameClearT_, Vector2{ 30.0f,60.0f }, Vector2{ 30.0f * 10.0f,60.0f * 10.0f }, 0.005f, Easing::easeOutQuint, false);
-				gameClearPos_ = Easing::easing(gameClearT_, position_, Vector2{ TOMATOsEngine::kMonitorWidth / 4.0f + 50.0f, TOMATOsEngine::kMonitorHeight / 2.0f - 100.0f }, 0.01f, Easing::easeOutQuint,false);
+				gameClearPos_ = Easing::easing(gameClearT_, position_, Vector2{ TOMATOsEngine::kMonitorWidth / 4.0f + 50.0f, TOMATOsEngine::kMonitorHeight / 2.0f - 100.0f }, 0.01f, Easing::easeOutQuint, false);
 			}
 			if (gameClearT_ >= 1.0f) {
 				isEndGameClearEasing_ = true;
@@ -392,7 +398,7 @@ void Player::Draw() {
 	}
 }
 
-void Player::CreateUpdate(uint32_t x, uint32_t y) {
+void Player::CreateParticle(uint32_t x, uint32_t y) {
 	// パーティクル
 	particleManager_->GetSplash()->Create(
 		Vector2(
@@ -422,7 +428,8 @@ void Player::GameOverUpdate() {
 		gameOverVelocity_.Normalized();
 		gameOverVelocity_ *= kSpeed;
 		isGameOver_ = true;
-	} else if (isGameOver_) {
+	}
+	else if (isGameOver_) {
 		const float kAddAngle = 30.0f * Math::ToRadian;
 		position_ += gameOverVelocity_;
 		gameOverAngle_ += kAddAngle;
@@ -430,7 +437,7 @@ void Player::GameOverUpdate() {
 }
 
 void Player::GameClearUpdate() {
-	
+
 }
 
 void Player::ComboUpdate(float  floor, uint32_t blockIndexX, uint32_t blockIndexY) {
@@ -442,6 +449,7 @@ void Player::ComboUpdate(float  floor, uint32_t blockIndexX, uint32_t blockIndex
 #pragma region 階段
 			step_ = blockIndexY;
 			if (step_ - 1 == preStep_) {
+				isComboed_ = false;
 				stepCount_++;
 				comboDrawCount_ = 0;
 				isHorizontal_ = false;
@@ -451,6 +459,7 @@ void Player::ComboUpdate(float  floor, uint32_t blockIndexX, uint32_t blockIndex
 				}
 			}
 			else {
+				isComboed_ = false;
 				stepCount_ = 0;
 				comboDrawCount_ = 0;
 			}
@@ -459,6 +468,7 @@ void Player::ComboUpdate(float  floor, uint32_t blockIndexX, uint32_t blockIndex
 #pragma region 平行
 			sameHeight_ = blockIndexY;
 			if (sameHeight_ == preSameHeight_) {
+				isComboed_ = true;
 				sameHeightCount_++;
 				stepCount_ = 0;
 				isHorizontal_ = true;
@@ -469,6 +479,7 @@ void Player::ComboUpdate(float  floor, uint32_t blockIndexX, uint32_t blockIndex
 				}
 			}
 			else {
+				isComboed_ = true;
 				sameHeightCount_ = 0;
 				comboDrawCount_ = 0;
 			}
@@ -541,8 +552,24 @@ void Player::SetBlockColor(int32_t blockIndexY) {
 	field_->ColorClearBlock();
 	if (blockIndexY != -1) {
 		for (uint32_t x = 0; x < Field::kNumHorizontalBlocks; x++) {
+			// フィーバーかどうか
+			if (FeverManager::GetInstance()->GetIsFever()) {
+				// フィーバー中は虹色
+				for (uint32_t y = 0; y < Field::kNumVerticalBlocks; y++) {
+					if (field_->GetBlock(x, y) == Field::Normal) {
+						// 色
+						const float kAddH = 0.0008f;
+						h_ += kAddH;
+						if (h_ >= 1.0f) {
+							h_ = 0.0f;
+						}
+
+						field_->SetColorBlock(x, y, Color::HSVA(h_, kCombo3S_, kCombo3V_));
+					}
+				}
+			}
 			// コンボ達成しているか
-			if (stepCount_ < kCombo_ && sameHeightCount_ < kCombo_) {
+			else if (stepCount_ < kCombo_ && sameHeightCount_ < kCombo_) {
 				// 階段
 				if (field_->GetBlock(x, static_cast<uint32_t>(blockIndexY + 2)) == Field::None && field_->GetBlock(static_cast<uint32_t>(x), static_cast<uint32_t>(blockIndexY + 1)) == Field::Normal) {
 					if (stepCount_ == 0) {
@@ -582,11 +609,30 @@ void Player::SetBlockColor(int32_t blockIndexY) {
 			}
 		}
 	}
+	else {
+		// フィーバーかどうか
+		if (FeverManager::GetInstance()->GetIsFever()) {
+			// フィーバー中は虹色
+			for (uint32_t x = 0; x < Field::kNumHorizontalBlocks; x++) {
+				for (uint32_t y = 0; y < Field::kNumVerticalBlocks; y++) {
+					if (field_->GetBlock(x, y) == Field::Normal) {
+						// 色
+						const float kAddH = 0.0008f;
+						h_ += kAddH;
+						if (h_ >= 1.0f) {
+							h_ = 0.0f;
+						}
+						field_->SetColorBlock(x, y, Color::HSVA(h_, kCombo3S_, kCombo3V_));
+					}
+				}
+			}
+		}
+	}
 }
 
 void Player::SetBlockParticleColor(int32_t blockIndexY) {
 	if (blockIndexY != -1) {
-		if (!isComboed_) {
+		if (isComboed_) {
 			for (uint32_t x = 0; x < Field::kNumHorizontalBlocks; x++) {
 				// コンボ達成しているか
 				if (stepCount_ < kCombo_ && sameHeightCount_ < kCombo_) {
@@ -621,13 +667,8 @@ void Player::SetBlockParticleColor(int32_t blockIndexY) {
 							particleManager_->GetCircle()->Create(Vector2(float(x * Field::kBlockSize) + (Field::kBlockSize / 2), float(blockIndexY * Field::kBlockSize) + (Field::kBlockSize / 2)), Color::HSVA(sameHeightColorH_, kS, kV), static_cast<uint32_t>(Circle::Texture::kSquare));
 						}
 					}
-
-
 				}
 			}
-		}
-		else {
-			isComboed_ = true;
 		}
 	}
 }

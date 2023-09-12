@@ -15,12 +15,14 @@ void RealWorld::Update() {
 }
 
 void RealWorld::Draw(CommandContext& commandContext) {
-
+#ifdef _DEBUG
     ImGui::Begin("Camera");
     Vector3 pos = camera_.GetPosition();
     ImGui::DragFloat3("Pos", &pos.x, 0.01f);
     camera_.SetPosition(pos);
     ImGui::End();
+#endif // _DEBUG
+
 
     camera_.UpdateMatrices();
     room_.Draw(commandContext, Matrix4x4::identity, camera_.GetViewProjectionMatrix(), false);
