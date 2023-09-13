@@ -29,8 +29,11 @@ void Player::Initialize() {
 	stepCount_ = -1;
 	stepColorH_ = 63.0f / 360.0f;
 	// 平行
-	preSameHeight_ = 0;
-	sameHeight_ = 0;
+	// 0だと怖い
+	preSameHeightX_ = 20;
+	sameHeightX_ = 20;
+	preSameHeightY_ = 0;
+	sameHeightY_ = 0;
 	sameHeightCount_ = -1;
 	textureHandle_ = TOMATOsEngine::LoadTexture("Resources/player.png");
 	sameHeightColorH_ = 307.0f / 360.0f;
@@ -53,6 +56,7 @@ void Player::Initialize() {
 	break_ = false;
 
 	comboSoundHandle_ = TOMATOsEngine::LoadAudio("Resources/Audio/combo.wav");
+	groundJumpSoundHandle_ = TOMATOsEngine::LoadAudio("Resources/Audio/groundJump.wav");
 
 	gameOverVelocity_ = { 0.0f,0.0f };
 	gameOverAngle_ = 0.0f;
@@ -105,8 +109,8 @@ void Player::Update() {
 	ImGui::Text("preStep_:%d", preStep_);
 	ImGui::Text("step_:%d", step_);
 	ImGui::Text("stepCount_:%d", stepCount_);
-	ImGui::Text("preSameHeight_:%d", preSameHeight_);
-	ImGui::Text("sameHeight_:%d", sameHeight_);
+	/*ImGui::Text("preSameHeight_:%d", preSameHeight_);
+	ImGui::Text("sameHeight_:%d", sameHeight_);*/
 	ImGui::Text("sameHeightCount_:%d", sameHeightCount_);
 	ImGui::SliderFloat("position_X", &comboPosition_.x, 0.0f, 640.0f);
 	ImGui::SliderFloat("position_Y", &comboPosition_.y, 0.0f, 480.0f);
@@ -281,6 +285,7 @@ void Player::move() {
 						isComboed_ = false;
 						// 高さ更新
 						nowHeight_ = blockBottom;
+
 						// コンボカウントリセット
 						stepCount_ = -1;
 						sameHeightCount_ = -1;
@@ -310,6 +315,7 @@ void Player::move() {
 						isComboed_ = false;
 						// 高さ更新
 						nowHeight_ = blockBottom;
+						nowWidth_ = blockRight;
 						// コンボカウントリセット
 						stepCount_ = -1;
 						sameHeightCount_ = -1;
@@ -326,6 +332,7 @@ void Player::move() {
 						isRightHit = true;
 						// 高さ更新
 						nowHeight_ = blockBottom;
+						nowWidth_ = blockRight;
 						// パーティクル
 						CreateParticle(blockRight, blockBottom);
 					}
@@ -377,8 +384,8 @@ void Player::Draw() {
 			TOMATOsEngine::DrawSpriteRect(rectMinPos, rectMaxPos, {}, Vector2(30.0f, 60.0f), textureHandle_, 0xFFFFFFFF);
 		}
 		// 円
-		TOMATOsEngine::DrawCircle(sameHeightColorChangePositionRight_, 5.0f, 0x66666666);
-		TOMATOsEngine::DrawCircle(sameHeightColorChangePositionLeft_, 5.0f, 0x66666666);
+		/*TOMATOsEngine::DrawCircle(sameHeightColorChangePositionRight_, 5.0f, 0x66666666);
+		TOMATOsEngine::DrawCircle(sameHeightColorChangePositionLeft_, 5.0f, 0x66666666);*/
 	}
 	else {
 
@@ -480,8 +487,10 @@ void Player::ComboUpdate(float  floor, uint32_t blockIndexX, uint32_t blockIndex
 			preStep_ = step_;
 #pragma endregion
 #pragma region 平行
-			sameHeight_ = blockIndexY;
-			if (sameHeight_ == preSameHeight_) {
+			sameHeightY_ = blockIndexY;
+			sameHeightX_ = blockIndexX;
+			if (sameHeightY_ == preSameHeightY_ &&
+				sameHeightX_ != preSameHeightX_) {
 				isComboed_ = true;
 				sameHeightCount_++;
 				stepCount_ = 0;
@@ -497,9 +506,12 @@ void Player::ComboUpdate(float  floor, uint32_t blockIndexX, uint32_t blockIndex
 				sameHeightCount_ = 0;
 				comboDrawCount_ = 0;
 			}
-			preSameHeight_ = sameHeight_;
+			preSameHeightY_ = sameHeightY_;
+			preSameHeightX_ = sameHeightX_;
 		}
 		else {
+			size_t playHandle = TOMATOsEngine::PlayAudio(groundJumpSoundHandle_);
+			TOMATOsEngine::SetVolume(playHandle,0.8f);
 			stepCount_ = -1;
 			sameHeightCount_ = -1;
 		}

@@ -73,8 +73,10 @@ private:
     int32_t stepCount_;
     float stepColorH_;
     // 平行
-    uint32_t preSameHeight_;
-    uint32_t sameHeight_;
+    uint32_t preSameHeightX_;
+    uint32_t sameHeightX_;
+    uint32_t preSameHeightY_;
+    uint32_t sameHeightY_;
     int32_t sameHeightCount_;
     float sameHeightColorH_;
     Vector2 sameHeightColorChangePositionRight_;
@@ -87,6 +89,8 @@ private:
 
     int32_t preHeight_;
     int32_t nowHeight_;
+    int32_t preWidth_;
+    int32_t nowWidth_;
 
     // テクスチャハンドル
     TextureHandle textureHandle_;
@@ -97,6 +101,7 @@ private:
     uint32_t continueTextureNum_;
 
     size_t comboSoundHandle_;
+    size_t groundJumpSoundHandle_;
     //gameover
     Vector2 gameOverVelocity_;
     float gameOverAngle_;
