@@ -410,7 +410,13 @@ void Field::BreakBlockHorizon(uint32_t blockIndexX, uint32_t blockIndexY, bool i
             breakedBlockNum_++;
             // フィーバー用の壊れたブロックを取得
             if (!fever->GetIsFever()) {
-                fever->IncreaseBlock(1);
+                if (isHorizontal == true) {
+                    fever->IncreaseBlock(1);
+                }
+                else {
+                    fever->IncreaseBlock(2);
+                }
+               
             }
         }
         blocks_[static_cast<uint32_t>(x)][blockIndexY] = BlockType::Frash;
@@ -578,6 +584,16 @@ std::vector<uint32_t> Field::GetGrowField(uint32_t numBlocks) {
 
             i--;
         }
+
+        uint32_t leatestindex = GetLeatestIndex();
+
+        auto leatestIndex = std::find(blockIndices.begin(), blockIndices.end(), leatestindex);
+        std::swap(blockIndices[0], *leatestIndex);
+
+        leatestindex = GetLeatestIndex(blockIndices[0]);
+
+        leatestIndex = std::find(blockIndices.begin(), blockIndices.end(), leatestindex);
+        std::swap(blockIndices[1], *leatestIndex);
     }
     return blockIndices;
 }
@@ -612,6 +628,124 @@ int32_t  Field::GetHeightestIndex() {
         }
     }
     return heightestIndex;
+}
+
+uint32_t  Field::GetLeatestIndex() {
+    uint32_t  leatestYIndex = kNumVerticalBlocks;
+    uint32_t  leatestXIndex[kNumHorizontalBlocks];
+    bool allNoneBlock = true;
+    uint32_t result = 0;
+    bool isLeatestIsNoneBlock = false;
+    for (int i = 0; i < kNumHorizontalBlocks;i++) {
+        leatestXIndex[i] = 0;
+    }
+    int inNum = 0;
+    for (uint32_t x = 0; x < kNumHorizontalBlocks; ++x) {
+        if (blocks_[x][0] == BlockType::None) {
+            isLeatestIsNoneBlock = true;
+            break;
+        }
+        for (uint32_t y = kNumVerticalBlocks - 1; y < kNumVerticalBlocks; --y) {
+            if (blocks_[x][y] == BlockType::Normal && leatestYIndex > y) {                            
+                leatestYIndex = y;
+                allNoneBlock = false;
+                break;
+            }
+            else if(blocks_[x][y] == BlockType::Normal){
+                break;
+            }
+        }
+    }
+
+    for (uint32_t x = 0; x < kNumHorizontalBlocks; ++x) {
+        if (isLeatestIsNoneBlock == true) {
+            if (blocks_[x][0] == BlockType::None) {
+                leatestXIndex[inNum] = x;
+                inNum++;
+            }
+        }
+        else {
+            for (uint32_t y = kNumVerticalBlocks - 1; y < kNumVerticalBlocks; --y) {
+                if (blocks_[x][y] == BlockType::Normal && y > leatestYIndex) {
+                    break;
+                }
+                else if (blocks_[x][y] == BlockType::Normal && y == leatestYIndex) {
+                    leatestXIndex[inNum] = x;
+                    inNum++;
+                    break;
+                }
+            }
+        }
+    }
+
+    result = leatestXIndex[randomNumberGenerator_.NextUIntRange(0, inNum - 1)];
+
+    if (allNoneBlock == true) {
+        result = randomNumberGenerator_.NextUIntRange(0, kNumHorizontalBlocks - 1);
+    }
+
+    return result;
+}
+
+uint32_t  Field::GetLeatestIndex(uint32_t exclusion) {
+    uint32_t  leatestYIndex = kNumVerticalBlocks;
+    uint32_t  leatestXIndex[kNumHorizontalBlocks];
+    bool allNoneBlock = true;
+    uint32_t result = 0;
+    bool isLeatestIsNoneBlock = false;
+    for (int i = 0; i < kNumHorizontalBlocks; i++) {
+        leatestXIndex[i] = 0;
+    }
+    int inNum = 0;
+    for (uint32_t x = 0; x < kNumHorizontalBlocks; ++x) {
+        if (x != exclusion) {
+            if (blocks_[x][0] == BlockType::None) {
+                isLeatestIsNoneBlock = true;
+                break;
+            }
+            for (uint32_t y = kNumVerticalBlocks - 1; y < kNumVerticalBlocks; --y) {
+                if (blocks_[x][y] == BlockType::Normal && leatestYIndex > y) {
+                    leatestYIndex = y;
+                    allNoneBlock = false;
+                    break;
+                }
+                else if (blocks_[x][y] == BlockType::Normal) {
+                    break;
+                }
+            }
+        }
+    }
+
+    for (uint32_t x = 0; x < kNumHorizontalBlocks; ++x) {
+        if (x != exclusion) {
+            if (isLeatestIsNoneBlock == true) {
+                if (blocks_[x][0] == BlockType::None) {
+                    leatestXIndex[inNum] = x;
+                    inNum++;
+                }
+            }
+            else {
+                for (uint32_t y = kNumVerticalBlocks - 1; y < kNumVerticalBlocks; --y) {
+                    if (blocks_[x][y] == BlockType::Normal && y > leatestYIndex) {
+                        break;
+                    }
+                    else if (blocks_[x][y] == BlockType::Normal && y == leatestYIndex) {
+                        leatestXIndex[inNum] = x;
+                        inNum++;
+                        break;
+                    }
+                }
+            }
+        }
+    }
+
+    result = leatestXIndex[randomNumberGenerator_.NextUIntRange(0, inNum - 1)];
+
+    if (allNoneBlock == true) {
+        result = randomNumberGenerator_.NextUIntRange(0, kNumHorizontalBlocks - 1);
+    }
+
+    return result;
 }
 
 void Field::HarryEffect() {

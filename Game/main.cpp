@@ -19,6 +19,7 @@ static float pitch = 1.0f;
 
 int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 
+
 	TOMATOsEngine::Initialize();
 #ifdef _DEBUG
 	TOMATOsEngine::SetFullScreen(false);
@@ -29,7 +30,6 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 		title,
 		inGame,
 		gameClear,
-		gameOver,
 	};
 
 	GameScene gameScene = title;
@@ -80,6 +80,7 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 	size_t ingamePlayHandle = 0;
 	size_t clearPlayHandle = 0;
 
+    bool isFullScreen = false;
 	// 音の溜め必要
 	bool ingameToClear = false;
 	bool clearToTitle = false;
@@ -158,18 +159,6 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 #ifdef _DEBUG
 			field.Edit();
 #endif // _DEBUG
-
-			break;
-		}
-		case gameOver:
-		{
-			/*if (TOMATOsEngine::IsKeyTrigger(DIK_SPACE)) {
-				gameScene = title;
-				titlePlayHandle = TOMATOsEngine::PlayAudio(titleSoundHandle, true);
-			}
-			backGround.Update();
-			backGround.Draw();
-			TOMATOsEngine::DrawSpriteRectAngle(gameOverPosition, gameOverSize, { 0.5f,0.5f }, 0.0f, { 0.0f,0.0f }, gameOverSize, gameOverHandle, Color(0.5f, 0.5f, 0.5f, 0.5f));*/
 			break;
 		}
 		case gameClear:

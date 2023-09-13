@@ -111,6 +111,8 @@ private:
     void DrawScoreNum(uint32_t num, Vector2 centerPos, Vector2 size, Vector2 textureSize, TextureHandle textureHandle);
     void DrawGrow();
     int32_t GetHeightestIndex();
+    uint32_t GetLeatestIndex();
+    uint32_t GetLeatestIndex(uint32_t exclusion);
     void HarryEffect();
     void GameOverUpdate();
     // 縦に伸びるので横縦配置
