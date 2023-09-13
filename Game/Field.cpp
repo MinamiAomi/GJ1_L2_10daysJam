@@ -10,6 +10,8 @@
 #include "GameTime.h"
 #include "Easing.h"
 
+#include "Player.h"
+
 void Field::Initialize() {
 	memset(blocks_, BlockType::None, sizeof(blocks_));
 
@@ -108,7 +110,7 @@ void Field::Update() {
             ChackBlock();
             ++growCoolTime_;
             breakTime_--;
-            if (growCoolTime_ >= growInterval_ && isFlash_ == false) {
+            if (growCoolTime_ >= growInterval_ && isFlash_ == false ) {
                 // 成長
                 SetGrow(nextBlockIndices_, numGrowingBlocks_);
                 // 次成長するところをセット

@@ -9,6 +9,7 @@
 #include "Math/Random.h"
 
 class ParticleManager;
+class Player;
 
 class Field {
 public:
@@ -85,8 +86,11 @@ public:
     void SetGrowInterval(uint32_t interval) { growInterval_ = interval; }
     uint32_t GetNumGrowingBlocks() { return numGrowingBlocks_; }
     void SetNumGrowingBlocks(uint32_t numGrowingBlock) { numGrowingBlocks_ = numGrowingBlock; }
+    void SetPlayer(Player* player) { player_ = player; }
 
 private:
+    Player* player_ = nullptr;
+
     struct GameOver {
         Vector2 position_;
         Vector2 velocity_;
