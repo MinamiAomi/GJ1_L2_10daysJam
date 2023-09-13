@@ -52,7 +52,7 @@ void LevelManager::Draw() {
 
 void LevelManager::LevelUpdate() {
 	// 何秒でレベル上がるか
-	const uint32_t kCoolTime = 12 * 60;
+	const uint32_t kCoolTime = 10 * 60;
 	time_++;
 	/*ImGui::Begin("level");
 	ImGui::Text("%d", numLever_);
@@ -65,7 +65,7 @@ void LevelManager::LevelUpdate() {
 		const float kLevel = 1.2f;
 		// レベル倍率をかける
 		interval_ = uint32_t(float(interval_) - (float(interval_) * (kLevel - 1.0f)));
-		interval_ = std::clamp(interval_,(uint32_t)42, (uint32_t)10000);	// インターバルタイムをセット
+		interval_ = std::clamp(interval_,(uint32_t)45, (uint32_t)10000);	// インターバルタイムをセット
 		field_->SetGrowInterval(interval_);
 		// レベルアップ
 		numLever_++;
@@ -77,7 +77,7 @@ void LevelManager::LevelUpdate() {
 	// フィーバー中
 	else if (FeverManager::GetInstance()->GetIsFever()) {
 		const uint32_t kInterval = 30;
-		const uint32_t kGrowingBlocks = 7;
+		const uint32_t kGrowingBlocks = 6;
 		// インターバルタイムをセット
 		field_->SetGrowInterval(kInterval);
 		// 出てくるブロック数

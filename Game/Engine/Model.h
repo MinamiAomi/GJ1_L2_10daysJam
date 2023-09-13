@@ -15,6 +15,12 @@ class CommandContext;
 
 class Model {
 public:
+    enum class SamplerType {
+        kLinearWrap,
+        kLinearClamp,
+        kPointWrap,
+        kPointClamp
+    };
     struct Vertex {
         Vector3 position;
         Vector3 normal;
@@ -26,6 +32,8 @@ public:
 
     void CreateFromObj(const std::filesystem::path& path);
     void Draw(CommandContext& commandContext, const Matrix4x4& world, const Camera& camera, bool isLighting = true);
+
+    void SetSamplerType(SamplerType samplerType) { samplerType_ = samplerType; }
 
 private:
     struct Mesh {
@@ -51,4 +59,5 @@ private:
     D3D12_INDEX_BUFFER_VIEW ibView_{};
     std::vector<Mesh> meshes_;
     std::vector<Material> materials_;
+    SamplerType samplerType_ = SamplerType::kLinearWrap;
 };

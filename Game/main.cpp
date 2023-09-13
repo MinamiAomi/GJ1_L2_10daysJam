@@ -283,14 +283,7 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 			break;
 		}
 		}
-		//// 3Dカメラを変更
-		//if (TOMATOsEngine::IsKeyTrigger(DIK_TAB)) {
-		//	TOMATOsEngine::SwitchViewMode();
-		//}
-		//// ゲームを終了
-		//if (TOMATOsEngine::IsKeyTrigger(DIK_SPACE)) {
-		//	TOMATOsEngine::RequestQuit();
-		//}
+
 	}
 
 	TOMATOsEngine::Shutdown();

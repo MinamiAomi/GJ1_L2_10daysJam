@@ -1,6 +1,9 @@
 #pragma once
 
+#ifdef _DEBUG
 #include "Externals/ImGui/imgui.h"
+#endif // _DEBUG
+
 
 #include <Windows.h>
 #include <d3d12.h>

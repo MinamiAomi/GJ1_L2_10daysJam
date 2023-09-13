@@ -78,9 +78,14 @@ void Field::Initialize() {
 	numTextureHandle_ = TOMATOsEngine::LoadTexture("Resources/dekisokonai36.png");
 	scoreT = 0.0f;
 
+    blockDownHandle_ = TOMATOsEngine::LoadAudio("Resources/Audio/blockDown.wav");
+    blockDown2Handle_ = TOMATOsEngine::LoadAudio("Resources/Audio/blockDown2.wav");
+    scoreSoundHandle_ = TOMATOsEngine::LoadAudio("Resources/Audio/score.wav");
+
     growCoolTime_ = 0;
     growInterval_ = 120;
     numGrowingBlocks_ = 4;
+    scoreFrame_ = 0;
 }
 
 void Field::Update() {
@@ -170,11 +175,49 @@ void Field::DrawScore()
 	Vector2 maxPos = { pos.x + TOMATOsEngine::kMonitorWidth * 0.5f,pos.y + TOMATOsEngine::kMonitorHeight * 0.5f - 40.0f };
 	TOMATOsEngine::DrawSpriteRect(minPos, maxPos, { 0.0f,0.0f }, { (float)TOMATOsEngine::kMonitorWidth ,(float)TOMATOsEngine::kMonitorHeight }, scoreTextureHandle_, 0xFFFFFFFF);
 	if (scoreT >= 1.0f) {
-		DrawScoreNum(breakedBlockNum_, { 421.0f,357.0f - 40.0f }, { 36.0f,36.0f }, { 36.0f,36.0f }, numTextureHandle_);
-		DrawScoreNum(combedStepNum_, { 324.0f,244.0f - 40.0f }, { 36.0f,36.0f }, { 36.0f,36.0f }, numTextureHandle_);
-		DrawScoreNum(combedHrizonNum_, { 516.0f,244.0f - 40.0f }, { 36.0f,36.0f }, { 36.0f,36.0f }, numTextureHandle_);
-		uint32_t score = breakedBlockNum_ + combedHrizonNum_ * kScoreHorizonMultiply + combedStepNum_ * kScoreStepMultiply;
-		DrawScoreNum(score, { 503.0f,129.0f - 40.0f }, { 36.0f,36.0f }, { 36.0f,36.0f }, numTextureHandle_);
+        uint32_t randomNum = randomNumberGenerator_.NextUIntRange(100, 999);
+        scoreFrame_++;
+        if (scoreFrame_ >= 25) {
+            if (scoreFrame_ == 25) {
+                TOMATOsEngine::PlayAudio(scoreSoundHandle_);
+            }
+            DrawScoreNum(breakedBlockNum_, { 421.0f,357.0f - 40.0f }, { 36.0f,36.0f }, { 36.0f,36.0f }, numTextureHandle_);
+        }
+        else {
+            DrawScoreNum(randomNum, { 421.0f,357.0f - 40.0f }, { 36.0f,36.0f }, { 36.0f,36.0f }, numTextureHandle_);
+        }
+
+        if (scoreFrame_ >= 50) {
+            if (scoreFrame_ == 50) {
+                TOMATOsEngine::PlayAudio(scoreSoundHandle_);
+            }
+            DrawScoreNum(combedStepNum_, { 324.0f,244.0f - 40.0f }, { 36.0f,36.0f }, { 36.0f,36.0f }, numTextureHandle_);
+        }
+        else {
+            DrawScoreNum(randomNum, { 324.0f,244.0f - 40.0f }, { 36.0f,36.0f }, { 36.0f,36.0f }, numTextureHandle_);
+        }
+
+        if (scoreFrame_ >= 75) {
+            if (scoreFrame_ == 75) {
+                TOMATOsEngine::PlayAudio(scoreSoundHandle_);
+            }
+            DrawScoreNum(combedHrizonNum_, { 516.0f,244.0f - 40.0f }, { 36.0f,36.0f }, { 36.0f,36.0f }, numTextureHandle_);
+        }
+        else {
+            DrawScoreNum(randomNum, { 516.0f,244.0f - 40.0f }, { 36.0f,36.0f }, { 36.0f,36.0f }, numTextureHandle_);
+        }
+
+        if (scoreFrame_ >= 100) {
+            if (scoreFrame_ == 100) {
+                TOMATOsEngine::PlayAudio(scoreSoundHandle_);
+            }
+            uint32_t score = breakedBlockNum_ + combedHrizonNum_ * kScoreHorizonMultiply + combedStepNum_ * kScoreStepMultiply;
+            DrawScoreNum(score, { 503.0f,129.0f - 40.0f }, { 36.0f,36.0f }, { 36.0f,36.0f }, numTextureHandle_);
+        }
+        else {
+            DrawScoreNum(randomNum, { 503.0f,129.0f - 40.0f }, { 36.0f,36.0f }, { 36.0f,36.0f }, numTextureHandle_);
+        }
+		
 	}
 	else {
 		uint32_t randomNum = randomNumberGenerator_.NextUIntRange(100,999);
@@ -301,6 +344,8 @@ void Field::GameOverUpdate() {
             for (uint32_t x = 0; x < kNumHorizontalBlocks; x++) {
                 if (blocks_[x][heightCount_] == BlockType::Normal) {
                     blocks_[x][heightCount_] = BlockType::None;
+                    size_t playHandle = TOMATOsEngine::PlayAudio(blockDownHandle_);
+                    playHandle;
                     GameOver* gameOver = new GameOver();
                     // ポジション
                     gameOver->position_ = { float(x * kBlockSize) + float(kBlockSize) * 0.5f,float(heightCount_ * kBlockSize) + float(kBlockSize) * 0.5f };
@@ -348,6 +393,8 @@ void Field::GameOverUpdate() {
         for (auto& block : gameOverBlocks_) {
             if (!block->isDrop_ && block->position_.y > gameOverPosition_.y - float(TOMATOsEngine::kMonitorHeight) * 0.5f) {
                 block->isDrop_ = true;
+                size_t playHandle = TOMATOsEngine::PlayAudio(blockDown2Handle_);
+                playHandle;
             }
             else if (block->isDrop_) {
                 block->velocity_.y += kGravity;
@@ -514,6 +561,8 @@ bool Field::IsInField(uint32_t blockIndexX, uint32_t blockIndexY) const {
 }
 
 void Field::Edit() {
+#ifdef _DEBUG
+
     ImGui::Begin("Field");
     int coolTime = int(growCoolTime_);
     ImGui::SliderInt("GrowCoolTime", &coolTime, 0, int(growInterval_));
@@ -527,6 +576,7 @@ void Field::Edit() {
     ImGui::SliderInt("NumGrowingBlocks", &numB, 0, int(kNumHorizontalBlocks - 1));
     numGrowingBlocks_ = uint32_t(numB);
     ImGui::End();
+#endif // _DEBUG
 }
 
 void Field::ChackBlock() {

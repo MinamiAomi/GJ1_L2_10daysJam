@@ -51,8 +51,8 @@ void Bloom::Initialize(ColorBuffer* originalTexture) {
         D3D12_GRAPHICS_PIPELINE_STATE_DESC psoDesc{};
         psoDesc.pRootSignature = rootSignature_;
 
-        auto vs = shaderManager->Compile(L"Engine/Graphics/Shader/ScreenQuadVS.hlsl", ShaderManager::kVertex);
-        auto ps = shaderManager->Compile(L"Engine/Graphics/Shader/LuminanceExtractionrPS.hlsl", ShaderManager::kPixel);
+        auto vs = shaderManager->Compile(L"Resources/Shader/ScreenQuadVS.hlsl", ShaderManager::kVertex);
+        auto ps = shaderManager->Compile(L"Resources/Shader/LuminanceExtractionrPS.hlsl", ShaderManager::kPixel);
         psoDesc.VS = CD3DX12_SHADER_BYTECODE(vs->GetBufferPointer(), vs->GetBufferSize());
         psoDesc.PS = CD3DX12_SHADER_BYTECODE(ps->GetBufferPointer(), ps->GetBufferSize());
         psoDesc.BlendState = Helper::BlendDisable;

@@ -56,6 +56,11 @@ void Graphics::Initialize() {
     SamplerManager::Initialize();
 }
 
+void Graphics::Shutdown(){
+    commandQueue_.Signal();
+    commandQueue_.WaitForGPU();
+}
+
 DescriptorHandle Graphics::AllocateDescriptor(D3D12_DESCRIPTOR_HEAP_TYPE type) {
     return descriptorHeaps_[type].Allocate();
 }

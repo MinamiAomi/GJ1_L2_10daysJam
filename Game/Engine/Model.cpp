@@ -7,6 +7,7 @@
 
 #include "Graphics/CommandContext.h"
 #include "Graphics/ShaderManager.h"
+#include "Graphics/SamplerManager.h"
 
 std::unique_ptr<RootSignature> Model::rootSignature_;
 std::unique_ptr<PipelineState> Model::pipelineState_;
@@ -18,21 +19,24 @@ void Model::CreatePipeline(DXGI_FORMAT rtvFormat, DXGI_FORMAT dsvFormat) {
     {
         CD3DX12_DESCRIPTOR_RANGE ranges[1]{};
         ranges[0].Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, 0);
+        CD3DX12_DESCRIPTOR_RANGE samplerRanges[1]{};
+        samplerRanges[0].Init(D3D12_DESCRIPTOR_RANGE_TYPE_SAMPLER, 1, 0);
 
-        CD3DX12_ROOT_PARAMETER rootParameters[3]{};
+        CD3DX12_ROOT_PARAMETER rootParameters[4]{};
         rootParameters[0].InitAsConstantBufferView(0);
         rootParameters[1].InitAsConstantBufferView(1);
         rootParameters[2].InitAsDescriptorTable(_countof(ranges), ranges);
+        rootParameters[3].InitAsDescriptorTable(_countof(samplerRanges), samplerRanges);
 
-        CD3DX12_STATIC_SAMPLER_DESC staticSampler(
-            0,
-            D3D12_FILTER_MIN_MAG_MIP_POINT);
+        /*  CD3DX12_STATIC_SAMPLER_DESC staticSampler(
+              0,
+              D3D12_FILTER_MIN_MAG_MIP_POINT);*/
 
         D3D12_ROOT_SIGNATURE_DESC desc{};
         desc.pParameters = rootParameters;
         desc.NumParameters = _countof(rootParameters);
-        desc.pStaticSamplers = &staticSampler;
-        desc.NumStaticSamplers = 1;
+        /* desc.pStaticSamplers = &staticSampler;
+         desc.NumStaticSamplers = 1;*/
         desc.Flags = D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT;
 
         rootSignature_->Create(L"Model RootSignature", desc);
@@ -54,8 +58,8 @@ void Model::CreatePipeline(DXGI_FORMAT rtvFormat, DXGI_FORMAT dsvFormat) {
         inputLayoutDesc.NumElements = _countof(inputElements);
         desc.InputLayout = inputLayoutDesc;
 
-        auto vs = shaderManager->Compile(L"Engine/Shader/ModelVS.hlsl", ShaderManager::kVertex);
-        auto ps = shaderManager->Compile(L"Engine/Shader/ModelPS.hlsl", ShaderManager::kPixel);
+        auto vs = shaderManager->Compile(L"Resources/Shader/ModelVS.hlsl", ShaderManager::kVertex);
+        auto ps = shaderManager->Compile(L"Resources/Shader/ModelPS.hlsl", ShaderManager::kPixel);
         desc.VS = CD3DX12_SHADER_BYTECODE(vs->GetBufferPointer(), vs->GetBufferSize());
         desc.PS = CD3DX12_SHADER_BYTECODE(ps->GetBufferPointer(), ps->GetBufferSize());
         desc.BlendState = Helper::BlendDisable;
@@ -101,6 +105,22 @@ void Model::Draw(CommandContext& commandContext, const Matrix4x4& world, const C
     commandContext.SetDynamicConstantBufferView(0, sizeof(transformationData), &transformationData);
     commandContext.SetVertexBuffer(0, vbView_);
     commandContext.SetIndexBuffer(ibView_);
+
+    switch (samplerType_) {
+    default:
+    case Model::SamplerType::kLinearWrap:
+        commandContext.SetDescriptorTable(3, SamplerManager::LinearWrap);
+        break;
+    case Model::SamplerType::kLinearClamp:
+        commandContext.SetDescriptorTable(3, SamplerManager::LinearClamp);
+        break;
+    case Model::SamplerType::kPointWrap:
+        commandContext.SetDescriptorTable(3, SamplerManager::PointWrap);
+        break;
+    case Model::SamplerType::kPointClamp:
+        commandContext.SetDescriptorTable(3, SamplerManager::PointClamp);
+        break;
+    }
 
     for (auto& mesh : meshes_) {
         const auto& material = materials_[mesh.materialIndex];

@@ -9,10 +9,10 @@ void ArcadeMachine::Initialize() {
     stickTransform_.parent = &transform_;
     stickTransform_.translate = { 0.0f, 0.8f, -0.26f };
 
-    body_.CreateFromObj("Engine/Model/body.obj");
-    stickRim_.CreateFromObj("Engine/Model/stick_rim.obj");
-    stick_.CreateFromObj("Engine/Model/stick.obj");
-    board_.CreateFromObj("Engine/Model/board.obj");
+    body_.CreateFromObj("Resources/Model/body.obj");
+    stickRim_.CreateFromObj("Resources/Model/stick_rim.obj");
+    stick_.CreateFromObj("Resources/Model/stick.obj");
+    board_.CreateFromObj("Resources/Model/board.obj");
 }
 
 void ArcadeMachine::Update() {
