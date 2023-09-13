@@ -25,7 +25,6 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 	TOMATOsEngine::SetFullScreen(false);
 #endif // _DEBUG
 
-
 	enum GameScene {
 		title,
 		inGame,
@@ -42,19 +41,24 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 	TextureHandle operationTextureHandle = TOMATOsEngine::LoadTexture("Resources/operationText.png");
 	TextureHandle endTextureHandle = TOMATOsEngine::LoadTexture("Resources/endText.png");
 	TextureHandle arrowTextureHandle = TOMATOsEngine::LoadTexture("Resources/arrow.png");
+	TextureHandle spaceorBTextureHandle = TOMATOsEngine::LoadTexture("Resources/spaceorb.png");
 
 	Vector2 textSize = { 64.0f * 2.5f,32.0f * 2.5f };
 	Vector2 startTextPosition = { static_cast<float>(TOMATOsEngine::kMonitorWidth) * 0.5f ,static_cast<float>(TOMATOsEngine::kMonitorHeight) * 0.5f - 180.0f };
 	Vector2 operationTextPosition = { static_cast<float>(TOMATOsEngine::kMonitorWidth) * 0.5f ,startTextPosition.y - textSize.y * 0.5f - 10.0f };
 	Vector2 endTextPosition = { static_cast<float>(TOMATOsEngine::kMonitorWidth) * 0.5f ,operationTextPosition.y - textSize.y * 0.5f - 10.0f };
 
-	Vector2 arrowPosition = { startTextPosition.x - textSize.x*0.5f-30.0f,startTextPosition.y };
-	Vector2 arrowSize = { 32.0f,32.0f};
+	Vector2 spaceorBPosition = { static_cast<float>(TOMATOsEngine::kMonitorWidth) * 0.5f ,static_cast<float>(TOMATOsEngine::kMonitorHeight) * 0.5f - 130.0f };
+	Vector2 spaceorBSize = { 150.0f * 1.5f,32.0 * 1.5f };
+	Vector2 arrowPosition = { startTextPosition.x - textSize.x * 0.5f - 60.0f,startTextPosition.y };
+	Vector2 arrowSize = { 32.0f,32.0f };
 	uint32_t arrowSetPosition = 0;
 	uint32_t arrowAnimation = 0;
 	uint32_t arrowColor = 0xFFFFFFFF;
-	bool flag_=false;
+	uint32_t StickCount_ = 0;
+	bool flag_ = false;
 	bool isSwitchViewMode = false;
+	bool canStick_ = true;
 
 
 	Vector2 gameOverPosition = { static_cast<float>(TOMATOsEngine::kMonitorWidth) * 0.5f,static_cast<float>(TOMATOsEngine::kMonitorHeight) * 0.5f - textSize.y * 2.0f };
@@ -112,24 +116,36 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 		ImGui::End();
 #endif // _DEBUG
 
-
+		auto pad = TOMATOsEngine::GetGamePadState();
+		auto prepad = TOMATOsEngine::GetGamePadPreState();
 		switch (gameScene) {
 		case title:
 		{
 			const uint32_t kArrowAnimation = 25;
+			const uint32_t kStickCountMax = 30;
 			if (!isSwitchViewMode) {
 				arrowAnimation++;
+				if (!canStick_) {
+					StickCount_++;
+					if (StickCount_ >= kStickCountMax) {
+						StickCount_ = 0;
+						canStick_ = true;
+					}
+				}
 				if (arrowAnimation >= kArrowAnimation) {
 					if (flag_) {
-					arrowColor = 0xFFFFFFFF;
+						arrowColor = 0xFFFFFFFF;
 					}
 					else {
-					arrowColor = 0xFFFFFF00;
+						arrowColor = 0xFFFFFF00;
 					}
 					flag_ ^= true;
 					arrowAnimation = 0;
 				}
-				if (TOMATOsEngine::IsKeyTrigger(DIK_S)) {
+				if (TOMATOsEngine::IsKeyTrigger(DIK_S) ||
+					(pad.Gamepad.sThumbLY < -20000 &&
+						canStick_)) {
+					canStick_ = false;
 					if (arrowSetPosition >= 2) {
 						arrowSetPosition = 0;
 					}
@@ -138,7 +154,10 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 					}
 					TOMATOsEngine::PlayAudio(pickHandle);
 				}
-				if (TOMATOsEngine::IsKeyTrigger(DIK_W)) {
+				if (TOMATOsEngine::IsKeyTrigger(DIK_W) ||
+					(pad.Gamepad.sThumbLY > +20000 &&
+						canStick_)) {
+					canStick_ = false;
 					if (arrowSetPosition <= 0) {
 						arrowSetPosition = 2;
 					}
@@ -156,7 +175,9 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 				else {
 					arrowPosition.y = endTextPosition.y;
 				}
-				if (TOMATOsEngine::IsKeyTrigger(DIK_SPACE)) {
+				if (TOMATOsEngine::IsKeyTrigger(DIK_SPACE) ||
+					((pad.Gamepad.wButtons & XINPUT_GAMEPAD_B) &&
+						!(prepad.Gamepad.wButtons & XINPUT_GAMEPAD_B))) {
 					TOMATOsEngine::PlayAudio(pickHandle);
 					if (arrowSetPosition == 0) {
 						gameScene = inGame;
@@ -183,17 +204,19 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 					auto pushSpacePlayHandle = TOMATOsEngine::PlayAudio(pushSpaceSoundHandle);
 					TOMATOsEngine::SetVolume(pushSpacePlayHandle, 0.1f);
 				}
+				
+
 			}
-			else {
-				if (TOMATOsEngine::IsKeyTrigger(DIK_ESCAPE)) {
-					TOMATOsEngine::PlayAudio(pickHandle);
-					TOMATOsEngine::SwitchViewMode();
-					isSwitchViewMode = false;
-				}
+			else if (TOMATOsEngine::IsKeyTrigger(DIK_ESCAPE) ||
+				(pad.Gamepad.wButtons & XINPUT_GAMEPAD_X)) {
+				TOMATOsEngine::PlayAudio(pickHandle);
+				TOMATOsEngine::SwitchViewMode();
+				isSwitchViewMode = false;
 			}
-			
 
 			TOMATOsEngine::DrawSpriteRect({ 0.0f,0.0f }, { static_cast<float>(TOMATOsEngine::kMonitorWidth) ,static_cast<float>(TOMATOsEngine::kMonitorHeight) }, { 0.0f,0.0f }, { 640.0f,480.0f }, titleHandle, 0xFFFFFFFF);
+
+			TOMATOsEngine::DrawSpriteRectAngle(spaceorBPosition, spaceorBSize, { 0.5f,0.5f }, 0.0f, {}, { 150.0f, 32.0f }, spaceorBTextureHandle, 0xFFFFFFFF);
 			// スタート
 			TOMATOsEngine::DrawSpriteRectAngle(startTextPosition, textSize, { 0.5f,0.5f }, 0.0f, {}, { 64.0f, 32.0f }, startTextureHandle, 0xFFFFFFFF);
 			// 操作
@@ -204,8 +227,12 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 			TOMATOsEngine::DrawSpriteRectAngle(arrowPosition, arrowSize, { 0.5f,0.5f }, 0.0f, {}, { 32.0f, 32.0f }, arrowTextureHandle, arrowColor);
 			break;
 		}
+
 		case inGame:
 		{
+			if (TOMATOsEngine::IsKeyTrigger(DIK_ESCAPE)) {
+				TOMATOsEngine::RequestQuit();
+			}
 			// 音
 			if (field.GetIsVanish() == true) {
 				gameScene = gameClear;
@@ -256,7 +283,9 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 					clearToTitle = true;
 				}
 			}
-			if (TOMATOsEngine::IsKeyTrigger(DIK_SPACE)) {
+			if (TOMATOsEngine::IsKeyTrigger(DIK_SPACE) ||
+				((pad.Gamepad.wButtons & XINPUT_GAMEPAD_B) &&
+					!(prepad.Gamepad.wButtons & XINPUT_GAMEPAD_B))) {
 
 				arrowPosition = { startTextPosition.x - textSize.x * 0.5f - 30.0f,startTextPosition.y };
 				arrowSetPosition = 0;
