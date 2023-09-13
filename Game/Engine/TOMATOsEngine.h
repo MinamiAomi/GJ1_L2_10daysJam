@@ -65,4 +65,9 @@ namespace TOMATOsEngine {
     void SetVolume(size_t soundHandle, float volume);
 
     void SetFullScreen(bool fullScreen);
+
+    // カメラの切り替え
+    void SwitchViewMode();
+    // 終了を要請
+    void RequestQuit();
 }

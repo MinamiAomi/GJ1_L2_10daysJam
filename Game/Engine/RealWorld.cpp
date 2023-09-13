@@ -13,6 +13,24 @@ void RealWorld::Initialize() {
 
 void RealWorld::Update() {
     arcadeMachine_.Update();
+
+    Vector3 position = camera_.GetPosition();
+    Quaternion rotate = camera_.GetRotate();
+
+    switch (viewMode_)
+    {
+    default:
+    case RealWorld::ViewMode::kMonitor:
+        position = Vector3::Lerp(0.1f, position, { 0.0f, 1.18f, -1.3f });
+        rotate = Quaternion::Slerp(0.1f, rotate, Quaternion::identity);
+        break;
+    case RealWorld::ViewMode::kBoard:
+        position = Vector3::Lerp(0.1f, position, { 0.0f, 1.58f, -0.4f });
+        rotate = Quaternion::Slerp(0.1f, rotate, Quaternion::MakeLookRotation(Vector3(0.0f, -1.0f, 0.4f).Normalized()));
+        break;
+    }
+    camera_.SetPosition(position);
+    camera_.SetRotate(rotate);
 }
 
 void RealWorld::Draw(CommandContext& commandContext) {

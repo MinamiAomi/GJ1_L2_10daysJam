@@ -28,6 +28,9 @@ namespace {
 
     Monitor* monitor = nullptr;
     std::unique_ptr<RealWorld> realWorld;
+    RealWorld::ViewMode viewMode;
+
+    bool isEndRequest = false;
 
     inline uint32_t RGBAtoABGR(uint32_t argb) {
         uint8_t R = (argb >> 24) & 0xFFu;
@@ -90,6 +93,8 @@ namespace TOMATOsEngine {
         renderManager->Reset();
 
         renderManager->BeginRender();
+
+        isEndRequest = false;
     }
 
     void Shutdown() {
@@ -106,9 +111,9 @@ namespace TOMATOsEngine {
         realWorld->Draw(renderManager->GetCommandContext());
         renderManager->EndRender();
 
-  
+
         if (!gameWindow->ProcessMessage() ||
-            input->IsKeyTrigger(DIK_ESCAPE)) {
+            isEndRequest) {
             return false;
         }
 
@@ -501,5 +506,24 @@ namespace TOMATOsEngine {
     }
     void SetFullScreen(bool fullScreen) {
         gameWindow->SetFullScreen(fullScreen);
+    }
+    void SwitchViewMode() {
+        if (realWorld) {
+            switch (viewMode)
+            {
+            default:
+            case RealWorld::ViewMode::kMonitor:
+                viewMode = RealWorld::ViewMode::kBoard;
+                realWorld->SetViewMode(RealWorld::ViewMode::kBoard);
+                break;
+            case RealWorld::ViewMode::kBoard:
+                viewMode = RealWorld::ViewMode::kMonitor;
+                realWorld->SetViewMode(RealWorld::ViewMode::kMonitor);
+                break;
+            }
+        }
+    }
+    void RequestQuit() {
+        isEndRequest = true;
     }
 }
