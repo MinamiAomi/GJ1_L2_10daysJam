@@ -377,8 +377,8 @@ void Player::Draw() {
 			TOMATOsEngine::DrawSpriteRect(rectMinPos, rectMaxPos, {}, Vector2(30.0f, 60.0f), textureHandle_, 0xFFFFFFFF);
 		}
 		// 円
-		TOMATOsEngine::DrawCircle(sameHeightColorChangePositionRight_,5.0f,0x66666666);
-		TOMATOsEngine::DrawCircle(sameHeightColorChangePositionLeft_,5.0f, 0x66666666);
+		TOMATOsEngine::DrawCircle(sameHeightColorChangePositionRight_, 5.0f, 0x66666666);
+		TOMATOsEngine::DrawCircle(sameHeightColorChangePositionLeft_, 5.0f, 0x66666666);
 	}
 	else {
 
@@ -507,6 +507,69 @@ void Player::ComboUpdate(float  floor, uint32_t blockIndexX, uint32_t blockIndex
 	else {
 		break_ = false;
 	}
+
+	// 縦のライン
+	float stepCombo = std::clamp(static_cast<float>(sameHeightCount_), -1.0f, 2.0f);
+	float sameHeightCombo = std::clamp(static_cast<float>(stepCount_), -1.0f, 2.0f);
+	float combo = std::max(stepCombo, sameHeightCombo);
+	if (combo >= 0) {
+		const uint32_t kNum = 8;
+		const Vector2 size = { float(TOMATOsEngine::kMonitorWidth / kNum),float(TOMATOsEngine::kMonitorWidth / kNum) * 2 };
+		const float distance = size.y + size.y * 2.0f;
+		float verticalLineColorH_ = 0.0f;
+		float verticalLineColorS_ = 0.0f;
+		float verticalLineColorV_ = 0.0f;
+
+		if (stepCount_ > sameHeightCount_) {
+			if (stepCount_ == 0) {
+				verticalLineColorS_ = kCombo1S_;
+				verticalLineColorV_ = kCombo1V_;
+				verticalLineColorH_ = stepColorH_;
+			}
+			else if (stepCount_ == 1) {
+				verticalLineColorS_ = kCombo2S_;
+				verticalLineColorV_ = kCombo2V_;
+				verticalLineColorH_ = stepColorH_;
+			}
+			else {
+				verticalLineColorS_ = kCombo3S_;
+				verticalLineColorV_ = kCombo3V_;
+				verticalLineColorH_ = h_;
+			}
+		}
+		else {
+			if (sameHeightCount_ == 0) {
+				verticalLineColorS_ = kCombo1S_;
+				verticalLineColorV_ = kCombo1V_;
+				verticalLineColorH_ = sameHeightColorH_;
+			}
+			else if (sameHeightCount_ == 1) {
+				verticalLineColorS_ = kCombo2S_;
+				verticalLineColorV_ = kCombo2V_;
+				verticalLineColorH_ = sameHeightColorH_;
+			}
+			else {
+				verticalLineColorS_ = kCombo3S_;
+				verticalLineColorV_ = kCombo3V_;
+				verticalLineColorH_ = h_;
+			}
+		}
+		// 足さないと一コンボでも0でfor文の中に入らない
+		combo += 1.0f;
+		for (uint32_t ix = 0; ix < kNum; ix++) {
+			for (uint32_t iy = 0; iy < uint32_t(combo); iy++) {
+				particleManager_->GetVerticalLine()->Create(
+					Vector2(
+						((float(ix) * size.x + (size.x * 0.5f))),
+						static_cast<float>(iy) * -distance
+					),
+					Color::HSVA(verticalLineColorH_, verticalLineColorS_, verticalLineColorV_, 0.1f),
+					static_cast<uint32_t>(VerticalLine::Texture::kHorizonLine),
+					{ size.x * 0.5f,size.y * 2.0f }
+				);
+			}
+		}
+	}
 }
 
 void Player::ComboDraw() {
@@ -577,7 +640,7 @@ void Player::SetBlockColor(int32_t blockIndexY) {
 		for (uint32_t x = 0; x < Field::kNumHorizontalBlocks; x++) {
 			// ライン
 			if (sameHeightStart_) {
-				int32_t posX = int32_t(x)* int32_t(Field::kBlockSize) + int32_t(Field::kBlockSize / 2);
+				int32_t posX = int32_t(x) * int32_t(Field::kBlockSize) + int32_t(Field::kBlockSize / 2);
 				if (int32_t(sameHeightColorChangePositionRight_.x) > posX &&
 					int32_t(sameHeightColorChangePositionLeft_.x) < posX) {
 
@@ -587,10 +650,10 @@ void Player::SetBlockColor(int32_t blockIndexY) {
 							//// 色
 							//const float kS = 0.5f;
 							//const float kV = 0.3f;
-							particleManager_->GetCircle()->Create(Vector2(float(x * Field::kBlockSize) + (Field::kBlockSize / 2), float(blockIndexY * Field::kBlockSize) + (Field::kBlockSize / 2)), {1.0f,1.0f,1.0,0.1f}, static_cast<uint32_t>(Circle::Texture::kSquare));
+							particleManager_->GetCircle()->Create(Vector2(float(x * Field::kBlockSize) + (Field::kBlockSize / 2), float(blockIndexY * Field::kBlockSize) + (Field::kBlockSize / 2)), { 1.0f,1.0f,1.0,0.1f }, static_cast<uint32_t>(Circle::Texture::kSquare));
 							sameHeightParticleFlag_.at(x) = true;
 						}
-						else if(sameHeightCount_ == 1) {
+						else if (sameHeightCount_ == 1) {
 							//// 色
 							//const float kS = 0.5f;
 							//const float kV = 0.3f;
@@ -636,7 +699,7 @@ void Player::SetBlockColor(int32_t blockIndexY) {
 						// 色
 						field_->SetColorBlock(x, static_cast<uint32_t>(blockIndexY + 1), Color::HSVA(stepColorH_, kCombo1S_, kCombo1V_));
 					}
-					else if(stepCount_ == 1) {
+					else if (stepCount_ == 1) {
 						// 色
 						field_->SetColorBlock(x, static_cast<uint32_t>(blockIndexY + 1), Color::HSVA(stepColorH_, kCombo2S_, kCombo2V_));
 					}

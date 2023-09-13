@@ -97,8 +97,7 @@ private:
 	static const uint32_t kVerticalLine_Max = 30;
 	std::array<std::unique_ptr<VerticalLine>, kVerticalLine_Max> verticalLines_;
 	TextureHandle verticalLine_TextureHandle_;
-	const uint32_t verticalLine_CoolTime_ = 300;
-	uint32_t verticalLine_Count_;
+	//uint32_t verticalLineNum_ = 8;
 
 	Player* player_;
 };

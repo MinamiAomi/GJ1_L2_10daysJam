@@ -61,6 +61,8 @@ BackGround::BackGround() {
 		verticalLine->death_Time_ = 0;
 		verticalLine->isAlive_ = false;
 	}
+
+	verticalLine_TextureHandle_ = TOMATOsEngine::LoadTexture("Resources/Particle/horizonLine.png");
 	Initialize();
 }
 
@@ -70,19 +72,23 @@ void BackGround::Initialize() {
 	// 四角
 	SquareInitialize();
 	// 縦のライン
-
+	VerticalLineInitialize();
 }
 
 void BackGround::Update() {
 	// 四角
 	SquareUpdate();
+	// 縦のライン
+	VerticalLineUpdate();
 }
 
 void BackGround::Draw() {
 	// フレーム
 	TOMATOsEngine::DrawFrame(fream_Position_, fream_Size_, Vector2(0.5f, 0.5f), 0.0f, {}, fream_Size_, fream_TextureHandle_, Color::HSVA(fream_ColorH_, 1.0f, 1.0f, 0.4f));
 	// 四角
-	SquareDraw();
+	//SquareDraw();
+	// 縦のライン
+	//VerticalLineDraw();
 }
 
 void BackGround::FrameDraw() {
@@ -172,7 +178,8 @@ void BackGround::SquareDraw() {
 
 void BackGround::VerticalLineInitialize() {}
 
-void BackGround::VerticalLineUpdate() {}
+void BackGround::VerticalLineUpdate() {
+}
 
 void BackGround::VerticalLineDraw() {}
 

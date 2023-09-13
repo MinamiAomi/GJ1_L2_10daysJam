@@ -18,6 +18,9 @@ void ParticleManager::Initialize() {
 	// エミッターの回りを回る
 	yenLetter_ = new YenLetter();
 	yenLetter_->Initialize();
+	// 縦のライン
+	verticleLine_ = new VerticalLine();
+	verticleLine_->Initialize();
 }
 
 void ParticleManager::Update() { 
@@ -26,16 +29,17 @@ void ParticleManager::Update() {
 	splash_->Update();
 	pop_->Update();
 	yenLetter_->Update();
+	verticleLine_->Update();
 }
 
 void ParticleManager::Draw() { 
-	TOMATOsEngine::SetBlendMode(kBlendModeAdditive);
-	circle_->Draw();
 	TOMATOsEngine::SetBlendMode(kBlendModeNormal);
 	follow_->Draw();
 	TOMATOsEngine::SetBlendMode(kBlendModeAdditive);
+	circle_->Draw();
 	splash_->Draw();
 	pop_->Draw();
 	yenLetter_->Draw();
+	verticleLine_->Draw();
 	TOMATOsEngine::SetBlendMode(kBlendModeNormal);
 }

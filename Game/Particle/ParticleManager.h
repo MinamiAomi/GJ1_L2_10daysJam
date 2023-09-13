@@ -5,6 +5,7 @@
 #include "Particle/Splash.h"
 #include "Particle/Pop.h"
 #include "Particle/YenLetter.h"
+#include "Particle/VerticalLine.h"
 
 class ParticleManager {
 public:
@@ -18,10 +19,12 @@ public:
 	Splash* GetSplash() { return splash_; }
 	Pop* GetPop() { return pop_; }
 	YenLetter* GetYenLetter() { return yenLetter_; }
+	VerticalLine* GetVerticalLine() { return verticleLine_; }
 private:
 	Circle* circle_;
 	Follow* follow_;
 	Splash* splash_;
 	Pop* pop_;
 	YenLetter* yenLetter_;
+	VerticalLine* verticleLine_;
 };
