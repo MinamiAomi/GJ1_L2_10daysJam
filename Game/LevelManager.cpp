@@ -13,7 +13,15 @@ void LevelManager::Initialize() {
 	interval_ = field_->GetGrowInterval();
 	growingBlocks_ = field_->GetNumGrowingBlocks();
 
-	textureHandle_ = TOMATOsEngine::LoadTexture("Resources/speedUp.png");
+	textSize_ = { 512.0f,256.0f };
+	textPosition_ = { float(TOMATOsEngine::kMonitorWidth) + textSize_.x,float(TOMATOsEngine::kMonitorHeight) * 0.5f };
+	textVelocity_.x = -10.0f;
+	textColorH_ = 0.0f;
+
+	isTextStart_ = false;
+
+	textureHandles_.at(Texture::kEffect) = TOMATOsEngine::LoadTexture("Resources/speedUpEffect.png");
+	textureHandles_.at(Texture::kText) = TOMATOsEngine::LoadTexture("Resources/speedUp.png");
 
 	for (auto& effect : effects_) {
 		effect = std::make_unique<Effect>();
@@ -30,18 +38,21 @@ void LevelManager::Update() {
 void LevelManager::Draw() {
 	Random::RandomNumberGenerator rnd{};
 
-	const float kS = rnd.NextFloatRange(0.5f,1.0f);
-	const float kV = rnd.NextFloatRange(0.5f,1.0f);
+	const float kS = rnd.NextFloatRange(0.5f, 1.0f);
+	const float kV = rnd.NextFloatRange(0.5f, 1.0f);
 	for (auto& effect : effects_) {
 		if (effect->isAlive_) {
-			TOMATOsEngine::DrawSpriteRectAngle(effect->position_, effect->size_, { 0.5f,0.5f }, 0.0f, {}, { 32.0f,64.0f }, textureHandle_, Color::HSVA((effect->colorH_ / 360.0f), kS, kV));
+			TOMATOsEngine::DrawSpriteRectAngle(effect->position_, effect->size_, { 0.5f,0.5f }, 0.0f, {}, { 32.0f,64.0f }, textureHandles_.at(Texture::kEffect), Color::HSVA((effect->colorH_ / 360.0f), kS, kV));
 		}
+	}
+	if (isTextStart_) {
+		TOMATOsEngine::DrawSpriteRectAngle(textPosition_, textSize_, { 0.5f,0.5f }, 0.0f, {}, { 64.0f,32.0f }, textureHandles_.at(Texture::kText), Color::HSVA((textColorH_ / 360.0f), kS, kV));
 	}
 }
 
 void LevelManager::LevelUpdate() {
 	// 何秒でレベル上がるか
-	const uint32_t kCoolTime = 20 * 60;
+	const uint32_t kCoolTime = 10 * 60;
 	time_++;
 	if (time_ % kCoolTime == 0 && numLever_ <= kNumLeversMax) {
 		// 難易度を何倍するか
@@ -78,20 +89,30 @@ void LevelManager::EffectUpdate() {
 	Random::RandomNumberGenerator rnd{};
 	for (auto& effect : effects_) {
 		// 画面外に言ったらfalse
-		if (effect->position_.y > float(TOMATOsEngine::kMonitorHeight)+effect->size_.y) {
+		if (effect->position_.y > float(TOMATOsEngine::kMonitorHeight) + effect->size_.y) {
 			effect->isAlive_ = false;
 		}
 		else {
 			// ポジション
 			effect->position_ += effect->velocity_;
 			// 色
-			effect->colorH_ = rnd.NextFloatRange(0.0f,20.0f);
+			effect->colorH_ = rnd.NextFloatRange(0.0f, 20.0f);
 		}
 
+	}
+	if (isTextStart_) {
+		// テキスト
+		textPosition_ += textVelocity_;
+		if (textPosition_.x < -textSize_.x) {
+			textPosition_ = { float(TOMATOsEngine::kMonitorWidth) + textSize_.x ,float(TOMATOsEngine::kMonitorHeight) * 0.5f };
+			isTextStart_ = false;
+		}
 	}
 }
 
 void LevelManager::CreateEffect() {
+	// テキストスタートフラグ
+	isTextStart_ = true;
 	Random::RandomNumberGenerator rnd{};
 	const float kSpeedMin = 5.0f;
 	const float kSpeedMax = 10.0f;
@@ -109,10 +130,10 @@ void LevelManager::CreateEffect() {
 			float speed = rnd.NextFloatRange(kSpeedMin, kSpeedMax);
 			effect->velocity_.y = speed;
 			// サイズ
-			effect->size_ = kSize*rnd.NextFloatRange(kSizeMin, kSizeMax);
+			effect->size_ = kSize * rnd.NextFloatRange(kSizeMin, kSizeMax);
 			// 座標
 			effect->position_.x = rnd.NextFloatRange(0.0f + effect->size_.x, float(TOMATOsEngine::kMonitorWidth) - effect->size_.x);
-			effect->position_.y = rnd.NextFloatRange(0.0f - effect->size_.y, float(TOMATOsEngine::kMonitorHeight) * 0.5f);
+			effect->position_.y = -rnd.NextFloatRange(effect->size_.y, float(TOMATOsEngine::kMonitorHeight));
 
 			effect->isAlive_ = true;
 
