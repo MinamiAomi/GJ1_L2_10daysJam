@@ -65,7 +65,7 @@ void LevelManager::LevelUpdate() {
 		const float kLevel = 1.3f;
 		// レベル倍率をかける
 		interval_ = uint32_t(float(interval_) - (float(interval_) * (kLevel - 1.0f)));
-		interval_ = std::clamp(interval_,(uint32_t)50, (uint32_t)10000);	// インターバルタイムをセット
+		interval_ = std::clamp(interval_,(uint32_t)45, (uint32_t)10000);	// インターバルタイムをセット
 		field_->SetGrowInterval(interval_);
 		// レベルアップ
 		numLever_++;
