@@ -147,7 +147,7 @@ void Player::move() {
 #pragma region 当たり判定
 
 	float top = tempPosition.y + size_.x * 0.5f;
-	float midY = tempPosition.y;
+	float midY = tempPosition.y + 10;
 	float bottom = tempPosition.y - size_.y * 0.5f;
 	float left = tempPosition.x - size_.x * 0.5f;
 	float right = tempPosition.x + size_.x * 0.5f;
@@ -174,20 +174,20 @@ void Player::move() {
 	// 壁ぞり処理
 
 	// 左のポイントふたつがブロックだった場合
-	if (field_->GetBlock(blockLeft, blockTop) == Field::Normal &&
-		field_->GetBlock(blockLeft, blockBottom) == Field::Normal) {
+	if (field_->GetBlock(blockLeft, blockTop) != Field::None &&
+		field_->GetBlock(blockLeft, blockBottom) != Field::None) {
 		tempPosition.x = (blockLeft + 1) * Field::kBlockSize + size_.x * 0.5f + 0.1f;
 	}
 
 	// 右のポイントふたつがブロックだった場合
-	if (field_->GetBlock(blockRight, blockTop) == Field::Normal &&
-		field_->GetBlock(blockRight, blockBottom) == Field::Normal) {
+	if (field_->GetBlock(blockRight, blockTop) != Field::None &&
+		field_->GetBlock(blockRight, blockBottom) != Field::None) {
 		tempPosition.x = blockRight * Field::kBlockSize - size_.x * 0.5f - 0.1f;
 	}
 
 	top = tempPosition.y + size_.x * 0.5f;
 	bottom = tempPosition.y - size_.y * 0.5f;
-	midY = tempPosition.y;
+	midY = tempPosition.y + 10;
 	left = tempPosition.x - size_.x * 0.5f;
 	right = tempPosition.x + size_.x * 0.5f;
 
@@ -198,20 +198,20 @@ void Player::move() {
 	blockRight = field_->CalcBlockIndexX(right);
 
 	// 左のポイント(真ん中)ふたつがブロックだった場合
-	if (field_->GetBlock(blockLeft, blockMidY) == Field::Normal &&
-		field_->GetBlock(blockLeft, blockBottom) == Field::Normal) {
+	if (field_->GetBlock(blockLeft, blockMidY) != Field::None &&
+		field_->GetBlock(blockLeft, blockBottom) != Field::None) {
 		tempPosition.x = (blockLeft + 1) * Field::kBlockSize + size_.x * 0.5f + 0.1f;
 	}
 
 	// 右のポイント(真ん中)ふたつがブロックだった場合
-	if (field_->GetBlock(blockRight, blockMidY) == Field::Normal &&
-		field_->GetBlock(blockRight, blockBottom) == Field::Normal) {
+	if (field_->GetBlock(blockRight, blockMidY) != Field::None &&
+		field_->GetBlock(blockRight, blockBottom) != Field::None) {
 		tempPosition.x = blockRight * Field::kBlockSize - size_.x * 0.5f - 0.1f;
 	}
 
 	top = tempPosition.y + size_.x * 0.5f;
 	bottom = tempPosition.y - size_.y * 0.5f;
-	midY = tempPosition.y;
+	midY = tempPosition.y + 10;
 	left = tempPosition.x - size_.x * 0.5f;
 	right = tempPosition.x + size_.x * 0.5f;
 
@@ -222,17 +222,17 @@ void Player::move() {
 	blockRight = field_->CalcBlockIndexX(right);
 
 	// 下のポイントふたつがブロックじゃなかった場合
-	if (!(field_->GetBlock(blockLeft, blockBottom) == Field::Normal &&
-		field_->GetBlock(blockRight, blockBottom) == Field::Normal)) {
+	if (!(field_->GetBlock(blockLeft, blockBottom) != Field::None &&
+		field_->GetBlock(blockRight, blockBottom) != Field::None)) {
 		//左下だけ当たった時
-		if (field_->GetBlock(blockLeft, blockBottom) == Field::Normal) {
+		if (field_->GetBlock(blockLeft, blockBottom) != Field::None) {
 			if (preBlockBottom <= blockBottom) {
 				tempPosition.x = (blockLeft + 1) * Field::kBlockSize + size_.x * 0.5f + 0.1f;
 			}
 		}
 
 		//右下だけ当たった時
-		if (field_->GetBlock(blockRight, blockBottom) == Field::Normal) {
+		if (field_->GetBlock(blockRight, blockBottom) != Field::None) {
 			if (preBlockBottom <= blockBottom) {
 				tempPosition.x = blockRight * Field::kBlockSize - size_.x * 0.5f - 0.1f;
 			}
@@ -258,8 +258,8 @@ void Player::move() {
 
 		if (bottom < field_->GetSize().y) {
 			// 跳ねる処理
-			if (blockLeftBottomType != Field::None ||
-				blockRightBottomType != Field::None ||
+			if (blockLeftBottomType == Field::Normal ||
+				blockRightBottomType == Field::Normal ||
 				bottom <= 0.0f) {
 				// 高さ更新
 				preHeight_ = nowHeight_;
@@ -272,7 +272,7 @@ void Player::move() {
 				if (bottom > 0.0f && bottom <= field_->GetSize().y) {
 					blockTopPosition = field_->GetBlockTop(blockBottom);
 				}
-				if (blockLeftBottomType != Field::None &&
+				if (blockLeftBottomType == Field::Normal &&
 					field_->IsInField(blockLeft, blockBottom)) {
 					// ブロック破壊
 					if (FeverManager::GetInstance()->GetIsFever() ||
@@ -301,7 +301,7 @@ void Player::move() {
 						CreateParticle(blockLeft, blockBottom);
 					}
 				}
-				if (blockRightBottomType != Field::None &&
+				if (blockRightBottomType == Field::Normal &&
 					field_->IsInField(blockRight, blockBottom)) {
 					// ブロック破壊
 					if (FeverManager::GetInstance()->GetIsFever() ||
