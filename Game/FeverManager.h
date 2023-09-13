@@ -28,9 +28,15 @@ private:
 	
 	// ゲージの量
 	uint32_t gaugePoints_;
+	// イージング用ゲージの量
+	float delayGaugePoints_;
+	// 前回のゲージの量
+	uint32_t preGaugePoints_;
 	// 周期(いろいろ使う)
 	uint32_t frame_;
 	bool isFever_;
-
+	// 前回とゲージの量が違ったらtrue
+	bool isDifferent_;
+	uint32_t diffirentCount_;
 };
 

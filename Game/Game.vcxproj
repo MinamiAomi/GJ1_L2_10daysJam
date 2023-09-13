@@ -76,6 +76,7 @@
     <ClInclude Include="Particle\ParticleManager.h" />
     <ClInclude Include="Particle\Pop.h" />
     <ClInclude Include="Particle\Splash.h" />
+    <ClInclude Include="Particle\VerticalLine.h" />
     <ClInclude Include="Particle\YenLetter.h" />
     <ClInclude Include="Player.h" />
     <ClInclude Include="GameTime.h" />
@@ -149,6 +150,7 @@
     <ClCompile Include="Particle\ParticleManager.cpp" />
     <ClCompile Include="Particle\Pop.cpp" />
     <ClCompile Include="Particle\Splash.cpp" />
+    <ClCompile Include="Particle\VerticalLine.cpp" />
     <ClCompile Include="Particle\YenLetter.cpp" />
     <ClCompile Include="Player.cpp" />
     <ClCompile Include="GameTime.cpp" />

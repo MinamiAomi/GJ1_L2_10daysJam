@@ -5,6 +5,7 @@
 
 #include "Math/MathUtils.h"
 #include "Math/Transform.h"
+#include "Math/Camera.h"
 #include "Model.h"
 
 
@@ -12,7 +13,7 @@ class ArcadeMachine {
 public:
     void Initialize();
     void Update();
-    void Draw(CommandContext& commandContext, const Matrix4x4& camera);
+    void Draw(CommandContext& commandContext, const Camera& camera);
 
 private:
     Transform transform_;
@@ -21,5 +22,6 @@ private:
     Model body_;
     Model stick_;
     Model stickRim_;
+    Model board_;
 
 };
