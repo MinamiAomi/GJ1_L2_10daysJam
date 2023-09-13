@@ -54,7 +54,7 @@ namespace TOMATOsEngine {
         assert(!audio);
 
         gameWindow = GameWindow::GetInstance();
-        gameWindow->Initialize(L"Title", 1280, 720);
+        gameWindow->Initialize(L"2006_BB", 1280, 720);
 
         input = Input::GetInstance();
         input->Initialize(gameWindow->GetHWND());
