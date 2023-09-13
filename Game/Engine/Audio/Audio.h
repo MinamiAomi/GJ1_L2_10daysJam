@@ -8,7 +8,7 @@
 
 class Audio {
 public:
-    static const size_t kMaxNumPlayHandles = 32;
+    static const size_t kMaxNumPlayHandles = 64;
 
     // チャンクヘッダ
     struct ChunkHearder {
