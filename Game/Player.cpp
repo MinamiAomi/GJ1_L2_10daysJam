@@ -53,6 +53,7 @@ void Player::Initialize() {
 	break_ = false;
 
 	comboSoundHandle_ = TOMATOsEngine::LoadAudio("Resources/Audio/combo.wav");
+	groundJumpSoundHandle_ = TOMATOsEngine::LoadAudio("Resources/Audio/groundJump.wav");
 
 	gameOverVelocity_ = { 0.0f,0.0f };
 	gameOverAngle_ = 0.0f;
@@ -500,6 +501,8 @@ void Player::ComboUpdate(float  floor, uint32_t blockIndexX, uint32_t blockIndex
 			preSameHeight_ = sameHeight_;
 		}
 		else {
+			size_t playHandle = TOMATOsEngine::PlayAudio(groundJumpSoundHandle_);
+			TOMATOsEngine::SetVolume(playHandle,0.5f);
 			stepCount_ = -1;
 			sameHeightCount_ = -1;
 		}

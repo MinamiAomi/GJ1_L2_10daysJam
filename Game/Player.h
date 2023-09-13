@@ -97,6 +97,7 @@ private:
     uint32_t continueTextureNum_;
 
     size_t comboSoundHandle_;
+    size_t groundJumpSoundHandle_;
     //gameover
     Vector2 gameOverVelocity_;
     float gameOverAngle_;
