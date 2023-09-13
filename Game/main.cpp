@@ -37,7 +37,27 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 	TextureHandle titleHandle = TOMATOsEngine::LoadTexture("Resources/BBtitle.png");
 	TextureHandle gameOverHandle = TOMATOsEngine::LoadTexture("Resources/gameOver.png");
 	TextureHandle floorHandle = TOMATOsEngine::LoadTexture("Resources/floor.png");
-	Vector2 gameOverPosition = { static_cast<float>(TOMATOsEngine::kMonitorWidth) * 0.5f,static_cast<float>(TOMATOsEngine::kMonitorHeight) * 0.5f };
+
+	TextureHandle startTextureHandle = TOMATOsEngine::LoadTexture("Resources/startText.png");
+	TextureHandle operationTextureHandle = TOMATOsEngine::LoadTexture("Resources/operationText.png");
+	TextureHandle endTextureHandle = TOMATOsEngine::LoadTexture("Resources/endText.png");
+	TextureHandle arrowTextureHandle = TOMATOsEngine::LoadTexture("Resources/arrow.png");
+
+	Vector2 textSize = { 64.0f * 2.5f,32.0f * 2.5f };
+	Vector2 startTextPosition = { static_cast<float>(TOMATOsEngine::kMonitorWidth) * 0.5f ,static_cast<float>(TOMATOsEngine::kMonitorHeight) * 0.5f - 180.0f };
+	Vector2 operationTextPosition = { static_cast<float>(TOMATOsEngine::kMonitorWidth) * 0.5f ,startTextPosition.y - textSize.y * 0.5f - 10.0f };
+	Vector2 endTextPosition = { static_cast<float>(TOMATOsEngine::kMonitorWidth) * 0.5f ,operationTextPosition.y - textSize.y * 0.5f - 10.0f };
+
+	Vector2 arrowPosition = { startTextPosition.x - textSize.x*0.5f-30.0f,startTextPosition.y };
+	Vector2 arrowSize = { 32.0f,32.0f};
+	uint32_t arrowSetPosition = 0;
+	uint32_t arrowAnimation = 0;
+	uint32_t arrowColor = 0xFFFFFFFF;
+	bool flag_=false;
+	bool isSwitchViewMode = false;
+
+
+	Vector2 gameOverPosition = { static_cast<float>(TOMATOsEngine::kMonitorWidth) * 0.5f,static_cast<float>(TOMATOsEngine::kMonitorHeight) * 0.5f - textSize.y * 2.0f };
 	Vector2 gameOverSize = { 320.0f,240.0f };
 	ParticleManager particleManager;
 	particleManager.Initialize();
@@ -68,6 +88,7 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 	auto titleSoundHandle = TOMATOsEngine::LoadAudio("Resources/Audio/titleBGM.wav");
 	auto ingameSoundHandle = TOMATOsEngine::LoadAudio("Resources/Audio/ingameBGM.wav");
 	auto clearSoundHandle = TOMATOsEngine::LoadAudio("Resources/Audio/clearBGM.wav");
+	size_t pickHandle = TOMATOsEngine::LoadAudio("Resources/Audio/pick.wav");
 
 	// タイトルははじめから流す
 	size_t titlePlayHandle = TOMATOsEngine::PlayAudio(titleSoundHandle, true);
@@ -75,7 +96,7 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 	size_t ingamePlayHandle = 0;
 	size_t clearPlayHandle = 0;
 
-    //bool isFullScreen = false;
+	//bool isFullScreen = false;
 	// 音の溜め必要
 	bool ingameToClear = false;
 	bool clearToTitle = false;
@@ -95,26 +116,92 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 		switch (gameScene) {
 		case title:
 		{
-			if (TOMATOsEngine::IsKeyTrigger(DIK_SPACE)) {
-				gameScene = inGame;
-				backGround.Initialize();
-				particleManager.Initialize();
-				field.Initialize();
-				player.Initialize();
-				player.SetPosition({ field.GetSize().x * 0.5f, field.GetSize().y - 100.0f });
-				feverManager->Initialize();
-				// 音
-				// タイトルBGM停止
-				TOMATOsEngine::StopAudio(titlePlayHandle);
-				// インゲームBGM
-				ingamePlayHandle = TOMATOsEngine::PlayAudio(ingameSoundHandle, true);
-				// スペース押した音
-				auto pushSpacePlayHandle = TOMATOsEngine::PlayAudio(pushSpaceSoundHandle);
-				TOMATOsEngine::SetVolume(pushSpacePlayHandle, 0.1f);
+			const uint32_t kArrowAnimation = 25;
+			if (!isSwitchViewMode) {
+				arrowAnimation++;
+				if (arrowAnimation >= kArrowAnimation) {
+					if (flag_) {
+					arrowColor = 0xFFFFFFFF;
+					}
+					else {
+					arrowColor = 0xFFFFFF00;
+					}
+					flag_ ^= true;
+					arrowAnimation = 0;
+				}
+				if (TOMATOsEngine::IsKeyTrigger(DIK_S)) {
+					if (arrowSetPosition >= 2) {
+						arrowSetPosition = 0;
+					}
+					else {
+						arrowSetPosition++;
+					}
+					TOMATOsEngine::PlayAudio(pickHandle);
+				}
+				if (TOMATOsEngine::IsKeyTrigger(DIK_W)) {
+					if (arrowSetPosition <= 0) {
+						arrowSetPosition = 2;
+					}
+					else {
+						arrowSetPosition--;
+					}
+					TOMATOsEngine::PlayAudio(pickHandle);
+				}
+				if (arrowSetPosition == 0) {
+					arrowPosition.y = startTextPosition.y;
+				}
+				else if (arrowSetPosition == 1) {
+					arrowPosition.y = operationTextPosition.y;
+				}
+				else {
+					arrowPosition.y = endTextPosition.y;
+				}
+				if (TOMATOsEngine::IsKeyTrigger(DIK_SPACE)) {
+					TOMATOsEngine::PlayAudio(pickHandle);
+					if (arrowSetPosition == 0) {
+						gameScene = inGame;
+						backGround.Initialize();
+						particleManager.Initialize();
+						field.Initialize();
+						player.Initialize();
+						player.SetPosition({ field.GetSize().x * 0.5f, field.GetSize().y - 100.0f });
+						feverManager->Initialize();
+						// 音
+						// タイトルBGM停止
+						TOMATOsEngine::StopAudio(titlePlayHandle);
+						// インゲームBGM
+						ingamePlayHandle = TOMATOsEngine::PlayAudio(ingameSoundHandle, true);
+					}
+					else if (arrowSetPosition == 1) {
+						TOMATOsEngine::SwitchViewMode();
+						isSwitchViewMode = true;
+					}
+					else {
+						TOMATOsEngine::RequestQuit();
+					}
+					// スペース押した音
+					auto pushSpacePlayHandle = TOMATOsEngine::PlayAudio(pushSpaceSoundHandle);
+					TOMATOsEngine::SetVolume(pushSpacePlayHandle, 0.1f);
+				}
 			}
+			else {
+				if (TOMATOsEngine::IsKeyTrigger(DIK_ESCAPE)) {
+					TOMATOsEngine::PlayAudio(pickHandle);
+					TOMATOsEngine::SwitchViewMode();
+					isSwitchViewMode = false;
+				}
+			}
+			
 
 			TOMATOsEngine::DrawSpriteRect({ 0.0f,0.0f }, { static_cast<float>(TOMATOsEngine::kMonitorWidth) ,static_cast<float>(TOMATOsEngine::kMonitorHeight) }, { 0.0f,0.0f }, { 640.0f,480.0f }, titleHandle, 0xFFFFFFFF);
-
+			// スタート
+			TOMATOsEngine::DrawSpriteRectAngle(startTextPosition, textSize, { 0.5f,0.5f }, 0.0f, {}, { 64.0f, 32.0f }, startTextureHandle, 0xFFFFFFFF);
+			// 操作
+			TOMATOsEngine::DrawSpriteRectAngle(operationTextPosition, textSize, { 0.5f,0.5f }, 0.0f, {}, { 64.0f, 32.0f }, operationTextureHandle, 0xFFFFFFFF);
+			// 終わり
+			TOMATOsEngine::DrawSpriteRectAngle(endTextPosition, textSize, { 0.5f,0.5f }, 0.0f, {}, { 64.0f, 32.0f }, endTextureHandle, 0xFFFFFFFF);
+			// 矢印
+			TOMATOsEngine::DrawSpriteRectAngle(arrowPosition, arrowSize, { 0.5f,0.5f }, 0.0f, {}, { 32.0f, 32.0f }, arrowTextureHandle, arrowColor);
 			break;
 		}
 		case inGame:
@@ -170,6 +257,11 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 				}
 			}
 			if (TOMATOsEngine::IsKeyTrigger(DIK_SPACE)) {
+
+				arrowPosition = { startTextPosition.x - textSize.x * 0.5f - 30.0f,startTextPosition.y };
+				arrowSetPosition = 0;
+				arrowAnimation = 0;
+
 				gameScene = title;
 				backGround.Initialize();
 				particleManager.Initialize();
@@ -196,14 +288,7 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 			break;
 		}
 		}
-		// 3Dカメラを変更
-		if (TOMATOsEngine::IsKeyTrigger(DIK_TAB)) {
-			TOMATOsEngine::SwitchViewMode();
-		}
-		// ゲームを終了
-		if (TOMATOsEngine::IsKeyTrigger(DIK_ESCAPE)) {
-			TOMATOsEngine::RequestQuit();
-		}
+
 	}
 
 	TOMATOsEngine::Shutdown();
