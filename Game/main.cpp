@@ -53,6 +53,8 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
     player.SetParticleManager(&particleManager);
     player.SetPosition({ field.GetSize().x * 0.5f, field.GetSize().y - 100.0f });
 
+    field.SetPlayer(&player);
+
     BackGround backGround;
     backGround.Initialize();
     backGround.SetPlayer(&player);
@@ -130,13 +132,13 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
                 backGround.Draw();
                 particleManager.Draw();
                 player.ComboDraw();
+                levelManager.Draw();
             }
             else {
                 backGround.FrameDraw();
             }
             field.Draw();
             player.Draw();
-            levelManager.Draw();
             if (!field.GetIsInGameOver()) {
                 gameTime->Draw();
             }

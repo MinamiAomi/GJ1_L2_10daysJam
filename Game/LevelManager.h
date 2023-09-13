@@ -17,6 +17,13 @@ public:
 		float colorH_;
 		bool isAlive_;
 	};
+
+	enum Texture {
+		kEffect,
+		kText,
+		
+		kCount,
+	};
 public:
 	void Initialize();
 	void Update();
@@ -30,6 +37,9 @@ private:
 
 	Field* field_;
 	
+	static const size_t kTextureMax = static_cast<size_t>(Texture::kCount);
+	std::array<TextureHandle, kTextureMax > textureHandles_;
+
 	static const uint32_t kEffectMax = 10;
 	const uint32_t kNumLeversMax = 10;
 	uint32_t numLever_;
@@ -39,6 +49,10 @@ private:
 
 	std::array<std::unique_ptr<Effect> , kEffectMax > effects_;
 
-	TextureHandle textureHandle_;
+	Vector2 textPosition_;
+	Vector2 textVelocity_;
+	Vector2 textSize_;
+	float textColorH_;
+	bool isTextStart_;
 };
 

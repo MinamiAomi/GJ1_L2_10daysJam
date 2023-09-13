@@ -27,6 +27,7 @@ public:
     float GetSameHeightColorH() const { return sameHeightColorH_; }
     float GetRainbowColorH() const { return h_; }
     bool GetIsEndGameClearEasing()const {return isEndGameClearEasing_;}
+    Vector2 GetVelocity()const { return velocity_; }
 
 private:
     static const int32_t kAnimationSwitchNum = 10;

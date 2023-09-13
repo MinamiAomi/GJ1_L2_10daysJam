@@ -10,6 +10,8 @@
 #include "GameTime.h"
 #include "Easing.h"
 
+#include "Player.h"
+
 void Field::Initialize() {
 	memset(blocks_, BlockType::None, sizeof(blocks_));
 
@@ -108,7 +110,7 @@ void Field::Update() {
             ChackBlock();
             ++growCoolTime_;
             breakTime_--;
-            if (growCoolTime_ >= growInterval_ && isFlash_ == false) {
+            if (growCoolTime_ >= growInterval_ && isFlash_ == false ) {
                 // 成長
                 SetGrow(nextBlockIndices_, numGrowingBlocks_);
                 // 次成長するところをセット
@@ -283,7 +285,7 @@ void Field::DrawGrow() {
         }
 
         Vector2 texBase = { static_cast<float>(growAnimationFrame_) * 64.0f,0.0f };
-        size.y = 32.0f * (float(growCoolTime_) / float(growInterval_));
+        size.y = 32.0f * (std::clamp(float(growCoolTime_) / float(growInterval_),0.0f,32.0f));
         TOMATOsEngine::DrawRectAngle(position, size, Vector2(0.0f, 0.0f), 0.0f, 0xA2A2A2A2);
         TOMATOsEngine::DrawSpriteRectAngle(position, { 32.0f ,32.0f }, Vector2(0.0f, 0.0f), 0.0f, texBase, Vector2(64.0f, 64.0f), textureHandles_.at(Texture::kGrow), 0xFFFFFFFF);
     }

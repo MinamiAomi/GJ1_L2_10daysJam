@@ -221,6 +221,9 @@
     <ClInclude Include="Easing.h" />
     <ClInclude Include="LevelManager.h" />
     <ClInclude Include="FeverManager.h" />
+    <ClInclude Include="Particle\VerticalLine.h">
+      <Filter>Game\Particle</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Externals\ImGui\imgui.cpp">
@@ -384,6 +387,9 @@
     <ClCompile Include="Easing.cpp" />
     <ClCompile Include="LevelManager.cpp" />
     <ClCompile Include="FeverManager.cpp" />
+    <ClCompile Include="Particle\VerticalLine.cpp">
+      <Filter>Game\Particle</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Text Include="..\Externals\ImGui\LICENSE.txt">
