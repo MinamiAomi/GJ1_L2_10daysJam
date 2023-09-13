@@ -57,12 +57,24 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
     LevelManager levelManager;
     levelManager.GetFild(&field);
     levelManager.Initialize();
-    
+
     FeverManager* feverManager = FeverManager::GetInstance();
 
     GameTime* gameTime = GameTime::GetInstance();
 
+    bool isFullScreen = true;
+
     while (TOMATOsEngine::BeginFrame()) {
+
+#ifdef _DEBUG
+        auto& io = ImGui::GetIO();
+        ImGui::Begin("Menu");
+        ImGui::Text("FPS : %f\n", io.Framerate);
+        ImGui::Text("Quit : ESCAPE\n");
+        ImGui::Text("FullScreen : TAB\n");
+        ImGui::End();
+#endif // _DEBUG
+
 
         switch (gameScene)
         {
@@ -76,6 +88,7 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
                 player.Initialize();
                 player.SetPosition({ field.GetSize().x * 0.5f, field.GetSize().y - 100.0f });
                 gameTime->Initialize();
+                feverManager->Initialize();
             }
 
             TOMATOsEngine::DrawSpriteRect({ 0.0f,0.0f }, { static_cast<float>(TOMATOsEngine::kMonitorWidth) ,static_cast<float>(TOMATOsEngine::kMonitorHeight) }, { 0.0f,0.0f }, { 640.0f,480.0f }, titleHandle, 0xFFFFFFFF);
@@ -86,6 +99,7 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
             // タイトルに戻るa
             if (TOMATOsEngine::IsKeyTrigger(DIK_SPACE)) {
                 gameScene = title;
+                gameTime->StopBGM();
             }
             if (field.GetIsGameOver()) {
                 gameScene = gameOver;
@@ -108,7 +122,7 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
             feverManager->Update();
 
             if (!field.GetIsInGameOver()) {
-                TOMATOsEngine::DrawSpriteRectCenter({ TOMATOsEngine::kMonitorWidth * 0.5f , TOMATOsEngine::kMonitorHeight * 0.5f - 10.0f}, { TOMATOsEngine::kMonitorWidth * 1.0f , TOMATOsEngine::kMonitorHeight * 1.0f }, { 0.0f,0.0f }, { TOMATOsEngine::kMonitorWidth * 1.0f , TOMATOsEngine::kMonitorHeight * 1.0f }, floorHandle, 0xFFFFFFFF);
+                TOMATOsEngine::DrawSpriteRectCenter({ TOMATOsEngine::kMonitorWidth * 0.5f , TOMATOsEngine::kMonitorHeight * 0.5f - 10.0f }, { TOMATOsEngine::kMonitorWidth * 1.0f , TOMATOsEngine::kMonitorHeight * 1.0f }, { 0.0f,0.0f }, { TOMATOsEngine::kMonitorWidth * 1.0f , TOMATOsEngine::kMonitorHeight * 1.0f }, floorHandle, 0xFFFFFFFF);
                 feverManager->Draw();
                 backGround.Draw();
                 particleManager.Draw();
@@ -158,7 +172,19 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
         default:
             break;
         }
-
+        if (TOMATOsEngine::IsKeyTrigger(DIK_TAB)) {
+            if (isFullScreen) {
+                TOMATOsEngine::SetFullScreen(false);
+                isFullScreen = false;
+            }
+            else {
+                TOMATOsEngine::SetFullScreen(true);
+                isFullScreen = true;
+            }
+        }
+        if (TOMATOsEngine::IsKeyTrigger(DIK_ESCAPE)) {
+            break;
+        }
     }
 
     TOMATOsEngine::Shutdown();

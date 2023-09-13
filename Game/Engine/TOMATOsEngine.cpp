@@ -78,7 +78,7 @@ namespace TOMATOsEngine {
         audio = Audio::GetInstance();
         audio->Initialize();
 
-
+        gameWindow->SetFullScreen(true);
 
         frameMatrix = Matrix4x4::MakeTranslation({ 0.0f, 40.0f, 0.0f });
         frameMatrix *= Matrix4x4::MakeOrthographicProjection(float(kMonitorWidth), float(kMonitorHeight), 0.0f, 1.0f);
@@ -496,5 +496,8 @@ namespace TOMATOsEngine {
     }
     void SetVolume(size_t soundHandle, float volume) {
         audio->SetValume(soundHandle, volume);
+    }
+    void SetFullScreen(bool fullScreen) {
+        gameWindow->SetFullScreen(fullScreen);
     }
 }
