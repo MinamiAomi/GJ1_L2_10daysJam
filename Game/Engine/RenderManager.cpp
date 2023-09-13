@@ -106,9 +106,9 @@ void RenderManager::EndRender() {
 }
 
 void RenderManager::Shutdown() {
+    graphics_->Shutdown();
     auto imguiManager = ImGuiManager::GetInstance();
     imguiManager->Shutdown();
-    graphics_->Shutdown();
 }
 
 void RenderManager::InitializePostEffect() {
