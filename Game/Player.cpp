@@ -384,8 +384,8 @@ void Player::Draw() {
 			TOMATOsEngine::DrawSpriteRect(rectMinPos, rectMaxPos, {}, Vector2(30.0f, 60.0f), textureHandle_, 0xFFFFFFFF);
 		}
 		// 円
-		TOMATOsEngine::DrawCircle(sameHeightColorChangePositionRight_, 5.0f, 0x66666666);
-		TOMATOsEngine::DrawCircle(sameHeightColorChangePositionLeft_, 5.0f, 0x66666666);
+		/*TOMATOsEngine::DrawCircle(sameHeightColorChangePositionRight_, 5.0f, 0x66666666);
+		TOMATOsEngine::DrawCircle(sameHeightColorChangePositionLeft_, 5.0f, 0x66666666);*/
 	}
 	else {
 
