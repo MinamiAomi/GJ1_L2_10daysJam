@@ -18,7 +18,7 @@ public:
 
 private:
 	// ゲージの最大値
-	static const uint32_t kFeverGaugeMax_ = 150;
+	static const uint32_t kFeverGaugeMax_ = 160;
 	// コンボ時の上昇量
 	static const uint32_t kComboPoints_ = 8;
 	// フィーバーの時間
