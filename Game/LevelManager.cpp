@@ -70,7 +70,7 @@ void LevelManager::LevelUpdate() {
 	}
 	// フィーバー中
 	else if (FeverManager::GetInstance()->GetIsFever()) {
-		const uint32_t kInterval = 30;
+		const uint32_t kInterval = 35;
 		const uint32_t kGrowingBlocks = 9;
 		// インターバルタイムをセット
 		field_->SetGrowInterval(kInterval);
