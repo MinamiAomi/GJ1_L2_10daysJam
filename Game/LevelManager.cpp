@@ -52,7 +52,7 @@ void LevelManager::Draw() {
 
 void LevelManager::LevelUpdate() {
 	// 何秒でレベル上がるか
-	const uint32_t kCoolTime = 10 * 60;
+	const uint32_t kCoolTime = 12 * 60;
 	time_++;
 	/*ImGui::Begin("level");
 	ImGui::Text("%d", numLever_);
@@ -62,10 +62,10 @@ void LevelManager::LevelUpdate() {
 	ImGui::End();*/
 	if (time_ % kCoolTime == 0 && numLever_ <= kNumLeversMax) {
 		// 難易度を何倍するか
-		const float kLevel = 1.3f;
+		const float kLevel = 1.2f;
 		// レベル倍率をかける
 		interval_ = uint32_t(float(interval_) - (float(interval_) * (kLevel - 1.0f)));
-		interval_ = std::clamp(interval_,(uint32_t)45, (uint32_t)10000);	// インターバルタイムをセット
+		interval_ = std::clamp(interval_,(uint32_t)42, (uint32_t)10000);	// インターバルタイムをセット
 		field_->SetGrowInterval(interval_);
 		// レベルアップ
 		numLever_++;
