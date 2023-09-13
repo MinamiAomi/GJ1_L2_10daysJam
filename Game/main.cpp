@@ -75,7 +75,7 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 	size_t ingamePlayHandle = 0;
 	size_t clearPlayHandle = 0;
 
-    bool isFullScreen = false;
+    //bool isFullScreen = false;
 	// 音の溜め必要
 	bool ingameToClear = false;
 	bool clearToTitle = false;
@@ -196,15 +196,13 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 			break;
 		}
 		}
+		// 3Dカメラを変更
 		if (TOMATOsEngine::IsKeyTrigger(DIK_TAB)) {
-			if (isFullScreen) {
-				TOMATOsEngine::SetFullScreen(false);
-				isFullScreen = false;
-			}
-			else {
-				TOMATOsEngine::SetFullScreen(true);
-				isFullScreen = true;
-			}
+			TOMATOsEngine::SwitchViewMode();
+		}
+		// ゲームを終了
+		if (TOMATOsEngine::IsKeyTrigger(DIK_SPACE)) {
+			TOMATOsEngine::RequestQuit();
 		}
 	}
 
