@@ -7,6 +7,7 @@ void RealWorld::Initialize() {
     camera_.SetRotate(Quaternion::identity);
     //camera_.SetRotate(Quaternion::MakeLookRotation(Vector3(0.0f, -1.0f, 0.1f).Normalized()));
     room_.CreateFromObj("Engine/Model/room.obj");
+    room_.SetSamplerType(Model::SamplerType::kPointWrap);
     arcadeMachine_.Initialize();
 
 }

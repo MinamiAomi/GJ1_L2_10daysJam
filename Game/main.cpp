@@ -201,7 +201,7 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 			TOMATOsEngine::SwitchViewMode();
 		}
 		// ゲームを終了
-		if (TOMATOsEngine::IsKeyTrigger(DIK_SPACE)) {
+		if (TOMATOsEngine::IsKeyTrigger(DIK_ESCAPE)) {
 			TOMATOsEngine::RequestQuit();
 		}
 	}
