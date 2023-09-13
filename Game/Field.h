@@ -187,6 +187,12 @@ private:
     TextureHandle numTextureHandle_;
     TextureHandle scoreTextureHandle_;
 
+    size_t blockDownHandle_;
+    size_t blockDown2Handle_;
+
+    size_t scoreSoundHandle_;
+    uint32_t scoreFrame_;
+
     bool isBlockBreaking_;
     bool isTextDropping_;
     bool isInGameOver_;
