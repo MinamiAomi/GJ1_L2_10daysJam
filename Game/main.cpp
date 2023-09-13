@@ -64,6 +64,14 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 
     while (TOMATOsEngine::BeginFrame()) {
 
+#ifdef _DEBUG
+        auto& io = ImGui::GetIO();
+        ImGui::Begin("Menu");
+        ImGui::Text("FPS : %f", io.Framerate);
+        ImGui::End();
+#endif // _DEBUG
+
+
         switch (gameScene)
         {
         case title:

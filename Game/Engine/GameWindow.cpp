@@ -124,7 +124,7 @@ void GameWindow::SetFullScreen(bool fullscreen) {
 }
 
 void GameWindow::SetSizeChangeMode(SizeChangeMode sizeChangeMode) {
-    sizeChangeMode_ = sizeChangeMode_;
+    sizeChangeMode_ = sizeChangeMode;
     if (sizeChangeMode_ == SizeChangeMode::kNone) {
         windowStyle_ &= ~WS_THICKFRAME;
     }
@@ -138,5 +138,7 @@ void GameWindow::SetSizeChangeMode(SizeChangeMode sizeChangeMode) {
         }
         windowStyle_ |= WS_THICKFRAME;
     }
-    //SetWindowLong(hWnd_);
+    SetWindowLong(hWnd_, GWL_STYLE, windowStyle_);
+    SetWindowPos(hWnd_, nullptr, 0, 0, 0, 0, (SWP_NOMOVE | SWP_NOSIZE | SWP_NOZORDER | SWP_FRAMECHANGED));
+    ShowWindow(hWnd_, SW_NORMAL);
 }
