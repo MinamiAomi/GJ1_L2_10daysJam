@@ -49,7 +49,7 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 	Vector2 endTextPosition = { static_cast<float>(TOMATOsEngine::kMonitorWidth) * 0.5f ,operationTextPosition.y - textSize.y * 0.5f - 10.0f };
 
 	Vector2 spaceorBPosition = { static_cast<float>(TOMATOsEngine::kMonitorWidth) * 0.5f ,static_cast<float>(TOMATOsEngine::kMonitorHeight) * 0.5f - 130.0f };
-	Vector2 spaceorBSize = { 150.0f*1.5f,32.0 * 1.5f };
+	Vector2 spaceorBSize = { 150.0f * 1.5f,32.0 * 1.5f };
 	Vector2 arrowPosition = { startTextPosition.x - textSize.x * 0.5f - 60.0f,startTextPosition.y };
 	Vector2 arrowSize = { 32.0f,32.0f };
 	uint32_t arrowSetPosition = 0;
@@ -92,6 +92,7 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 	auto titleSoundHandle = TOMATOsEngine::LoadAudio("Resources/Audio/titleBGM.wav");
 	auto ingameSoundHandle = TOMATOsEngine::LoadAudio("Resources/Audio/ingameBGM.wav");
 	auto clearSoundHandle = TOMATOsEngine::LoadAudio("Resources/Audio/clearBGM.wav");
+	size_t pickHandle = TOMATOsEngine::LoadAudio("Resources/Audio/pick.wav");
 
 	// タイトルははじめから流す
 	size_t titlePlayHandle = TOMATOsEngine::PlayAudio(titleSoundHandle, true);
@@ -151,6 +152,7 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 					else {
 						arrowSetPosition++;
 					}
+					TOMATOsEngine::PlayAudio(pickHandle);
 				}
 				if (TOMATOsEngine::IsKeyTrigger(DIK_W) ||
 					(pad.Gamepad.sThumbLY > +20000 &&
@@ -162,6 +164,7 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 					else {
 						arrowSetPosition--;
 					}
+					TOMATOsEngine::PlayAudio(pickHandle);
 				}
 				if (arrowSetPosition == 0) {
 					arrowPosition.y = startTextPosition.y;
@@ -175,6 +178,7 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 				if (TOMATOsEngine::IsKeyTrigger(DIK_SPACE) ||
 					((pad.Gamepad.wButtons & XINPUT_GAMEPAD_B) &&
 						!(prepad.Gamepad.wButtons & XINPUT_GAMEPAD_B))) {
+					TOMATOsEngine::PlayAudio(pickHandle);
 					if (arrowSetPosition == 0) {
 						gameScene = inGame;
 						backGround.Initialize();
@@ -200,18 +204,18 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 					auto pushSpacePlayHandle = TOMATOsEngine::PlayAudio(pushSpaceSoundHandle);
 					TOMATOsEngine::SetVolume(pushSpacePlayHandle, 0.1f);
 				}
-			}
-			else {
-				if (TOMATOsEngine::IsKeyTrigger(DIK_ESCAPE) ||
-					(pad.Gamepad.wButtons & XINPUT_GAMEPAD_X)) {
-					TOMATOsEngine::SwitchViewMode();
-					isSwitchViewMode = false;
-				}
-			}
+				
 
+			}
+			else if (TOMATOsEngine::IsKeyTrigger(DIK_ESCAPE) ||
+				(pad.Gamepad.wButtons & XINPUT_GAMEPAD_X)) {
+				TOMATOsEngine::PlayAudio(pickHandle);
+				TOMATOsEngine::SwitchViewMode();
+				isSwitchViewMode = false;
+			}
 
 			TOMATOsEngine::DrawSpriteRect({ 0.0f,0.0f }, { static_cast<float>(TOMATOsEngine::kMonitorWidth) ,static_cast<float>(TOMATOsEngine::kMonitorHeight) }, { 0.0f,0.0f }, { 640.0f,480.0f }, titleHandle, 0xFFFFFFFF);
-			
+
 			TOMATOsEngine::DrawSpriteRectAngle(spaceorBPosition, spaceorBSize, { 0.5f,0.5f }, 0.0f, {}, { 150.0f, 32.0f }, spaceorBTextureHandle, 0xFFFFFFFF);
 			// スタート
 			TOMATOsEngine::DrawSpriteRectAngle(startTextPosition, textSize, { 0.5f,0.5f }, 0.0f, {}, { 64.0f, 32.0f }, startTextureHandle, 0xFFFFFFFF);
@@ -223,6 +227,7 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 			TOMATOsEngine::DrawSpriteRectAngle(arrowPosition, arrowSize, { 0.5f,0.5f }, 0.0f, {}, { 32.0f, 32.0f }, arrowTextureHandle, arrowColor);
 			break;
 		}
+
 		case inGame:
 		{
 			if (TOMATOsEngine::IsKeyTrigger(DIK_ESCAPE)) {
