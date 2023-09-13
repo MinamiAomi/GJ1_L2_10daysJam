@@ -37,7 +37,7 @@ private:
     UINT windowStyle_;
     RECT windowRect_;
     float aspectRaito_;
-    SizeChangeMode sizeChangeMode_ = SizeChangeMode::kNormal;
+    SizeChangeMode sizeChangeMode_ = SizeChangeMode::kFixedAspect;
     bool isFullScreen_ = false;
 
 };

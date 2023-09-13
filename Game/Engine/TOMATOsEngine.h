@@ -63,4 +63,6 @@ namespace TOMATOsEngine {
     size_t IsPlayAudio(size_t playHandle);
     void SetPitch(size_t soundHandle, float pitch);
     void SetVolume(size_t soundHandle, float volume);
+
+    void SetFullScreen(bool fullScreen);
 }

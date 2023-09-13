@@ -57,10 +57,12 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
     LevelManager levelManager;
     levelManager.GetFild(&field);
     levelManager.Initialize();
-    
+
     FeverManager* feverManager = FeverManager::GetInstance();
 
     GameTime* gameTime = GameTime::GetInstance();
+
+    bool isFullScreen = true;
 
     while (TOMATOsEngine::BeginFrame()) {
 
@@ -116,7 +118,7 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
             feverManager->Update();
 
             if (!field.GetIsInGameOver()) {
-                TOMATOsEngine::DrawSpriteRectCenter({ TOMATOsEngine::kMonitorWidth * 0.5f , TOMATOsEngine::kMonitorHeight * 0.5f - 10.0f}, { TOMATOsEngine::kMonitorWidth * 1.0f , TOMATOsEngine::kMonitorHeight * 1.0f }, { 0.0f,0.0f }, { TOMATOsEngine::kMonitorWidth * 1.0f , TOMATOsEngine::kMonitorHeight * 1.0f }, floorHandle, 0xFFFFFFFF);
+                TOMATOsEngine::DrawSpriteRectCenter({ TOMATOsEngine::kMonitorWidth * 0.5f , TOMATOsEngine::kMonitorHeight * 0.5f - 10.0f }, { TOMATOsEngine::kMonitorWidth * 1.0f , TOMATOsEngine::kMonitorHeight * 1.0f }, { 0.0f,0.0f }, { TOMATOsEngine::kMonitorWidth * 1.0f , TOMATOsEngine::kMonitorHeight * 1.0f }, floorHandle, 0xFFFFFFFF);
                 feverManager->Draw();
                 backGround.Draw();
                 particleManager.Draw();
@@ -166,7 +168,19 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
         default:
             break;
         }
-
+        if (TOMATOsEngine::IsKeyTrigger(DIK_TAB)) {
+            if (isFullScreen) {
+                TOMATOsEngine::SetFullScreen(false);
+                isFullScreen = false;
+            }
+            else {
+                TOMATOsEngine::SetFullScreen(true);
+                isFullScreen = true;
+            }
+        }
+        if (TOMATOsEngine::IsKeyTrigger(DIK_ESCAPE)) {
+            break;
+        }
     }
 
     TOMATOsEngine::Shutdown();
