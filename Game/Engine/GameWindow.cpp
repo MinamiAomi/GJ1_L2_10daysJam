@@ -33,6 +33,8 @@ GameWindow* GameWindow::GetInstance() {
 void GameWindow::Initialize(const wchar_t* title, uint32_t clientWidth, uint32_t clientHeight) {
     ASSERT_IF_FAILED(CoInitializeEx(0, COINIT_MULTITHREADED));
 
+    windowStyle_ = WS_OVERLAPPEDWINDOW;
+
     // ウィンドウクラスを生成
     WNDCLASS wc{};
     wc.lpfnWndProc = WindowProc;	// ウィンドウプロシージャ
@@ -44,13 +46,13 @@ void GameWindow::Initialize(const wchar_t* title, uint32_t clientWidth, uint32_t
     // ウィンドウサイズを表す構造体にクライアント領域を入れる
     RECT wrc{ 0,0,static_cast<LONG>(clientWidth),static_cast<LONG>(clientHeight) };
     // クライアント領域を元に実際のサイズにwrcを変更してもらう
-    AdjustWindowRect(&wrc, WS_OVERLAPPEDWINDOW, false);
+    AdjustWindowRect(&wrc, windowStyle_, false);
 
     // ウィンドウの生成
     hWnd_ = CreateWindow(
         wc.lpszClassName,		// 利用するクラス名
         title,				// タイトルバーの文字
-        WS_OVERLAPPEDWINDOW,	// よく見るウィンドウスタイル
+        windowStyle_,	// よく見るウィンドウスタイル
         CW_USEDEFAULT,			// 表示X座標（WindowsOSに任せる）
         CW_USEDEFAULT,			// 表示Y座標（WindowsOSに任せる）
         wrc.right - wrc.left,	// ウィンドウ横幅
@@ -61,6 +63,9 @@ void GameWindow::Initialize(const wchar_t* title, uint32_t clientWidth, uint32_t
         nullptr);				// オプション
     clientWidth_ = clientWidth;
     clientHeight_ = clientHeight;
+    aspectRaito_ = clientWidth_ / float(clientHeight_);
+
+    SetWindowLongPtr(hWnd_, GWLP_USERDATA, reinterpret_cast<LONG_PTR>(this));
 
     ShowWindow(hWnd_, SW_SHOW);
 }
@@ -84,4 +89,54 @@ void GameWindow::Shutdown() {
     CloseWindow(hWnd_);
     hWnd_ = nullptr;
     CoUninitialize();
+}
+
+void GameWindow::SetFullScreen(bool fullscreen) {
+    if (isFullScreen_ != fullscreen) {
+        if (fullscreen) {
+            GetWindowRect(hWnd_, &windowRect_);
+
+            SetWindowLong(hWnd_, GWL_STYLE, windowStyle_ & ~(WS_CAPTION | WS_MAXIMIZEBOX | WS_MINIMIZEBOX | WS_SYSMENU | WS_THICKFRAME));
+
+            RECT fullScreenRect{};
+            HMONITOR monitor = MonitorFromWindow(hWnd_, MONITOR_DEFAULTTONEAREST);
+            MONITORINFO info{};
+            info.cbSize = sizeof(info);
+            GetMonitorInfo(monitor, &info);
+            fullScreenRect.right = info.rcMonitor.right - info.rcMonitor.left;
+            fullScreenRect.bottom = info.rcMonitor.bottom - info.rcMonitor.top;
+
+            SetWindowPos(hWnd_,
+                HWND_TOPMOST, fullScreenRect.left, fullScreenRect.top, fullScreenRect.right, fullScreenRect.bottom,
+                SWP_FRAMECHANGED | SWP_NOACTIVATE);
+            ShowWindow(hWnd_, SW_MAXIMIZE);
+        }
+        else {
+            SetWindowLong(hWnd_, GWL_STYLE, windowStyle_);
+            SetWindowPos(hWnd_, HWND_NOTOPMOST,
+                windowRect_.left, windowRect_.top, windowRect_.right - windowRect_.left, windowRect_.bottom - windowRect_.top,
+                SWP_FRAMECHANGED | SWP_NOACTIVATE);
+            ShowWindow(hWnd_, SW_NORMAL);
+        }
+    }
+
+    isFullScreen_ = fullscreen;
+}
+
+void GameWindow::SetSizeChangeMode(SizeChangeMode sizeChangeMode) {
+    sizeChangeMode_ = sizeChangeMode_;
+    if (sizeChangeMode_ == SizeChangeMode::kNone) {
+        windowStyle_ &= ~WS_THICKFRAME;
+    }
+    else {
+        if (sizeChangeMode_ == SizeChangeMode::kFixedAspect) {
+            RECT clientRect{};
+            GetClientRect(hWnd_, &clientRect);
+            clientWidth_ = uint32_t(clientRect.right - clientRect.left);
+            clientHeight_ = uint32_t(clientRect.bottom - clientRect.top);
+            aspectRaito_ = clientWidth_ / float(clientHeight_);
+        }
+        windowStyle_ |= WS_THICKFRAME;
+    }
+    //SetWindowLong(hWnd_);
 }
