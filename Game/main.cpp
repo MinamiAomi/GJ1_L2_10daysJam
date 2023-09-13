@@ -21,6 +21,7 @@ static float pitch = 1.0f;
 int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 
     TOMATOsEngine::Initialize();
+    TOMATOsEngine::SetFullScreen(false);
 
 
     enum GameScene {
@@ -64,7 +65,7 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 
     GameTime* gameTime = GameTime::GetInstance();
 
-    bool isFullScreen = true;
+    bool isFullScreen = false;
 
     while (TOMATOsEngine::BeginFrame()) {
 
@@ -184,9 +185,9 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
                 isFullScreen = true;
             }
         }
-        if (TOMATOsEngine::IsKeyTrigger(DIK_ESCAPE)) {
+       /* if (TOMATOsEngine::IsKeyTrigger(DIK_ESCAPE)) {
             break;
-        }
+        }*/
     }
 
     TOMATOsEngine::Shutdown();
