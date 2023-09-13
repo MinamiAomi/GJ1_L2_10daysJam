@@ -55,6 +55,8 @@ void Bloom::Initialize(ColorBuffer* originalTexture) {
         auto ps = shaderManager->Compile(L"Resources/Shader/LuminanceExtractionrPS.hlsl", ShaderManager::kPixel);
         psoDesc.VS = CD3DX12_SHADER_BYTECODE(vs->GetBufferPointer(), vs->GetBufferSize());
         psoDesc.PS = CD3DX12_SHADER_BYTECODE(ps->GetBufferPointer(), ps->GetBufferSize());
+
+
         psoDesc.BlendState = Helper::BlendDisable;
         psoDesc.RasterizerState = Helper::RasterizerNoCull;
         psoDesc.NumRenderTargets = 1;
@@ -64,8 +66,9 @@ void Bloom::Initialize(ColorBuffer* originalTexture) {
         psoDesc.SampleDesc.Count = 1;
         luminacePipelineState_.Create(L"Luminace PSO", psoDesc);
     
-        ps = shaderManager->Compile(L"Engine/Graphics/Shader/BloomPS.hlsl", ShaderManager::kPixel);
+        ps = shaderManager->Compile(L"Resources/Shader/BloomPS.hlsl", ShaderManager::kPixel);
         psoDesc.PS = CD3DX12_SHADER_BYTECODE(ps->GetBufferPointer(), ps->GetBufferSize());
+
         psoDesc.BlendState = Helper::BlendAdditive;
         additivePipelineState_.Create(L"Additive PSO", psoDesc);
     }

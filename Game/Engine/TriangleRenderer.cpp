@@ -27,7 +27,6 @@ void TriangleRenderer::Initialize(DXGI_FORMAT rtvFormat) {
 
         desc.pRootSignature = rootSignature_;
 
-
         auto vs = shaderManager->Compile(L"Resources/Shader/TriangleVS.hlsl", ShaderManager::kVertex);
         auto ps = shaderManager->Compile(L"Resources/Shader/TrianglePS.hlsl", ShaderManager::kPixel);
         desc.VS = CD3DX12_SHADER_BYTECODE(vs->GetBufferPointer(), vs->GetBufferSize());
@@ -64,9 +63,9 @@ void TriangleRenderer::Initialize(DXGI_FORMAT rtvFormat) {
 void TriangleRenderer::Draw(CommandContext& commandContext, const Vertex* vertices, uint32_t numTriangles) {
 
 
-   /* Vertex* dest = reinterpret_cast<Vertex*>(vertexBuffer_.GetCPUData());
-    dest += triangleCount_ * 3;
-    memcpy(dest, vertices, sizeof(Vertex) * numTriangles * 3);*/
+    /* Vertex* dest = reinterpret_cast<Vertex*>(vertexBuffer_.GetCPUData());
+     dest += triangleCount_ * 3;
+     memcpy(dest, vertices, sizeof(Vertex) * numTriangles * 3);*/
 
 
     commandContext.SetRootSignature(rootSignature_);

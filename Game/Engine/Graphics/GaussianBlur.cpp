@@ -53,6 +53,7 @@ namespace {
             auto ps = shaderManager->Compile(L"Resources/Shader/GaussianBlurPS.hlsl", ShaderManager::kPixel);
             psoDesc.VS = CD3DX12_SHADER_BYTECODE(vs->GetBufferPointer(), vs->GetBufferSize());
             psoDesc.PS = CD3DX12_SHADER_BYTECODE(ps->GetBufferPointer(), ps->GetBufferSize());
+
             psoDesc.BlendState = Helper::BlendDisable;
             psoDesc.RasterizerState = Helper::RasterizerNoCull;
             psoDesc.NumRenderTargets = 1;
@@ -65,6 +66,7 @@ namespace {
 
             vs = shaderManager->Compile(L"Resources/Shader/VerticalGaussianBlurVS.hlsl", ShaderManager::kVertex);
             psoDesc.VS = CD3DX12_SHADER_BYTECODE(vs->GetBufferPointer(), vs->GetBufferSize());
+
             psos->verticalBlurPSO.Create(L"GaussianBlur VerticalPSO", psoDesc);
 
             gbPipelineStateMap_[format] = std::move(psos);

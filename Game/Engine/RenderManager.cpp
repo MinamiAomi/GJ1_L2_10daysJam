@@ -147,8 +147,8 @@ void RenderManager::InitializePostEffect() {
 
         desc.pRootSignature = postEffectRootSignature_;
 
-        auto vs = shaderManager->Compile(L"Engine/Graphics/Shader/ScreenQuadVS.hlsl", ShaderManager::kVertex);
-        auto ps = shaderManager->Compile(L"Engine/Shader/PostEffectPS.hlsl", ShaderManager::kPixel);
+        auto vs = shaderManager->Compile(L"Resources/Shader/ScreenQuadVS.hlsl", ShaderManager::kVertex);
+        auto ps = shaderManager->Compile(L"Resources/Shader/PostEffectPS.hlsl", ShaderManager::kPixel);
         desc.VS = CD3DX12_SHADER_BYTECODE(vs->GetBufferPointer(), vs->GetBufferSize());
         desc.PS = CD3DX12_SHADER_BYTECODE(ps->GetBufferPointer(), ps->GetBufferSize());
         desc.BlendState = Helper::BlendDisable;

@@ -40,7 +40,6 @@ void SpriteRenderer::Initialize(DXGI_FORMAT rtvFormat) {
 
         desc.pRootSignature = rootSignature_;
 
-
         auto vs = shaderManager->Compile(L"Resources/Shader/SpriteVS.hlsl", ShaderManager::kVertex);
         auto ps = shaderManager->Compile(L"Resources/Shader/SpritePS.hlsl", ShaderManager::kPixel);
         desc.VS = CD3DX12_SHADER_BYTECODE(vs->GetBufferPointer(), vs->GetBufferSize());

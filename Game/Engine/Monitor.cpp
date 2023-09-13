@@ -65,6 +65,7 @@ void Monitor::Initilaize(uint32_t bufferWidth, uint32_t bufferHeight, DXGI_FORMA
         auto ps = shaderManager->Compile(L"Resources/Shader/MonitorPS.hlsl", ShaderManager::kPixel);
         desc.VS = CD3DX12_SHADER_BYTECODE(vs->GetBufferPointer(), vs->GetBufferSize());
         desc.PS = CD3DX12_SHADER_BYTECODE(ps->GetBufferPointer(), ps->GetBufferSize());
+
         desc.BlendState = Helper::BlendDisable;
         desc.DepthStencilState = Helper::DepthStateReadWrite;
         desc.RasterizerState = Helper::RasterizerDefault;
