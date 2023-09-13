@@ -76,7 +76,7 @@ void Model::DestroyPipeline() {
     pipelineState_.reset();
 }
 
-void Model::Draw(CommandContext& commandContext, const Matrix4x4& world, const Matrix4x4& camera, bool isLighting) {
+void Model::Draw(CommandContext& commandContext, const Matrix4x4& world, const Camera& camera, bool isLighting) {
     assert(rootSignature_ && pipelineState_);
 
     struct TransformationConstantData {
@@ -91,7 +91,7 @@ void Model::Draw(CommandContext& commandContext, const Matrix4x4& world, const M
 
     TransformationConstantData transformationData;
     transformationData.world = world;
-    transformationData.worldViewProj = world * camera;
+    transformationData.worldViewProj = world * camera.GetViewProjectionMatrix();
 
     commandContext.SetRootSignature(*rootSignature_);
     commandContext.SetPipelineState(*pipelineState_);

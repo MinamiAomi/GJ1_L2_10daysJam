@@ -106,7 +106,9 @@ namespace TOMATOsEngine {
         realWorld->Draw(renderManager->GetCommandContext());
         renderManager->EndRender();
 
-        if (!gameWindow->ProcessMessage()) {
+  
+        if (!gameWindow->ProcessMessage() ||
+            input->IsKeyTrigger(DIK_ESCAPE)) {
             return false;
         }
 

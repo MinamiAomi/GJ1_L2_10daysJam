@@ -9,6 +9,7 @@
 #include "Graphics/PipelineState.h"
 #include "Graphics/Texture.h"
 #include "Math/MathUtils.h"
+#include "Math/Camera.h"
 
 class CommandContext;
 
@@ -24,7 +25,7 @@ public:
     static void DestroyPipeline();
 
     void CreateFromObj(const std::filesystem::path& path);
-    void Draw(CommandContext& commandContext, const Matrix4x4& world, const Matrix4x4& camera, bool isLighting = true);
+    void Draw(CommandContext& commandContext, const Matrix4x4& world, const Camera& camera, bool isLighting = true);
 
 private:
     struct Mesh {

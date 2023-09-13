@@ -35,13 +35,13 @@ void ArcadeMachine::Update() {
     }
 }
 
-void ArcadeMachine::Draw(CommandContext& commandContext, const Matrix4x4& camera) {
+void ArcadeMachine::Draw(CommandContext& commandContext, const Camera& camera) {
     transform_.UpdateMatrix();
     stickTransform_.UpdateMatrix();
 
     body_.Draw(commandContext, transform_.worldMatrix, camera);
     stickRim_.Draw(commandContext, transform_.worldMatrix, camera);
     stick_.Draw(commandContext, stickTransform_.worldMatrix, camera);
-    Monitor::GetInstance()->Draw(commandContext, transform_.worldMatrix, camera);
+    Monitor::GetInstance()->Draw(commandContext, transform_.worldMatrix, camera.GetViewProjectionMatrix());
 }
 
