@@ -88,6 +88,7 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 	auto titleSoundHandle = TOMATOsEngine::LoadAudio("Resources/Audio/titleBGM.wav");
 	auto ingameSoundHandle = TOMATOsEngine::LoadAudio("Resources/Audio/ingameBGM.wav");
 	auto clearSoundHandle = TOMATOsEngine::LoadAudio("Resources/Audio/clearBGM.wav");
+	size_t pickHandle = TOMATOsEngine::LoadAudio("Resources/Audio/pick.wav");
 
 	// タイトルははじめから流す
 	size_t titlePlayHandle = TOMATOsEngine::PlayAudio(titleSoundHandle, true);
@@ -135,6 +136,7 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 					else {
 						arrowSetPosition++;
 					}
+					TOMATOsEngine::PlayAudio(pickHandle);
 				}
 				if (TOMATOsEngine::IsKeyTrigger(DIK_W)) {
 					if (arrowSetPosition <= 0) {
@@ -143,6 +145,7 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 					else {
 						arrowSetPosition--;
 					}
+					TOMATOsEngine::PlayAudio(pickHandle);
 				}
 				if (arrowSetPosition == 0) {
 					arrowPosition.y = startTextPosition.y;
@@ -154,6 +157,7 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 					arrowPosition.y = endTextPosition.y;
 				}
 				if (TOMATOsEngine::IsKeyTrigger(DIK_SPACE)) {
+					TOMATOsEngine::PlayAudio(pickHandle);
 					if (arrowSetPosition == 0) {
 						gameScene = inGame;
 						backGround.Initialize();
@@ -182,6 +186,7 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 			}
 			else {
 				if (TOMATOsEngine::IsKeyTrigger(DIK_ESCAPE)) {
+					TOMATOsEngine::PlayAudio(pickHandle);
 					TOMATOsEngine::SwitchViewMode();
 					isSwitchViewMode = false;
 				}
