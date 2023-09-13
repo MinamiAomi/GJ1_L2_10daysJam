@@ -22,5 +22,6 @@ private:
     Model body_;
     Model stick_;
     Model stickRim_;
+    Model board_;
 
 };

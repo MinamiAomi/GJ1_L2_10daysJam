@@ -12,6 +12,7 @@ void ArcadeMachine::Initialize() {
     body_.CreateFromObj("Engine/Model/body.obj");
     stickRim_.CreateFromObj("Engine/Model/stick_rim.obj");
     stick_.CreateFromObj("Engine/Model/stick.obj");
+    board_.CreateFromObj("Engine/Model/board.obj");
 }
 
 void ArcadeMachine::Update() {
@@ -41,6 +42,7 @@ void ArcadeMachine::Draw(CommandContext& commandContext, const Camera& camera) {
 
     body_.Draw(commandContext, transform_.worldMatrix, camera);
     stickRim_.Draw(commandContext, transform_.worldMatrix, camera);
+    board_.Draw(commandContext, transform_.worldMatrix, camera);
     stick_.Draw(commandContext, stickTransform_.worldMatrix, camera);
     Monitor::GetInstance()->Draw(commandContext, transform_.worldMatrix, camera.GetViewProjectionMatrix());
 }
