@@ -98,9 +98,9 @@ namespace TOMATOsEngine {
     }
 
     void Shutdown() {
+        renderManager->Shutdown();
         realWorld.reset();
         Model::DestroyPipeline();
-        renderManager->Shutdown();
         gameWindow->Shutdown();
     }
 
