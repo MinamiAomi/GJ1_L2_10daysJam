@@ -514,6 +514,8 @@ bool Field::IsInField(uint32_t blockIndexX, uint32_t blockIndexY) const {
 }
 
 void Field::Edit() {
+#ifdef _DEBUG
+
     ImGui::Begin("Field");
     int coolTime = int(growCoolTime_);
     ImGui::SliderInt("GrowCoolTime", &coolTime, 0, int(growInterval_));
@@ -527,6 +529,7 @@ void Field::Edit() {
     ImGui::SliderInt("NumGrowingBlocks", &numB, 0, int(kNumHorizontalBlocks - 1));
     numGrowingBlocks_ = uint32_t(numB);
     ImGui::End();
+#endif // _DEBUG
 }
 
 void Field::ChackBlock() {

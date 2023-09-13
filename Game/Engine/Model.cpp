@@ -58,8 +58,8 @@ void Model::CreatePipeline(DXGI_FORMAT rtvFormat, DXGI_FORMAT dsvFormat) {
         inputLayoutDesc.NumElements = _countof(inputElements);
         desc.InputLayout = inputLayoutDesc;
 
-        auto vs = shaderManager->Compile(L"Engine/Shader/ModelVS.hlsl", ShaderManager::kVertex);
-        auto ps = shaderManager->Compile(L"Engine/Shader/ModelPS.hlsl", ShaderManager::kPixel);
+        auto vs = shaderManager->Compile(L"Resources/Shader/ModelVS.hlsl", ShaderManager::kVertex);
+        auto ps = shaderManager->Compile(L"Resources/Shader/ModelPS.hlsl", ShaderManager::kPixel);
         desc.VS = CD3DX12_SHADER_BYTECODE(vs->GetBufferPointer(), vs->GetBufferSize());
         desc.PS = CD3DX12_SHADER_BYTECODE(ps->GetBufferPointer(), ps->GetBufferSize());
         desc.BlendState = Helper::BlendDisable;

@@ -15,6 +15,7 @@ public:
     static Graphics* GetInstance();
 
     void Initialize();
+    void Shutdown();
 
     DescriptorHandle AllocateDescriptor(D3D12_DESCRIPTOR_HEAP_TYPE type);
 

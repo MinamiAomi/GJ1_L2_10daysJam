@@ -28,8 +28,8 @@ void TriangleRenderer::Initialize(DXGI_FORMAT rtvFormat) {
         desc.pRootSignature = rootSignature_;
 
 
-        auto vs = shaderManager->Compile(L"Engine/Shader/TriangleVS.hlsl", ShaderManager::kVertex);
-        auto ps = shaderManager->Compile(L"Engine/Shader/TrianglePS.hlsl", ShaderManager::kPixel);
+        auto vs = shaderManager->Compile(L"Resources/Shader/TriangleVS.hlsl", ShaderManager::kVertex);
+        auto ps = shaderManager->Compile(L"Resources/Shader/TrianglePS.hlsl", ShaderManager::kPixel);
         desc.VS = CD3DX12_SHADER_BYTECODE(vs->GetBufferPointer(), vs->GetBufferSize());
         desc.PS = CD3DX12_SHADER_BYTECODE(ps->GetBufferPointer(), ps->GetBufferSize());
 

@@ -61,8 +61,8 @@ void Monitor::Initilaize(uint32_t bufferWidth, uint32_t bufferHeight, DXGI_FORMA
         inputLayoutDesc.NumElements = _countof(inputElements);
         desc.InputLayout = inputLayoutDesc;
 
-        auto vs = shaderManager->Compile(L"Engine/Shader/MonitorVS.hlsl", ShaderManager::kVertex);
-        auto ps = shaderManager->Compile(L"Engine/Shader/MonitorPS.hlsl", ShaderManager::kPixel);
+        auto vs = shaderManager->Compile(L"Resources/Shader/MonitorVS.hlsl", ShaderManager::kVertex);
+        auto ps = shaderManager->Compile(L"Resources/Shader/MonitorPS.hlsl", ShaderManager::kPixel);
         desc.VS = CD3DX12_SHADER_BYTECODE(vs->GetBufferPointer(), vs->GetBufferSize());
         desc.PS = CD3DX12_SHADER_BYTECODE(ps->GetBufferPointer(), ps->GetBufferSize());
         desc.BlendState = Helper::BlendDisable;
@@ -79,7 +79,7 @@ void Monitor::Initilaize(uint32_t bufferWidth, uint32_t bufferHeight, DXGI_FORMA
     colorBuffer_.Create(L"Monitor ColorBuffer", bufferWidth, bufferHeight, DXGI_FORMAT_R8G8B8A8_UNORM);
 
     {
-        std::filesystem::path path = "Engine/Model/monitor.obj";
+        std::filesystem::path path = "Resources/Model/monitor.obj";
         std::ifstream file(path);
         assert(file.is_open());
 
