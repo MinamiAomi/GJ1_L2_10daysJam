@@ -69,7 +69,9 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 #ifdef _DEBUG
         auto& io = ImGui::GetIO();
         ImGui::Begin("Menu");
-        ImGui::Text("FPS : %f", io.Framerate);
+        ImGui::Text("FPS : %f\n", io.Framerate);
+        ImGui::Text("Quit : ESCAPE\n");
+        ImGui::Text("FullScreen : TAB\n");
         ImGui::End();
 #endif // _DEBUG
 
