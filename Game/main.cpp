@@ -88,6 +88,7 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
                 player.Initialize();
                 player.SetPosition({ field.GetSize().x * 0.5f, field.GetSize().y - 100.0f });
                 gameTime->Initialize();
+                feverManager->Initialize();
             }
 
             TOMATOsEngine::DrawSpriteRect({ 0.0f,0.0f }, { static_cast<float>(TOMATOsEngine::kMonitorWidth) ,static_cast<float>(TOMATOsEngine::kMonitorHeight) }, { 0.0f,0.0f }, { 640.0f,480.0f }, titleHandle, 0xFFFFFFFF);
@@ -98,6 +99,7 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
             // タイトルに戻るa
             if (TOMATOsEngine::IsKeyTrigger(DIK_SPACE)) {
                 gameScene = title;
+                gameTime->StopBGM();
             }
             if (field.GetIsGameOver()) {
                 gameScene = gameOver;
