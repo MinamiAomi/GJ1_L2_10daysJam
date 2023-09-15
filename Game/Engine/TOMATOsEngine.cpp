@@ -116,25 +116,31 @@ namespace TOMATOsEngine {
         renderManager->BeginRender();
         realWorld->Draw(renderManager->GetCommandContext());
         renderManager->EndRender();
-        
+
         // FPS固定
         {
-            auto nowTime = std::chrono::steady_clock::now();
-            auto elapsed = std::chrono::duration_cast<std::chrono::microseconds>(nowTime - referenceTime);
+            // max 60fps 固定
+            std::chrono::steady_clock::time_point now = std::chrono::steady_clock::now();
+            std::chrono::microseconds elapsed =
+                std::chrono::duration_cast<std::chrono::microseconds>(now - referenceTime);
 
+            // 60ギリギリだとちょっとばかし高いリフレッシュレートのモニタで逆にかくついてしまうので少しバッファを取る
             static const std::chrono::microseconds kMinCheckTime(uint64_t(1000000.0f / 62.0f));
+            // 実際にwaitするのは60基準
             static const std::chrono::microseconds kMinTime(uint64_t(1000000.0f / 60.0f));
-           
-            auto check = kMinCheckTime - elapsed;
+            std::chrono::microseconds check = kMinCheckTime - elapsed;
             if (std::chrono::microseconds(0) < check) {
-                auto waitTime = kMinTime - elapsed;
+                std::chrono::microseconds waitTime = kMinTime - elapsed;
 
-                auto waitStart = std::chrono::steady_clock::now();
+                // sleepは信用ならないので1uでポーリング
+                std::chrono::steady_clock::time_point waitStart = std::chrono::steady_clock::now();
                 do {
-                    std::this_thread::sleep_for(std::chrono::microseconds(1));
+                    std::this_thread::sleep_for(std::chrono::nanoseconds(1));
                 } while (std::chrono::steady_clock::now() - waitStart < waitTime);
             }
-            elapsed = std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::steady_clock::now() - referenceTime);
+
+            elapsed = std::chrono::duration_cast<std::chrono::microseconds>(
+                std::chrono::steady_clock::now() - referenceTime);
             referenceTime = std::chrono::steady_clock::now();
         }
 
