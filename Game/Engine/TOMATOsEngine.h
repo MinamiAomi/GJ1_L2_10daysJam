@@ -43,9 +43,9 @@ namespace TOMATOsEngine {
     void DrawFrame(const Vector2& pos, const Vector2& size, const Vector2& anchorPoint, float angle, const Vector2& texBase, const Vector2& texSize, TextureHandle texHandle, uint32_t color);
     void SetBlendMode(BlendMode blendMode);
 
-    bool IsKeyPressed(char keycode);
-    bool IsKeyTrigger(char keycode);
-    bool IsKeyRelease(char keycode);
+    bool IsKeyPressed(unsigned char keycode);
+    bool IsKeyTrigger(unsigned char keycode);
+    bool IsKeyRelease(unsigned char keycode);
 
     bool IsMousePressed(int button);
     bool IsMouseTrigger(int button);

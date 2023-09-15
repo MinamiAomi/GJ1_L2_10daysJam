@@ -464,15 +464,15 @@ namespace TOMATOsEngine {
         spriteRenderer->Draw(renderManager->GetCommandContext(), vertices, 2, texture.GetSRV());
     }
 
-    bool IsKeyPressed(char keycode) {
+    bool IsKeyPressed(unsigned char keycode) {
         return input->IsKeyPressed(keycode);
     }
 
-    bool IsKeyTrigger(char keycode) {
+    bool IsKeyTrigger(unsigned char keycode) {
         return input->IsKeyTrigger(keycode);
     }
 
-    bool IsKeyRelease(char keycode) {
+    bool IsKeyRelease(unsigned char keycode) {
         return input->IsKeyRelease(keycode);
     }
 

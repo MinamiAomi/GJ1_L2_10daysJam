@@ -143,6 +143,8 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
                     arrowAnimation = 0;
                 }
                 if (TOMATOsEngine::IsKeyTrigger(DIK_S) ||
+                    TOMATOsEngine::IsKeyTrigger(DIK_DOWN) ||
+                    ((pad.Gamepad.wButtons & XINPUT_GAMEPAD_DPAD_DOWN) && !(prepad.Gamepad.wButtons & XINPUT_GAMEPAD_DPAD_DOWN)) ||
                     (pad.Gamepad.sThumbLY < -20000 &&
                         canStick_)) {
                     canStick_ = false;
@@ -155,6 +157,8 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
                     TOMATOsEngine::PlayAudio(pickHandle);
                 }
                 if (TOMATOsEngine::IsKeyTrigger(DIK_W) ||
+                    TOMATOsEngine::IsKeyTrigger(DIK_UP) ||
+                    ((pad.Gamepad.wButtons & XINPUT_GAMEPAD_DPAD_UP) && !(prepad.Gamepad.wButtons & XINPUT_GAMEPAD_DPAD_UP)) ||
                     (pad.Gamepad.sThumbLY > +20000 &&
                         canStick_)) {
                     canStick_ = false;
@@ -207,8 +211,9 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 
 
             }
-            else if (TOMATOsEngine::IsKeyTrigger(DIK_ESCAPE) ||
-                (pad.Gamepad.wButtons & XINPUT_GAMEPAD_X)) {
+            else if (TOMATOsEngine::IsKeyTrigger(DIK_SPACE) ||
+                (pad.Gamepad.wButtons & XINPUT_GAMEPAD_B) &&
+                !(prepad.Gamepad.wButtons & XINPUT_GAMEPAD_B)) {
                 TOMATOsEngine::PlayAudio(pickHandle);
                 TOMATOsEngine::SwitchViewMode();
                 isSwitchViewMode = false;
@@ -317,6 +322,7 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
                 TOMATOsEngine::StopAudio(clearPlayHandle);
                 // タイトルBGM
                 titlePlayHandle = TOMATOsEngine::PlayAudio(titleSoundHandle, true);
+                TOMATOsEngine::SetVolume(titlePlayHandle, 0.2f);
                 // スペースオン
                 auto pushSpacePlayHandle = TOMATOsEngine::PlayAudio(pushSpaceSoundHandle);
                 TOMATOsEngine::SetVolume(pushSpacePlayHandle, 0.1f);

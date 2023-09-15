@@ -132,10 +132,14 @@ void Player::move() {
 	const auto& xInputState = TOMATOsEngine::GetGamePadState();
 
 	if (TOMATOsEngine::IsKeyPressed(DIK_D) ||
+		TOMATOsEngine::IsKeyPressed(DIK_RIGHT) ||
+		xInputState.Gamepad.wButtons & XINPUT_GAMEPAD_DPAD_RIGHT ||
 		xInputState.Gamepad.sThumbLX > XINPUT_GAMEPAD_LEFT_THUMB_DEADZONE) {
 		velocity_.x += 3.5f;
 	}
 	if (TOMATOsEngine::IsKeyPressed(DIK_A) ||
+		TOMATOsEngine::IsKeyPressed(DIK_LEFT) ||
+		xInputState.Gamepad.wButtons & XINPUT_GAMEPAD_DPAD_LEFT ||
 		-xInputState.Gamepad.sThumbLX > XINPUT_GAMEPAD_LEFT_THUMB_DEADZONE) {
 		velocity_.x -= 3.5f;
 	}

@@ -20,9 +20,9 @@ public:
     void Initialize(HWND hWnd);
     void Update();
 
-    bool IsKeyPressed(char keycode) const { return keys_[keycode] != 0; }
-    bool IsKeyTrigger(char keycode) const { return keys_[keycode] != 0 && preKeys_[keycode] == 0; }
-    bool IsKeyRelease(char keycode) const { return keys_[keycode] == 0 && preKeys_[keycode] != 0; }
+    bool IsKeyPressed(unsigned char keycode) const { return keys_[keycode] != 0; }
+    bool IsKeyTrigger(unsigned char keycode) const { return keys_[keycode] != 0 && preKeys_[keycode] == 0; }
+    bool IsKeyRelease(unsigned char keycode) const { return keys_[keycode] == 0 && preKeys_[keycode] != 0; }
 
     bool IsMousePressed(int button) const { return mouseState_.state.rgbButtons[button] & MOUSE_CLICKED_VALUE; }
     bool IsMouseTrigger(int button) const { return (mouseState_.state.rgbButtons[button] & MOUSE_CLICKED_VALUE) && !(preMouseState_.state.rgbButtons[button] & MOUSE_CLICKED_VALUE); }
