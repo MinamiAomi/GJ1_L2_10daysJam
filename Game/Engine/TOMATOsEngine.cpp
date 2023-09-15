@@ -131,7 +131,7 @@ namespace TOMATOsEngine {
 
                 std::chrono::steady_clock::time_point waitStart = std::chrono::steady_clock::now();
                 do {
-                    std::this_thread::sleep_for(std::chrono::microseconds(1));
+                    std::this_thread::sleep_for(std::chrono::nanoseconds(1));
                 } while (std::chrono::steady_clock::now() - waitStart < waitTime);
             }
 
