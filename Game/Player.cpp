@@ -266,6 +266,7 @@ void Player::move() {
 				blockRightBottomType == Field::Normal ||
 				bottom <= 0.0f) {
 				// 高さ更新
+				uint32_t nowWidth = 0;
 				preHeight_ = nowHeight_;
 				velocity_.y = kJumpPower;
 				animationFrame_ = (continueTextureNum_ - 1) * kAnimationSwitchNum;
@@ -285,7 +286,7 @@ void Player::move() {
 						isComboed_ = false;
 						// 高さ更新
 						nowHeight_ = blockBottom;
-
+						//nowWidth  = blockLeft;
 						// コンボカウントリセット
 						stepCount_ = -1;
 						sameHeightCount_ = -1;
@@ -302,6 +303,7 @@ void Player::move() {
 						isLeftHit = true;
 						// 高さ更新
 						nowHeight_ = blockBottom;
+						//nowWidth = blockLeft;
 						// パーティクル
 						CreateParticle(blockLeft, blockBottom);
 					}
@@ -315,7 +317,7 @@ void Player::move() {
 						isComboed_ = false;
 						// 高さ更新
 						nowHeight_ = blockBottom;
-						nowWidth_ = blockRight;
+						//nowWidth = blockRight;
 						// コンボカウントリセット
 						stepCount_ = -1;
 						sameHeightCount_ = -1;
@@ -332,25 +334,28 @@ void Player::move() {
 						isRightHit = true;
 						// 高さ更新
 						nowHeight_ = blockBottom;
-						nowWidth_ = blockRight;
+						//nowWidth = blockRight;
 						// パーティクル
 						CreateParticle(blockRight, blockBottom);
 					}
 				}
 				if (isRightHit && isLeftHit) {
 					field_->BreakBlock(blockMidX, blockBottom);
+					nowWidth = blockMidX;
 				}
 				else if (isRightHit) {
 					field_->BreakBlock(blockRight, blockBottom);
+					nowWidth = blockRight;
 				}
 				else if (isLeftHit) {
 					field_->BreakBlock(blockLeft, blockBottom);
+					nowWidth = blockLeft;
 				}
 
 
 				tempPosition.y += blockTopPosition - bottom;
 				// コンボアップデート
-				ComboUpdate(bottom, blockLeft, blockBottom);
+				ComboUpdate(bottom, nowWidth, blockBottom);
 				// 地面に着いたら
 				if (bottom <= 0.0f) {
 					nowHeight_ = -1;
