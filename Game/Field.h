@@ -88,6 +88,10 @@ public:
     void SetNumGrowingBlocks(uint32_t numGrowingBlock) { numGrowingBlocks_ = numGrowingBlock; }
     void SetPlayer(Player* player) { player_ = player; }
 
+    // mainで呼び出す
+    // BGMのピッチを上げるため
+    bool IsDangerousHeight() const { return isDangerousHeight_; }
+
 private:
     Player* player_ = nullptr;
 
@@ -197,5 +201,5 @@ private:
     bool isTextDropping_;
     bool isInGameOver_;
     bool isGameOver_;
-
+    bool isDangerousHeight_;
 };
