@@ -75,6 +75,7 @@ private:
     // 平行
     uint32_t preSameHeightX_;
     uint32_t sameHeightX_;
+    bool isDifferentX_;
     uint32_t preSameHeightY_;
     uint32_t sameHeightY_;
     int32_t sameHeightCount_;
@@ -89,8 +90,6 @@ private:
 
     int32_t preHeight_;
     int32_t nowHeight_;
-    int32_t preWidth_;
-    int32_t nowWidth_;
 
     // テクスチャハンドル
     TextureHandle textureHandle_;

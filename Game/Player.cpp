@@ -32,6 +32,7 @@ void Player::Initialize() {
 	// 0だと怖い
 	preSameHeightX_ = 20;
 	sameHeightX_ = 20;
+	isDifferentX_ = false;
 	preSameHeightY_ = 0;
 	sameHeightY_ = 0;
 	sameHeightCount_ = -1;
@@ -485,6 +486,7 @@ void Player::ComboUpdate(float  floor, uint32_t blockIndexX, uint32_t blockIndex
 				}
 			}
 			else {
+				// 一コンボ目
 				isComboed_ = false;
 				stepCount_ = 0;
 				comboDrawCount_ = 0;
@@ -496,6 +498,7 @@ void Player::ComboUpdate(float  floor, uint32_t blockIndexX, uint32_t blockIndex
 			sameHeightX_ = blockIndexX;
 			if (sameHeightY_ == preSameHeightY_ &&
 				sameHeightX_ != preSameHeightX_) {
+				isDifferentX_ = true;
 				isComboed_ = true;
 				sameHeightCount_++;
 				stepCount_ = 0;
@@ -507,14 +510,22 @@ void Player::ComboUpdate(float  floor, uint32_t blockIndexX, uint32_t blockIndex
 				}
 			}
 			else {
-				isComboed_ = true;
+				// 一コンボ目
+				isDifferentX_ = true;
+				isComboed_ = false;
 				sameHeightCount_ = 0;
 				comboDrawCount_ = 0;
+			}
+			if (isDifferentX_&&
+				sameHeightX_ == preSameHeightX_) {
+				isDifferentX_ = false;
 			}
 			preSameHeightY_ = sameHeightY_;
 			preSameHeightX_ = sameHeightX_;
 		}
 		else {
+			// 地面
+			isDifferentX_ = false;
 			size_t playHandle = TOMATOsEngine::PlayAudio(groundJumpSoundHandle_);
 			TOMATOsEngine::SetVolume(playHandle,0.8f);
 			stepCount_ = -1;
@@ -722,7 +733,9 @@ void Player::SetBlockColor(int32_t blockIndexY) {
 					}
 				}
 				// 平行
-				if (field_->GetBlock(x, static_cast<uint32_t>(blockIndexY + 1)) == Field::None && field_->GetBlock(static_cast<uint32_t>(x), static_cast<uint32_t>(blockIndexY)) == Field::Normal) {
+				if (field_->GetBlock(x, static_cast<uint32_t>(blockIndexY + 1)) == Field::None &&
+					field_->GetBlock(static_cast<uint32_t>(x), static_cast<uint32_t>(blockIndexY)) == Field::Normal &&
+					isDifferentX_) {
 					if (sameHeightCount_ == 0) {
 						// 色
 						field_->SetColorBlock(x, static_cast<uint32_t>(blockIndexY), Color::HSVA(sameHeightColorH_, kCombo1S_, kCombo1V_));
