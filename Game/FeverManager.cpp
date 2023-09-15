@@ -14,6 +14,11 @@ void FeverManager::Initialize() {
 	preGaugePoints_ = gaugePoints_;
 	diffirentCount_ = 0;
 	isDifferent_ = false;
+
+	textureHandle_ = TOMATOsEngine::LoadTexture("Resources/fever.png");
+	texturePosition_ = { float(TOMATOsEngine::kMonitorWidth) * 0.5f,0.0f };
+	float scale = 3.0f;
+	textureSize_ = { 76.0f* scale , 32.0f * scale };
 }
 
 void FeverManager::Update() {
@@ -54,6 +59,7 @@ void FeverManager::Draw() {
 	float gaugeRatio = delayGaugePoints_ / kFeverGaugeMax_;
 	// 波の基準の高さ
 	float waveBaseHeight = kFeverStartWaveHeight * gaugeRatio;
+	texturePosition_.y = kFeverStartWaveHeight * gaugeRatio;
 	float frameT = frame_ / float(kFrameCycle);
 	// 角度のオフセット
 	float angleOffset = Math::TwoPi * frameT;
@@ -81,9 +87,9 @@ void FeverManager::Draw() {
 		isDifferent_ = true;
 		diffirentCount_ = 0;
 	}
+	uint32_t color0 = 0;
+	uint32_t color1 = 0;
 	for (uint32_t i = 0; i < kNumWaveDivisions; ++i) {
-		uint32_t color0 = 0;
-		uint32_t color1 = 0;
 		// フィーバー中
 		if (isFever_) {
 			color0 = colors[i];
@@ -128,4 +134,8 @@ void FeverManager::Draw() {
 		diffirentCount_++;
 	}
 	preGaugePoints_ = gaugePoints_;
+	// テクスチャ
+	/*if (isFever_) {
+		TOMATOsEngine::DrawSpriteRectAngle(texturePosition_, textureSize_, { 0.5f,0.5f }, 0.0f, {}, { 76.0f,32.0f }, textureHandle_, Color::HSVA(colorHSlice + frameT, 1.0f, 1.0f, 0.4f));
+	}*/
 }

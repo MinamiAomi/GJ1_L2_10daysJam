@@ -2,6 +2,9 @@
 
 #include <cstdint>
 
+#include "Math/MathUtils.h"
+#include "TextureHandle.h"
+
 class FeverManager {
 public:
 	static FeverManager* GetInstance();
@@ -38,5 +41,9 @@ private:
 	// 前回とゲージの量が違ったらtrue
 	bool isDifferent_;
 	uint32_t diffirentCount_;
+	// テクスチャ
+	TextureHandle textureHandle_;
+	Vector2 texturePosition_;
+	Vector2 textureSize_;
 };
 
