@@ -241,6 +241,7 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
             backGround.Update();
             player.Update();
 
+            // BGMが流れていたらピッチを上げる
             if (ingamePlayHandle != INVALID_PLAY_HANDLE) {
                 static float pitch = 1.0f;
                 if (field.IsDangerousHeight()) {
