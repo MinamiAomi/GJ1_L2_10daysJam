@@ -119,20 +119,16 @@ namespace TOMATOsEngine {
 
         // FPS固定
         {
-            // max 60fps 固定
             std::chrono::steady_clock::time_point now = std::chrono::steady_clock::now();
             std::chrono::microseconds elapsed =
                 std::chrono::duration_cast<std::chrono::microseconds>(now - referenceTime);
 
-            // 60ギリギリだとちょっとばかし高いリフレッシュレートのモニタで逆にかくついてしまうので少しバッファを取る
             static const std::chrono::microseconds kMinCheckTime(uint64_t(1000000.0f / 62.0f));
-            // 実際にwaitするのは60基準
             static const std::chrono::microseconds kMinTime(uint64_t(1000000.0f / 60.0f));
             std::chrono::microseconds check = kMinCheckTime - elapsed;
-            if (std::chrono::microseconds(0) < check) {
+            if (check > std::chrono::microseconds(0)) {
                 std::chrono::microseconds waitTime = kMinTime - elapsed;
 
-                // sleepは信用ならないので1uでポーリング
                 std::chrono::steady_clock::time_point waitStart = std::chrono::steady_clock::now();
                 do {
                     std::this_thread::sleep_for(std::chrono::nanoseconds(1));
