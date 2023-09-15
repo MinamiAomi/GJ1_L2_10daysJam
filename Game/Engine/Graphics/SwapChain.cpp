@@ -17,6 +17,10 @@ void SwapChain::Create(HWND hWnd) {
         assert(false);
     }
 
+    HDC hdc = GetDC(hWnd);
+    refreshRate_ = GetDeviceCaps(hdc, VREFRESH);
+    ReleaseDC(hWnd, hdc);
+
     LONG clientWidth = clientRect.right - clientRect.left;
     LONG clientHeight = clientRect.bottom - clientRect.top;
 
@@ -37,6 +41,8 @@ void SwapChain::Create(HWND hWnd) {
         nullptr,
         reinterpret_cast<IDXGISwapChain1**>(swapChain_.ReleaseAndGetAddressOf())));
 
+    swapChain_->SetMaximumFrameLatency(1);
+
     for (uint32_t i = 0; i < kNumBuffers; ++i) {
         ComPtr<ID3D12Resource> resource;
         ASSERT_IF_FAILED(swapChain_->GetBuffer(i, IID_PPV_ARGS(resource.GetAddressOf())));
@@ -46,6 +52,7 @@ void SwapChain::Create(HWND hWnd) {
 }
 
 void SwapChain::Present() {
-    swapChain_->Present(1, 0);
+    static constexpr int32_t kThreasholdRefreshRate = 58;
+    swapChain_->Present(refreshRate_ < kThreasholdRefreshRate ? 0 : 1, 0);
     currentBufferIndex_ = (currentBufferIndex_ + 1) % kNumBuffers;
 }

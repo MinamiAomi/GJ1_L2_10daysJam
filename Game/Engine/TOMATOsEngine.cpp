@@ -2,6 +2,8 @@
 
 #include <cassert>
 #include <memory>
+#include <chrono>
+#include <thread>
 
 #include "GameWindow.h"
 #include "RenderManager.h"
@@ -29,6 +31,8 @@ namespace {
     Monitor* monitor = nullptr;
     std::unique_ptr<RealWorld> realWorld;
     RealWorld::ViewMode viewMode;
+
+    std::chrono::steady_clock::time_point referenceTime;
 
     bool isEndRequest = false;
 
@@ -95,6 +99,8 @@ namespace TOMATOsEngine {
         renderManager->BeginRender();
 
         isEndRequest = false;
+
+        referenceTime = std::chrono::steady_clock::now();
     }
 
     void Shutdown() {
@@ -110,7 +116,27 @@ namespace TOMATOsEngine {
         renderManager->BeginRender();
         realWorld->Draw(renderManager->GetCommandContext());
         renderManager->EndRender();
+        
+        // FPS固定
+        {
+            auto nowTime = std::chrono::steady_clock::now();
+            auto elapsed = std::chrono::duration_cast<std::chrono::microseconds>(nowTime - referenceTime);
 
+            static const std::chrono::microseconds kMinCheckTime(uint64_t(1000000.0f / 62.0f));
+            static const std::chrono::microseconds kMinTime(uint64_t(1000000.0f / 60.0f));
+           
+            auto check = kMinCheckTime - elapsed;
+            if (std::chrono::microseconds(0) < check) {
+                auto waitTime = kMinTime - elapsed;
+
+                auto waitStart = std::chrono::steady_clock::now();
+                do {
+                    std::this_thread::sleep_for(std::chrono::microseconds(1));
+                } while (std::chrono::steady_clock::now() - waitStart < waitTime);
+            }
+            elapsed = std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::steady_clock::now() - referenceTime);
+            referenceTime = std::chrono::steady_clock::now();
+        }
 
         if (!gameWindow->ProcessMessage() ||
             isEndRequest) {

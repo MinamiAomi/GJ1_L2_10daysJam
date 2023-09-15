@@ -13,7 +13,7 @@ class ColorBuffer;
 
 class SwapChain {
 public:
-    static const uint32_t kNumBuffers = 2;
+    static const uint32_t kNumBuffers = 3;
 
     void Create(HWND hWnd);
     void Present();
@@ -26,4 +26,5 @@ private:
     Microsoft::WRL::ComPtr<IDXGISwapChain4> swapChain_;
     std::unique_ptr<ColorBuffer> buffers_[kNumBuffers];
     uint32_t currentBufferIndex_ = 0;
+    int32_t refreshRate_ = 0;
 };
