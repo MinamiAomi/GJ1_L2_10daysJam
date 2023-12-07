@@ -91,6 +91,8 @@ private:
     int32_t preHeight_;
     int32_t nowHeight_;
 
+    int32_t nowWeight_;
+
     // テクスチャハンドル
     TextureHandle textureHandle_;
     // テクスチャハンドル
@@ -118,4 +120,8 @@ private:
 
     Field* field_;
     ParticleManager* particleManager_;
+
+    Vector2 dropIndex_ = { 0.0f,0.0f };
+    bool issYosoku_ = false;
+    TextureHandle yosokuHandle_;
 };
