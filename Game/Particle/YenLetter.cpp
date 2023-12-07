@@ -75,9 +75,10 @@ void YenLetter::Update() {
 					static_cast<float>(particle->time_),
 					0.0f, 1.0f);
 				// 色
-				particle->color_ = Vector4(
-					1.0f, 1.0f, 1.0f,
-					Math::Lerp(t, 1.0f, 0.0f));
+				particle->color_.x = Math::Lerp(t,particle->color_.x, 0.0f);
+				particle->color_.y = Math::Lerp(t,particle->color_.y, 0.0f);
+				particle->color_.z = Math::Lerp(t,particle->color_.z, 0.0f);
+				particle->color_.w = Math::Lerp(t,particle->color_.w, 0.0f);
 
 				// サイズ
 				float size = Math::Lerp(t, particle->size_Origin_.x, 0.0f);
