@@ -92,6 +92,12 @@ public:
     // BGMのピッチを上げるため
     bool IsDangerousHeight() const { return isDangerousHeight_; }
 
+    int32_t GetHeightestIndex();
+    int32_t GetHeightestIndex(uint32_t xIndex);
+    uint32_t GetLeatestIndex();
+
+    uint32_t GetLeatestIndex(uint32_t exclusion);
+
 private:
     Player* player_ = nullptr;
 
@@ -114,9 +120,7 @@ private:
     void DrawBlock();
     void DrawScoreNum(uint32_t num, Vector2 centerPos, Vector2 size, Vector2 textureSize, TextureHandle textureHandle);
     void DrawGrow();
-    int32_t GetHeightestIndex();
-    uint32_t GetLeatestIndex();
-    uint32_t GetLeatestIndex(uint32_t exclusion);
+
     void HarryEffect();
     void GameOverUpdate();
     // 縦に伸びるので横縦配置

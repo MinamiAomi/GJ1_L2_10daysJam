@@ -690,6 +690,19 @@ int32_t  Field::GetHeightestIndex() {
     return heightestIndex;
 }
 
+int32_t Field::GetHeightestIndex(uint32_t xIndex)
+{
+    int32_t  heightestIndex = -1;
+    
+        for (int32_t y = 0; y < kNumVerticalBlocks; ++y) {
+            if (blocks_[xIndex][y] == BlockType::Normal && heightestIndex < y) {
+                heightestIndex = y;
+            }
+        }
+    
+    return heightestIndex;
+}
+
 uint32_t  Field::GetLeatestIndex() {
     uint32_t  leatestYIndex = kNumVerticalBlocks;
     uint32_t  leatestXIndex[kNumHorizontalBlocks];
