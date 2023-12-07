@@ -73,6 +73,9 @@ void Player::Initialize() {
 	nowWeight_ = 0;
 
 	yosokuHandle_ = TOMATOsEngine::LoadTexture("Resources/yosoku.png");
+
+	sameHeightTextureHandle_ = TOMATOsEngine::LoadTexture("Resources/horizon.png");
+	stepTextureHandle_ = TOMATOsEngine::LoadTexture("Resources/stairs.png");
 }
 
 void Player::Update() {
@@ -83,6 +86,8 @@ void Player::Update() {
 			move();
 
 			SetBlockColor(nowHeight_);
+
+			SkillUpdate();
 			// コンボ数によってエフェクト変化
 			if (stepCount_ == 1 || sameHeightCount_ == 1) {
 				particleManager_->GetFollow()->Create(position_, Vector4(1.0f, 1.0f, 1.0f, 1.0f), static_cast<uint32_t>(Follow::Texture::kPlayer));
@@ -394,14 +399,14 @@ void Player::move() {
 		if (rightHeightestIndex < leftHeightestIndex) {
 			dropIndex_ = { float(blockLeft) ,float(leftHeightestIndex) };
 		}
-		else if(leftHeightestIndex < rightHeightestIndex){
-			dropIndex_ = { float(blockRight) ,float(rightHeightestIndex)};
+		else if (leftHeightestIndex < rightHeightestIndex) {
+			dropIndex_ = { float(blockRight) ,float(rightHeightestIndex) };
 		}
 		else {
 			dropIndex_ = { float(blockMid) ,float(rightHeightestIndex) };
 		}
 	}
-	
+
 }
 
 void Player::Draw() {
@@ -425,7 +430,7 @@ void Player::Draw() {
 		if (issYosoku_ && !field_->GetIsInGameOver()) {
 			TOMATOsEngine::DrawSpriteRectCenter({ dropIndex_.x * Field::kBlockSize + Field::kBlockSize / 2.0f,dropIndex_.y * Field::kBlockSize + Field::kBlockSize / 2.0f }, { Field::kBlockSize,Field::kBlockSize }, { 0.0f,0.0f }, { 32.0f,32.0f }, yosokuHandle_, 0xFFFFFFFF);
 		}
-
+		SkillDraw();
 		// 円
 		/*TOMATOsEngine::DrawCircle(sameHeightColorChangePositionRight_, 5.0f, 0x66666666);
 		TOMATOsEngine::DrawCircle(sameHeightColorChangePositionLeft_, 5.0f, 0x66666666);*/
@@ -504,6 +509,117 @@ void Player::GameClearUpdate() {
 
 }
 
+void Player::SkillUpdate() {
+	if (!isSkillSprite_) {
+		if (stepCount_ >= kCombo_) {
+			if (!stepInfo_.empty()) {
+				for (auto& step : stepInfo_) {
+					step.position.y += skillSize_.y * 0.5f+5.0f;
+				}
+			}
+			if (!sameHeightInfo_.empty()) {
+				for (auto& sameHeight : sameHeightInfo_) {
+					sameHeight.position.y += skillSize_.y * 0.5f + 5.0f;
+				}
+			}
+			SpriteInfo info{};
+			info.position = {};
+			info.color = { 1.0f,1.0f,1.0f,1.0f };
+			info.time = 0.0f;
+			info.isAlive = true;
+			info.isAnimation = true;
+			stepInfo_.emplace_back(info);
+			isSkillSprite_ = true;
+		}
+		if (sameHeightCount_ >= kCombo_) {
+			if (!stepInfo_.empty()) {
+				for (auto& step : stepInfo_) {
+					step.position.y += skillSize_.y * 0.5f + 5.0f;
+				}
+			}
+			if (!sameHeightInfo_.empty()) {
+				for (auto& sameHeight : sameHeightInfo_) {
+					sameHeight.position.y += skillSize_.y * 0.5f + 5.0f;
+				}
+			}
+			SpriteInfo info{};
+			info.position = {};
+			info.color = { 1.0f,1.0f,1.0f,1.0f };
+			info.time = 0.0f;
+			info.isAlive = true;
+			info.isAnimation = true;
+			sameHeightInfo_.emplace_back(info);
+			isSkillSprite_ = true;
+		}
+
+	}
+
+	for (auto& step : stepInfo_) {
+		if (step.isAnimation) {
+			float t = step.time / kSkillAnimationTime_;
+			step.position.x = Math::Lerp(t, startSkillAnimationPos_.x, endSkillAnimationPos_.x);
+			step.position.y = Math::Lerp(t, startSkillAnimationPos_.y, endSkillAnimationPos_.y);
+			step.time += 1.0f;
+			if (step.time >= kSkillAnimationTime_) {
+				step.isAnimation = false;
+				step.time = 0.0f;
+				step.position = endSkillAnimationPos_;
+			}
+		}
+		else {
+			float t = step.time / kSkillColorTime_;
+			step.color.w = Math::Lerp(t, 1.0f, 0.0f);
+			step.time += 1.0f;
+			if (step.time >= kSkillColorTime_) {
+				step.isAlive = false;
+				step.time = 0.0f;
+			}
+		}
+	}
+	stepInfo_.erase(std::remove_if(stepInfo_.begin(), stepInfo_.end(),
+		[](const SpriteInfo& sprite) { return !sprite.isAlive; }), stepInfo_.end());
+	for (auto& sameHeight : sameHeightInfo_) {
+		if (sameHeight.isAnimation) {
+			float t = sameHeight.time / kSkillAnimationTime_;
+			sameHeight.position.x = Math::Lerp(t, startSkillAnimationPos_.x, endSkillAnimationPos_.x);
+			sameHeight.position.y = Math::Lerp(t, startSkillAnimationPos_.y, endSkillAnimationPos_.y);
+			sameHeight.time += 1.0f;
+			if (sameHeight.time >= kSkillAnimationTime_) {
+				sameHeight.isAnimation = false;
+				sameHeight.time = 0.0f;
+			}
+		}
+		else {
+			float t = sameHeight.time / kSkillColorTime_;
+			sameHeight.color.w = Math::Lerp(t, 1.0f, 0.0f);
+			sameHeight.time += 1.0f;
+			if (sameHeight.time >= kSkillColorTime_) {
+				sameHeight.isAlive = false;
+				sameHeight.time = 0.0f;
+			}
+		}
+	}
+	sameHeightInfo_.erase(std::remove_if(sameHeightInfo_.begin(), sameHeightInfo_.end(),
+		[](const SpriteInfo& sprite) { return !sprite.isAlive; }), sameHeightInfo_.end());
+	if (ImGui::TreeNode("skill")) {
+		ImGui::DragFloat("animationTime", &kSkillAnimationTime_, 0.1f);
+		ImGui::DragFloat("colorTime", &kSkillColorTime_, 0.1f);
+		ImGui::DragFloat2("startPos", &startSkillAnimationPos_.x, 0.1f);
+		ImGui::DragFloat2("endPos", &endSkillAnimationPos_.x, 0.1f);
+		ImGui::Text("bool:%d", isSkillSprite_);
+		ImGui::TreePop();
+	}
+}
+
+void Player::SkillDraw() {
+	for (auto& sameHeight : sameHeightInfo_) {
+		TOMATOsEngine::DrawSpriteRectAngle(sameHeight.position, skillSize_, { 0.5f,0.5f }, 0.0f, {}, { 128.0f,64.0f }, sameHeightTextureHandle_, Color::Convert(sameHeight.color));
+	}
+	for (auto& step : stepInfo_) {
+		TOMATOsEngine::DrawSpriteRectAngle(step.position, skillSize_, { 0.5f,0.5f }, 0.0f, {}, { 128.0f,64.0f }, stepTextureHandle_, Color::Convert(step.color));
+	}
+}
+
 void Player::ComboUpdate(float  floor, uint32_t blockIndexX, uint32_t blockIndexY) {
 	uint32_t x = blockIndexX;
 	x = 0;
@@ -514,6 +630,7 @@ void Player::ComboUpdate(float  floor, uint32_t blockIndexX, uint32_t blockIndex
 			step_ = blockIndexY;
 			if (step_ - 1 == preStep_) {
 				isComboed_ = false;
+				isSkillSprite_ = false;
 				stepCount_++;
 				comboDrawCount_ = 0;
 				isHorizontal_ = false;
@@ -525,6 +642,7 @@ void Player::ComboUpdate(float  floor, uint32_t blockIndexX, uint32_t blockIndex
 			else {
 				// 一コンボ目
 				isComboed_ = false;
+				isSkillSprite_ = false;
 				stepCount_ = 0;
 				comboDrawCount_ = 0;
 			}
@@ -550,6 +668,7 @@ void Player::ComboUpdate(float  floor, uint32_t blockIndexX, uint32_t blockIndex
 				// 一コンボ目
 				isDifferentX_ = true;
 				isComboed_ = false;
+				isSkillSprite_ = false;
 				sameHeightCount_ = 0;
 				comboDrawCount_ = 0;
 			}
