@@ -56,10 +56,8 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 	uint32_t arrowSetPosition = 0;
 	uint32_t arrowAnimation = 0;
 	uint32_t arrowColor = 0xFFFFFFFF;
-	uint32_t StickCount_ = 0;
 	bool flag_ = false;
 	bool isSwitchViewMode = false;
-	bool canStick_ = true;
 
 
 	Vector2 gameOverPosition = { static_cast<float>(TOMATOsEngine::kMonitorWidth) * 0.5f,static_cast<float>(TOMATOsEngine::kMonitorHeight) * 0.5f - textSize.y * 2.0f };
@@ -119,17 +117,19 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 
 	while (TOMATOsEngine::BeginFrame()) {
 
+
+		auto pad = TOMATOsEngine::GetGamePadState();
+		auto prepad = TOMATOsEngine::GetGamePadPreState();
 #ifdef _DEBUG
 		auto& io = ImGui::GetIO();
 		ImGui::Begin("Menu");
 		ImGui::Text("FPS : %f\n", io.Framerate);
 		ImGui::Text("Quit : ESCAPE\n");
 		ImGui::Text("FullScreen : TAB\n");
+		ImGui::Text("now:%d", pad.Gamepad.sThumbLY);
+		ImGui::Text("pre:%d", prepad.Gamepad.sThumbLY);
 		ImGui::End();
 #endif // _DEBUG
-
-		auto pad = TOMATOsEngine::GetGamePadState();
-		auto prepad = TOMATOsEngine::GetGamePadPreState();
 		switch (gameScene) {
 		case title:
 		{
@@ -139,16 +139,8 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 			}
 			if (!isShutdown) {
 				const uint32_t kArrowAnimation = 25;
-				const uint32_t kStickCountMax = 30;
 				if (!isSwitchViewMode) {
 					arrowAnimation++;
-					if (!canStick_) {
-						StickCount_++;
-						if (StickCount_ >= kStickCountMax) {
-							StickCount_ = 0;
-							canStick_ = true;
-						}
-					}
 					if (arrowAnimation >= kArrowAnimation) {
 						if (flag_) {
 							arrowColor = 0xFFFFFFFF;
@@ -162,9 +154,9 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 					if (TOMATOsEngine::IsKeyTrigger(DIK_S) ||
 						TOMATOsEngine::IsKeyTrigger(DIK_DOWN) ||
 						((pad.Gamepad.wButtons & XINPUT_GAMEPAD_DPAD_DOWN) && !(prepad.Gamepad.wButtons & XINPUT_GAMEPAD_DPAD_DOWN)) ||
-						(pad.Gamepad.sThumbLY < -20000 &&
-							canStick_)) {
-						canStick_ = false;
+						(pad.Gamepad.sThumbLY < -5000 &&
+							prepad.Gamepad.sThumbLY <= 4000.0f&&
+							prepad.Gamepad.sThumbLY >= -4000.0f)) {
 						if (arrowSetPosition >= 2) {
 							arrowSetPosition = 0;
 						}
@@ -172,13 +164,14 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 							arrowSetPosition++;
 						}
 						TOMATOsEngine::PlayAudio(pickHandle);
+						arrowColor = 0xFFFFFFFF;
 					}
 					if (TOMATOsEngine::IsKeyTrigger(DIK_W) ||
 						TOMATOsEngine::IsKeyTrigger(DIK_UP) ||
 						((pad.Gamepad.wButtons & XINPUT_GAMEPAD_DPAD_UP) && !(prepad.Gamepad.wButtons & XINPUT_GAMEPAD_DPAD_UP)) ||
-						(pad.Gamepad.sThumbLY > +20000 &&
-							canStick_)) {
-						canStick_ = false;
+						(pad.Gamepad.sThumbLY > +5000 &&
+							prepad.Gamepad.sThumbLY <= 4000.0f &&
+							prepad.Gamepad.sThumbLY >= -4000.0f)) {
 						if (arrowSetPosition <= 0) {
 							arrowSetPosition = 2;
 						}
@@ -186,6 +179,7 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 							arrowSetPosition--;
 						}
 						TOMATOsEngine::PlayAudio(pickHandle);
+						arrowColor = 0xFFFFFFFF;
 					}
 					if (arrowSetPosition == 0) {
 						arrowPosition.y = startTextPosition.y;
