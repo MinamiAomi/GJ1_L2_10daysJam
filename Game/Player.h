@@ -114,7 +114,7 @@ private:
 	float kSkillAnimationTime_ = 20.0f;
 	float kSkillColorTime_ = 240.0f;
 	Vector2 startSkillAnimationPos_ = {-128.0f,180.0f};
-	Vector2 endSkillAnimationPos_ = { 128.0f*0.5f+5.0f,180.0f };
+	Vector2 endSkillAnimationPos_ = { 128.0f*0.5f+10.0f,180.0f };
 	Vector2 skillSize_={ 128.0f,64.0f };
 	std::vector<SpriteInfo> sameHeightInfo_;
 	std::vector<SpriteInfo> stepInfo_;
@@ -146,4 +146,5 @@ private:
 	Vector2 dropIndex_ = { 0.0f,0.0f };
 	bool issYosoku_ = false;
 	TextureHandle yosokuHandle_;
+	uint32_t yosokuColor_;
 };

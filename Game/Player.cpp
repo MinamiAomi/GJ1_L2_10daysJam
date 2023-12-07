@@ -428,7 +428,7 @@ void Player::Draw() {
 
 		//予測ボックス
 		if (issYosoku_ && !field_->GetIsInGameOver()) {
-			TOMATOsEngine::DrawSpriteRectCenter({ dropIndex_.x * Field::kBlockSize + Field::kBlockSize / 2.0f,dropIndex_.y * Field::kBlockSize + Field::kBlockSize / 2.0f }, { Field::kBlockSize,Field::kBlockSize }, { 0.0f,0.0f }, { 32.0f,32.0f }, yosokuHandle_, 0xFFFFFFFF);
+			TOMATOsEngine::DrawSpriteRectCenter({ dropIndex_.x * Field::kBlockSize + Field::kBlockSize / 2.0f,dropIndex_.y * Field::kBlockSize + Field::kBlockSize / 2.0f }, { Field::kBlockSize,Field::kBlockSize }, { 0.0f,0.0f }, { 32.0f,32.0f }, yosokuHandle_, yosokuColor_);
 		}
 		SkillDraw();
 		// 円
@@ -601,14 +601,6 @@ void Player::SkillUpdate() {
 	}
 	sameHeightInfo_.erase(std::remove_if(sameHeightInfo_.begin(), sameHeightInfo_.end(),
 		[](const SpriteInfo& sprite) { return !sprite.isAlive; }), sameHeightInfo_.end());
-	if (ImGui::TreeNode("skill")) {
-		ImGui::DragFloat("animationTime", &kSkillAnimationTime_, 0.1f);
-		ImGui::DragFloat("colorTime", &kSkillColorTime_, 0.1f);
-		ImGui::DragFloat2("startPos", &startSkillAnimationPos_.x, 0.1f);
-		ImGui::DragFloat2("endPos", &endSkillAnimationPos_.x, 0.1f);
-		ImGui::Text("bool:%d", isSkillSprite_);
-		ImGui::TreePop();
-	}
 }
 
 void Player::SkillDraw() {
@@ -811,6 +803,7 @@ void Player::ComboDraw() {
 void Player::SetBlockColor(int32_t blockIndexY) {
 	// 色
 	field_->ColorClearBlock();
+	yosokuColor_ = 0xFFFFFFFF;
 	if (blockIndexY != -1) {
 		const float AddX = 40.0f;
 		if (sameHeightStart_) {
@@ -872,6 +865,7 @@ void Player::SetBlockColor(int32_t blockIndexY) {
 						}
 
 						field_->SetColorBlock(x, y, Color::HSVA(h_, kCombo3S_, kCombo3V_));
+						yosokuColor_ = Color::HSVA(h_, kCombo3S_, kCombo3V_);
 					}
 				}
 			}
@@ -882,10 +876,12 @@ void Player::SetBlockColor(int32_t blockIndexY) {
 					if (stepCount_ == 0) {
 						// 色
 						field_->SetColorBlock(x, static_cast<uint32_t>(blockIndexY + 1), Color::HSVA(stepColorH_, kCombo1S_, kCombo1V_));
+						yosokuColor_ = Color::HSVA(stepColorH_, kCombo1S_, kCombo1V_);
 					}
 					else if (stepCount_ == 1) {
 						// 色
 						field_->SetColorBlock(x, static_cast<uint32_t>(blockIndexY + 1), Color::HSVA(stepColorH_, kCombo2S_, kCombo2V_));
+						yosokuColor_ = Color::HSVA(stepColorH_, kCombo2S_, kCombo2V_);
 					}
 				}
 				// 平行
@@ -895,10 +891,12 @@ void Player::SetBlockColor(int32_t blockIndexY) {
 					if (sameHeightCount_ == 0) {
 						// 色
 						field_->SetColorBlock(x, static_cast<uint32_t>(blockIndexY), Color::HSVA(sameHeightColorH_, kCombo1S_, kCombo1V_));
+						yosokuColor_ = Color::HSVA(sameHeightColorH_, kCombo1S_, kCombo1V_);
 					}
 					else if (sameHeightCount_ == 1) {
 						// 色
 						field_->SetColorBlock(x, static_cast<uint32_t>(blockIndexY), Color::HSVA(sameHeightColorH_, kCombo2S_, kCombo2V_));
+						yosokuColor_ = Color::HSVA(sameHeightColorH_, kCombo2S_, kCombo2V_);
 					}
 				}
 			}
@@ -913,6 +911,7 @@ void Player::SetBlockColor(int32_t blockIndexY) {
 						}
 
 						field_->SetColorBlock(x, y, Color::HSVA(h_, kCombo3S_, kCombo3V_));
+						yosokuColor_ = Color::HSVA(h_, kCombo3S_, kCombo3V_);
 					}
 				}
 			}
@@ -932,6 +931,7 @@ void Player::SetBlockColor(int32_t blockIndexY) {
 							h_ = 0.0f;
 						}
 						field_->SetColorBlock(x, y, Color::HSVA(h_, kCombo3S_, kCombo3V_));
+						yosokuColor_ = Color::HSVA(h_, kCombo3S_, kCombo3V_);
 					}
 				}
 			}
