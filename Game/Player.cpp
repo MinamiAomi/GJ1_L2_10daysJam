@@ -86,14 +86,17 @@ void Player::Update() {
 			// コンボ数によってエフェクト変化
 			if (stepCount_ == 1 || sameHeightCount_ == 1) {
 				particleManager_->GetFollow()->Create(position_, Vector4(1.0f, 1.0f, 1.0f, 1.0f), static_cast<uint32_t>(Follow::Texture::kPlayer));
-				particleManager_->GetYenLetter()->Create(position_, Vector4(1.0f, 1.0f, 1.0f, 0.8f), static_cast<uint32_t>(YenLetter::Texture::kWhite1x1));
-				particleManager_->GetYenLetter()->Create(position_, Vector4(1.0f, 1.0f, 1.0f, 0.8f), static_cast<uint32_t>(YenLetter::Texture::kWhite1x1), false);
+
+				particleManager_->GetYenLetter()->Create(position_, Color::HSVA(comboColorH_, 1.0f, 0.5f), static_cast<uint32_t>(YenLetter::Texture::kWhite1x1));
+				particleManager_->GetYenLetter()->Create(position_, Color::HSVA(comboColorH_, 1.0f, 0.5f), static_cast<uint32_t>(YenLetter::Texture::kWhite1x1), false);
+
 			}
 			else if (stepCount_ == 2 || sameHeightCount_ == 2) {
 				particleManager_->GetFollow()->Create(position_, Vector4(1.0f, 1.0f, 1.0f, 1.0f), static_cast<uint32_t>(Follow::Texture::kPlayer));
 				particleManager_->GetFollow()->Create(position_, Vector4(1.0f, 1.0f, 1.0f, 1.0f), static_cast<uint32_t>(Follow::Texture::kStar));
-				particleManager_->GetYenLetter()->Create(position_, Vector4(1.0f, 1.0f, 1.0f, 1.0f), static_cast<uint32_t>(YenLetter::Texture::kWhite1x1));
-				particleManager_->GetYenLetter()->Create(position_, Vector4(1.0f, 1.0f, 1.0f, 1.0f), static_cast<uint32_t>(YenLetter::Texture::kWhite1x1), false);
+
+				particleManager_->GetYenLetter()->Create(position_, Color::HSVA(comboColorH_, 1.0f, 0.8f), static_cast<uint32_t>(YenLetter::Texture::kWhite1x1));
+				particleManager_->GetYenLetter()->Create(position_, Color::HSVA(comboColorH_, 1.0f, 0.8f), static_cast<uint32_t>(YenLetter::Texture::kWhite1x1), false);
 			}
 			else if (stepCount_ == 0 || sameHeightCount_ == 0) {
 				particleManager_->GetFollow()->Create(position_, Vector4(1.0f, 1.0f, 1.0f, 0.5f), static_cast<uint32_t>(Follow::Texture::kPlayer));
@@ -550,7 +553,7 @@ void Player::ComboUpdate(float  floor, uint32_t blockIndexX, uint32_t blockIndex
 				sameHeightCount_ = 0;
 				comboDrawCount_ = 0;
 			}
-			if (isDifferentX_&&
+			if (isDifferentX_ &&
 				sameHeightX_ == preSameHeightX_) {
 				isDifferentX_ = false;
 			}
@@ -561,7 +564,7 @@ void Player::ComboUpdate(float  floor, uint32_t blockIndexX, uint32_t blockIndex
 			// 地面
 			isDifferentX_ = false;
 			size_t playHandle = TOMATOsEngine::PlayAudio(groundJumpSoundHandle_);
-			TOMATOsEngine::SetVolume(playHandle,0.8f);
+			TOMATOsEngine::SetVolume(playHandle, 0.8f);
 			stepCount_ = -1;
 			sameHeightCount_ = -1;
 		}
