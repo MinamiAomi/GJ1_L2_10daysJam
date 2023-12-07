@@ -57,6 +57,16 @@ namespace Animation {
         float GetInterpolatedValue(float animationTime) override;
     };
 
+    class Vector2Node :
+        public Node<Vector2> {
+    public:
+        Vector2Node() = default;
+        Vector2Node(const KeyFrame& keyFrame) : Node(keyFrame) {}
+        Vector2Node(const std::vector<KeyFrame>& keyFrames) : Node(keyFrames) {}
+        Vector2Node(std::vector<KeyFrame>&& keyFrames) : Node(std::move(keyFrames)) {}
+        Vector2 GetInterpolatedValue(float animationTime) override;
+    };
+
     class Vector3Node :
         public Node<Vector3> {
     public:
