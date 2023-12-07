@@ -16,6 +16,8 @@
 
 #include "Audio/Audio.h"
 
+#pragma comment(lib, "winmm.lib")
+
 namespace {
     GameWindow* gameWindow = nullptr;
     RenderManager* renderManager = nullptr;
@@ -130,9 +132,11 @@ namespace TOMATOsEngine {
                 std::chrono::microseconds waitTime = kMinTime - elapsed;
 
                 std::chrono::steady_clock::time_point waitStart = std::chrono::steady_clock::now();
+                timeBeginPeriod(1);
                 do {
-                    std::this_thread::sleep_for(std::chrono::nanoseconds(1));
+                    std::this_thread::sleep_for(std::chrono::microseconds(1));
                 } while (std::chrono::steady_clock::now() - waitStart < waitTime);
+                timeEndPeriod(1);
             }
 
             elapsed = std::chrono::duration_cast<std::chrono::microseconds>(
