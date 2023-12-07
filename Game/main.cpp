@@ -111,6 +111,7 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 	float animationTime = 0.0f;
 	bool isShutdown = false;
 	TextureHandle shutdownTextureHandle = TOMATOsEngine::LoadTexture("Resources/shpere.png");
+	auto shutdownSoundHandle = TOMATOsEngine::LoadAudio("Resources/Audio/shutdown.wav");
 	Vector2 shutdownSize{};
 	Vector2 shutdownSideSize{};
 	Animation::Vector2Node shutdownSizeAnimation({ { {1280.0f, 20.0f}, 0.0f}, {{20.0f, 20.0f}, 0.2f}, {{20.0f, 640.0f}, 0.4f}, {{2.0f, 10.0f}, 0.4f}, {{1280.0f, 1.0f}, 1.0f} });
@@ -134,6 +135,7 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 		{
 			if (TOMATOsEngine::IsKeyTrigger(DIK_ESCAPE)) {
 				isShutdown = true;
+				TOMATOsEngine::PlayAudio(shutdownSoundHandle);
 			}
 			if (!isShutdown) {
 				const uint32_t kArrowAnimation = 25;
@@ -217,11 +219,12 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 							isSwitchViewMode = true;
 						}
 						else {
-							TOMATOsEngine::RequestQuit();
+							isShutdown = true;
+							TOMATOsEngine::PlayAudio(shutdownSoundHandle);
 						}
 						// スペース押した音
-						auto pushSpacePlayHandle = TOMATOsEngine::PlayAudio(pushSpaceSoundHandle);
-						TOMATOsEngine::SetVolume(pushSpacePlayHandle, 0.1f);
+						//auto pushSpacePlayHandle = TOMATOsEngine::PlayAudio(pushSpaceSoundHandle);
+						//TOMATOsEngine::SetVolume(pushSpacePlayHandle, 0.1f);
 					}
 
 
@@ -260,7 +263,7 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 			if (isShutdown) {
 				TOMATOsEngine::DrawSpriteRectAngle({ static_cast<float>(TOMATOsEngine::kMonitorWidth) * 0.5f ,static_cast<float>(TOMATOsEngine::kMonitorHeight) * 0.5f }, { 1280.0f,1280.0f }, { 0.5f,0.5f }, 0.0f, {}, { 32.0f,32.0f }, shutdownTextureHandle, 0x000000FF);
 				TOMATOsEngine::DrawSpriteRectAngle({ static_cast<float>(TOMATOsEngine::kMonitorWidth) * 0.5f ,static_cast<float>(TOMATOsEngine::kMonitorHeight) * 0.5f }, shutdownSize, { 0.5f,0.5f }, 0.0f, {}, { 32.0f,32.0f }, shutdownTextureHandle, 0xFFFFFFFF);
-				TOMATOsEngine::DrawSpriteRectAngle({ static_cast<float>(TOMATOsEngine::kMonitorWidth) * 0.5f ,static_cast<float>(TOMATOsEngine::kMonitorHeight) * 0.5f }, shutdownSideSize, { 0.5f,0.5f }, 45.0f* Math::ToRadian, {}, { 32.0f,32.0f }, shutdownTextureHandle, 0xFFFFFF05);
+				TOMATOsEngine::DrawSpriteRectAngle({ static_cast<float>(TOMATOsEngine::kMonitorWidth) * 0.5f ,static_cast<float>(TOMATOsEngine::kMonitorHeight) * 0.5f }, shutdownSideSize, { 0.5f,0.5f }, 45.0f * Math::ToRadian, {}, { 32.0f,32.0f }, shutdownTextureHandle, 0xFFFFFF05);
 				TOMATOsEngine::DrawSpriteRectAngle({ static_cast<float>(TOMATOsEngine::kMonitorWidth) * 0.5f ,static_cast<float>(TOMATOsEngine::kMonitorHeight) * 0.5f }, shutdownSideSize, { 0.5f,0.5f }, 135.0f * Math::ToRadian, {}, { 32.0f,32.0f }, shutdownTextureHandle, 0xFFFFFF05);
 			}
 
