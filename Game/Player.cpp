@@ -428,7 +428,7 @@ void Player::Draw() {
 
 		//予測ボックス
 		if (issYosoku_ && !field_->GetIsInGameOver()) {
-			TOMATOsEngine::DrawSpriteRectCenter({ dropIndex_.x * Field::kBlockSize + Field::kBlockSize / 2.0f,dropIndex_.y * Field::kBlockSize + Field::kBlockSize / 2.0f }, { Field::kBlockSize,Field::kBlockSize }, { 0.0f,0.0f }, { 32.0f,32.0f }, yosokuHandle_, yosokuColor_);
+			TOMATOsEngine::DrawSpriteRectCenter({ dropIndex_.x * Field::kBlockSize + Field::kBlockSize / 2.0f,dropIndex_.y * Field::kBlockSize + Field::kBlockSize / 2.0f }, { Field::kBlockSize,Field::kBlockSize }, { 0.0f,0.0f }, { 32.0f,32.0f }, yosokuHandle_, 0xFFFFFFFF);
 		}
 		SkillDraw();
 		// 円
