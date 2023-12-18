@@ -76,6 +76,9 @@ void Player::Initialize() {
 
 	sameHeightTextureHandle_ = TOMATOsEngine::LoadTexture("Resources/horizon.png");
 	stepTextureHandle_ = TOMATOsEngine::LoadTexture("Resources/stairs.png");
+
+	sameHeightInfo_.clear();
+	stepInfo_.clear();
 }
 
 void Player::Update() {
@@ -428,7 +431,9 @@ void Player::Draw() {
 
 		//予測ボックス
 		if (issYosoku_ && !field_->GetIsInGameOver()) {
-			TOMATOsEngine::DrawSpriteRectCenter({ dropIndex_.x * Field::kBlockSize + Field::kBlockSize / 2.0f,dropIndex_.y * Field::kBlockSize + Field::kBlockSize / 2.0f }, { Field::kBlockSize,Field::kBlockSize }, { 0.0f,0.0f }, { 32.0f,32.0f }, yosokuHandle_, yosokuColor_);
+			TOMATOsEngine::DrawSpriteRectCenter({ dropIndex_.x * Field::kBlockSize + Field::kBlockSize / 2.0f,dropIndex_.y * Field::kBlockSize + Field::kBlockSize / 2.0f }, { Field::kBlockSize,Field::kBlockSize }, { 0.0f,0.0f }, { 32.0f,32.0f }, yosokuHandle_, 0xFFFFFFFF);
+		}
+		if (!field_->GetIsInGameOver()) {
 			SkillDraw();
 		}
 		// 円
@@ -514,7 +519,7 @@ void Player::SkillUpdate() {
 		if (stepCount_ >= kCombo_) {
 			if (!stepInfo_.empty()) {
 				for (auto& step : stepInfo_) {
-					step.position.y += skillSize_.y * 0.5f+5.0f;
+					step.position.y += skillSize_.y * 0.5f + 5.0f;
 				}
 			}
 			if (!sameHeightInfo_.empty()) {
