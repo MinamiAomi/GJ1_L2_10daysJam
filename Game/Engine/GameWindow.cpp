@@ -68,6 +68,8 @@ void GameWindow::Initialize(const wchar_t* title, uint32_t clientWidth, uint32_t
     SetWindowLongPtr(hWnd_, GWLP_USERDATA, reinterpret_cast<LONG_PTR>(this));
 
        ShowWindow(hWnd_, SW_SHOW);
+
+       SetWindowText(hWnd_, L"AAAAA");
 }
 
 bool GameWindow::ProcessMessage() const {

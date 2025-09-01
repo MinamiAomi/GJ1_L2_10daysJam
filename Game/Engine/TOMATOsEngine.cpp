@@ -17,6 +17,8 @@
 #include "Audio/Audio.h"
 
 namespace {
+    const wchar_t kWindowTitle[] = L"BB";
+
     GameWindow* gameWindow = nullptr;
     RenderManager* renderManager = nullptr;
     TriangleRenderer* triangleRenderer = nullptr;
@@ -58,7 +60,7 @@ namespace TOMATOsEngine {
         assert(!audio);
 
         gameWindow = GameWindow::GetInstance();
-        gameWindow->Initialize(L"2006_BB", 1280, 720);
+        gameWindow->Initialize(kWindowTitle, 1280, 720);
 
         input = Input::GetInstance();
         input->Initialize(gameWindow->GetHWND());

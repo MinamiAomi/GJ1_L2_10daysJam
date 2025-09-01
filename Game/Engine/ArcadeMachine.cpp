@@ -22,10 +22,10 @@ void ArcadeMachine::Update() {
     if (input->IsKeyPressed(DIK_D) || input->IsKeyPressed(DIK_A) ||
         std::abs(xInputState.Gamepad.sThumbLX) > XINPUT_GAMEPAD_LEFT_THUMB_DEADZONE) {
         Quaternion diff;
-        if (input->IsKeyPressed(DIK_D) || xInputState.Gamepad.sThumbLX > 0) {
+        if (input->IsKeyPressed(DIK_D) || xInputState.Gamepad.sThumbLX > XINPUT_GAMEPAD_LEFT_THUMB_DEADZONE) {
             diff = Quaternion::MakeForZAxis(-30.0f * Math::ToRadian) * diff;
         }
-        if (input->IsKeyPressed(DIK_A) || xInputState.Gamepad.sThumbLX < 0) {
+        if (input->IsKeyPressed(DIK_A) || xInputState.Gamepad.sThumbLX < -XINPUT_GAMEPAD_LEFT_THUMB_DEADZONE) {
             diff = Quaternion::MakeForZAxis(30.0f * Math::ToRadian) * diff;
         }
 

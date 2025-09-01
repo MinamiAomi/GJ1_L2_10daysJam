@@ -24,7 +24,7 @@ namespace SamplerManager {
         desc.AddressW = D3D12_TEXTURE_ADDRESS_MODE_WRAP;
         desc.MipLODBias = D3D12_DEFAULT_MIP_LOD_BIAS;
         desc.MaxAnisotropy = D3D12_DEFAULT_MAX_ANISOTROPY;
-        desc.ComparisonFunc = D3D12_COMPARISON_FUNC_LESS_EQUAL;
+        desc.ComparisonFunc = D3D12_COMPARISON_FUNC_NONE;
         float borderColor[4] = { 0.0f,0.0f,0.0f,0.0f };
         memcpy(desc.BorderColor, borderColor, sizeof(desc.BorderColor));
         desc.MinLOD = 0.0f;
