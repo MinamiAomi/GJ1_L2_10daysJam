@@ -70,6 +70,15 @@ void Player::Initialize() {
 	isHorizontal_ = false;
 	isEndGameClearEasing_ = false;
 	gameClearMoveCoolTime_ = kGameClearMoveCoolTime_;
+	nowWeight_ = 0;
+
+	yosokuHandle_ = TOMATOsEngine::LoadTexture("Resources/yosoku.png");
+
+	sameHeightTextureHandle_ = TOMATOsEngine::LoadTexture("Resources/horizon.png");
+	stepTextureHandle_ = TOMATOsEngine::LoadTexture("Resources/stairs.png");
+
+	sameHeightInfo_.clear();
+	stepInfo_.clear();
 }
 
 void Player::Update() {
@@ -80,17 +89,22 @@ void Player::Update() {
 			move();
 
 			SetBlockColor(nowHeight_);
+
+			SkillUpdate();
 			// コンボ数によってエフェクト変化
 			if (stepCount_ == 1 || sameHeightCount_ == 1) {
 				particleManager_->GetFollow()->Create(position_, Vector4(1.0f, 1.0f, 1.0f, 1.0f), static_cast<uint32_t>(Follow::Texture::kPlayer));
-				particleManager_->GetYenLetter()->Create(position_, Vector4(1.0f, 1.0f, 1.0f, 0.8f), static_cast<uint32_t>(YenLetter::Texture::kWhite1x1));
-				particleManager_->GetYenLetter()->Create(position_, Vector4(1.0f, 1.0f, 1.0f, 0.8f), static_cast<uint32_t>(YenLetter::Texture::kWhite1x1), false);
+
+				particleManager_->GetYenLetter()->Create(position_, Color::HSVA(comboColorH_, 1.0f, 0.5f), static_cast<uint32_t>(YenLetter::Texture::kWhite1x1));
+				particleManager_->GetYenLetter()->Create(position_, Color::HSVA(comboColorH_, 1.0f, 0.5f), static_cast<uint32_t>(YenLetter::Texture::kWhite1x1), false);
+
 			}
 			else if (stepCount_ == 2 || sameHeightCount_ == 2) {
 				particleManager_->GetFollow()->Create(position_, Vector4(1.0f, 1.0f, 1.0f, 1.0f), static_cast<uint32_t>(Follow::Texture::kPlayer));
 				particleManager_->GetFollow()->Create(position_, Vector4(1.0f, 1.0f, 1.0f, 1.0f), static_cast<uint32_t>(Follow::Texture::kStar));
-				particleManager_->GetYenLetter()->Create(position_, Vector4(1.0f, 1.0f, 1.0f, 1.0f), static_cast<uint32_t>(YenLetter::Texture::kWhite1x1));
-				particleManager_->GetYenLetter()->Create(position_, Vector4(1.0f, 1.0f, 1.0f, 1.0f), static_cast<uint32_t>(YenLetter::Texture::kWhite1x1), false);
+
+				particleManager_->GetYenLetter()->Create(position_, Color::HSVA(comboColorH_, 1.0f, 0.8f), static_cast<uint32_t>(YenLetter::Texture::kWhite1x1));
+				particleManager_->GetYenLetter()->Create(position_, Color::HSVA(comboColorH_, 1.0f, 0.8f), static_cast<uint32_t>(YenLetter::Texture::kWhite1x1), false);
 			}
 			else if (stepCount_ == 0 || sameHeightCount_ == 0) {
 				particleManager_->GetFollow()->Create(position_, Vector4(1.0f, 1.0f, 1.0f, 0.5f), static_cast<uint32_t>(Follow::Texture::kPlayer));
@@ -375,6 +389,27 @@ void Player::move() {
 
 	//仮ポス代入
 	position_ = tempPosition;
+
+	issYosoku_ = false;
+
+	uint32_t blockMid = field_->CalcBlockIndexX(position_.x);
+
+	int rightHeightestIndex = field_->GetHeightestIndex(blockRight);
+	int leftHeightestIndex = field_->GetHeightestIndex(blockLeft);
+
+	if (rightHeightestIndex != -1 || leftHeightestIndex != -1) {
+		issYosoku_ = true;
+		if (rightHeightestIndex < leftHeightestIndex) {
+			dropIndex_ = { float(blockLeft) ,float(leftHeightestIndex) };
+		}
+		else if (leftHeightestIndex < rightHeightestIndex) {
+			dropIndex_ = { float(blockRight) ,float(rightHeightestIndex) };
+		}
+		else {
+			dropIndex_ = { float(blockMid) ,float(rightHeightestIndex) };
+		}
+	}
+
 }
 
 void Player::Draw() {
@@ -392,6 +427,14 @@ void Player::Draw() {
 		}
 		else {
 			TOMATOsEngine::DrawSpriteRect(rectMinPos, rectMaxPos, {}, Vector2(30.0f, 60.0f), textureHandle_, 0xFFFFFFFF);
+		}
+
+		//予測ボックス
+		if (issYosoku_ && !field_->GetIsInGameOver()) {
+			TOMATOsEngine::DrawSpriteRectCenter({ dropIndex_.x * Field::kBlockSize + Field::kBlockSize / 2.0f,dropIndex_.y * Field::kBlockSize + Field::kBlockSize / 2.0f }, { Field::kBlockSize,Field::kBlockSize }, { 0.0f,0.0f }, { 32.0f,32.0f }, yosokuHandle_, 0xFFFFFFFF);
+		}
+		if (!field_->GetIsInGameOver()) {
+			SkillDraw();
 		}
 		// 円
 		/*TOMATOsEngine::DrawCircle(sameHeightColorChangePositionRight_, 5.0f, 0x66666666);
@@ -471,6 +514,109 @@ void Player::GameClearUpdate() {
 
 }
 
+void Player::SkillUpdate() {
+	if (!isSkillSprite_) {
+		if (stepCount_ >= kCombo_) {
+			if (!stepInfo_.empty()) {
+				for (auto& step : stepInfo_) {
+					step.position.y += skillSize_.y * 0.5f + 5.0f;
+				}
+			}
+			if (!sameHeightInfo_.empty()) {
+				for (auto& sameHeight : sameHeightInfo_) {
+					sameHeight.position.y += skillSize_.y * 0.5f + 5.0f;
+				}
+			}
+			SpriteInfo info{};
+			info.position = {};
+			info.color = { 1.0f,1.0f,1.0f,1.0f };
+			info.time = 0.0f;
+			info.isAlive = true;
+			info.isAnimation = true;
+			stepInfo_.emplace_back(info);
+			isSkillSprite_ = true;
+		}
+		if (sameHeightCount_ >= kCombo_) {
+			if (!stepInfo_.empty()) {
+				for (auto& step : stepInfo_) {
+					step.position.y += skillSize_.y * 0.5f + 5.0f;
+				}
+			}
+			if (!sameHeightInfo_.empty()) {
+				for (auto& sameHeight : sameHeightInfo_) {
+					sameHeight.position.y += skillSize_.y * 0.5f + 5.0f;
+				}
+			}
+			SpriteInfo info{};
+			info.position = {};
+			info.color = { 1.0f,1.0f,1.0f,1.0f };
+			info.time = 0.0f;
+			info.isAlive = true;
+			info.isAnimation = true;
+			sameHeightInfo_.emplace_back(info);
+			isSkillSprite_ = true;
+		}
+
+	}
+
+	for (auto& step : stepInfo_) {
+		if (step.isAnimation) {
+			float t = step.time / kSkillAnimationTime_;
+			step.position.x = Math::Lerp(t, startSkillAnimationPos_.x, endSkillAnimationPos_.x);
+			step.position.y = Math::Lerp(t, startSkillAnimationPos_.y, endSkillAnimationPos_.y);
+			step.time += 1.0f;
+			if (step.time >= kSkillAnimationTime_) {
+				step.isAnimation = false;
+				step.time = 0.0f;
+				step.position = endSkillAnimationPos_;
+			}
+		}
+		else {
+			float t = step.time / kSkillColorTime_;
+			step.color.w = Math::Lerp(t, 1.0f, 0.0f);
+			step.time += 1.0f;
+			if (step.time >= kSkillColorTime_) {
+				step.isAlive = false;
+				step.time = 0.0f;
+			}
+		}
+	}
+	stepInfo_.erase(std::remove_if(stepInfo_.begin(), stepInfo_.end(),
+		[](const SpriteInfo& sprite) { return !sprite.isAlive; }), stepInfo_.end());
+	for (auto& sameHeight : sameHeightInfo_) {
+		if (sameHeight.isAnimation) {
+			float t = sameHeight.time / kSkillAnimationTime_;
+			sameHeight.position.x = Math::Lerp(t, startSkillAnimationPos_.x, endSkillAnimationPos_.x);
+			sameHeight.position.y = Math::Lerp(t, startSkillAnimationPos_.y, endSkillAnimationPos_.y);
+			sameHeight.time += 1.0f;
+			if (sameHeight.time >= kSkillAnimationTime_) {
+				sameHeight.isAnimation = false;
+				sameHeight.time = 0.0f;
+			}
+		}
+		else {
+			float t = sameHeight.time / kSkillColorTime_;
+			sameHeight.color.w = Math::Lerp(t, 1.0f, 0.0f);
+			sameHeight.time += 1.0f;
+			if (sameHeight.time >= kSkillColorTime_) {
+				sameHeight.isAlive = false;
+				sameHeight.time = 0.0f;
+			}
+		}
+	}
+	sameHeightInfo_.erase(std::remove_if(sameHeightInfo_.begin(), sameHeightInfo_.end(),
+		[](const SpriteInfo& sprite) { return !sprite.isAlive; }), sameHeightInfo_.end());
+}
+
+void Player::SkillDraw() {
+	for (auto& sameHeight : sameHeightInfo_) {
+		TOMATOsEngine::DrawSpriteRectAngle(sameHeight.position, skillSize_, { 0.5f,0.5f }, 0.0f, {}, { 128.0f,64.0f }, sameHeightTextureHandle_, Color::Convert(sameHeight.color));
+	}
+	for (auto& step : stepInfo_) {
+		TOMATOsEngine::DrawSpriteRectAngle(step.position, skillSize_, { 0.5f,0.5f }, 0.0f, {}, { 128.0f,64.0f }, stepTextureHandle_, Color::Convert(step.color));
+	}
+}
+
 void Player::ComboUpdate(float  floor, uint32_t blockIndexX, uint32_t blockIndexY) {
 	uint32_t x = blockIndexX;
 	x = 0;
@@ -481,6 +627,7 @@ void Player::ComboUpdate(float  floor, uint32_t blockIndexX, uint32_t blockIndex
 			step_ = blockIndexY;
 			if (step_ - 1 == preStep_) {
 				isComboed_ = false;
+				isSkillSprite_ = false;
 				stepCount_++;
 				comboDrawCount_ = 0;
 				isHorizontal_ = false;
@@ -492,6 +639,7 @@ void Player::ComboUpdate(float  floor, uint32_t blockIndexX, uint32_t blockIndex
 			else {
 				// 一コンボ目
 				isComboed_ = false;
+				isSkillSprite_ = false;
 				stepCount_ = 0;
 				comboDrawCount_ = 0;
 			}
@@ -517,10 +665,11 @@ void Player::ComboUpdate(float  floor, uint32_t blockIndexX, uint32_t blockIndex
 				// 一コンボ目
 				isDifferentX_ = true;
 				isComboed_ = false;
+				isSkillSprite_ = false;
 				sameHeightCount_ = 0;
 				comboDrawCount_ = 0;
 			}
-			if (isDifferentX_&&
+			if (isDifferentX_ &&
 				sameHeightX_ == preSameHeightX_) {
 				isDifferentX_ = false;
 			}
@@ -531,7 +680,7 @@ void Player::ComboUpdate(float  floor, uint32_t blockIndexX, uint32_t blockIndex
 			// 地面
 			isDifferentX_ = false;
 			size_t playHandle = TOMATOsEngine::PlayAudio(groundJumpSoundHandle_);
-			TOMATOsEngine::SetVolume(playHandle,0.8f);
+			TOMATOsEngine::SetVolume(playHandle, 0.8f);
 			stepCount_ = -1;
 			sameHeightCount_ = -1;
 		}
@@ -659,6 +808,7 @@ void Player::ComboDraw() {
 void Player::SetBlockColor(int32_t blockIndexY) {
 	// 色
 	field_->ColorClearBlock();
+	yosokuColor_ = 0xFFFFFFFF;
 	if (blockIndexY != -1) {
 		const float AddX = 40.0f;
 		if (sameHeightStart_) {
@@ -720,6 +870,7 @@ void Player::SetBlockColor(int32_t blockIndexY) {
 						}
 
 						field_->SetColorBlock(x, y, Color::HSVA(h_, kCombo3S_, kCombo3V_));
+						yosokuColor_ = Color::HSVA(h_, kCombo3S_, kCombo3V_);
 					}
 				}
 			}
@@ -730,10 +881,12 @@ void Player::SetBlockColor(int32_t blockIndexY) {
 					if (stepCount_ == 0) {
 						// 色
 						field_->SetColorBlock(x, static_cast<uint32_t>(blockIndexY + 1), Color::HSVA(stepColorH_, kCombo1S_, kCombo1V_));
+						yosokuColor_ = Color::HSVA(stepColorH_, kCombo1S_, kCombo1V_);
 					}
 					else if (stepCount_ == 1) {
 						// 色
 						field_->SetColorBlock(x, static_cast<uint32_t>(blockIndexY + 1), Color::HSVA(stepColorH_, kCombo2S_, kCombo2V_));
+						yosokuColor_ = Color::HSVA(stepColorH_, kCombo2S_, kCombo2V_);
 					}
 				}
 				// 平行
@@ -743,10 +896,12 @@ void Player::SetBlockColor(int32_t blockIndexY) {
 					if (sameHeightCount_ == 0) {
 						// 色
 						field_->SetColorBlock(x, static_cast<uint32_t>(blockIndexY), Color::HSVA(sameHeightColorH_, kCombo1S_, kCombo1V_));
+						yosokuColor_ = Color::HSVA(sameHeightColorH_, kCombo1S_, kCombo1V_);
 					}
 					else if (sameHeightCount_ == 1) {
 						// 色
 						field_->SetColorBlock(x, static_cast<uint32_t>(blockIndexY), Color::HSVA(sameHeightColorH_, kCombo2S_, kCombo2V_));
+						yosokuColor_ = Color::HSVA(sameHeightColorH_, kCombo2S_, kCombo2V_);
 					}
 				}
 			}
@@ -761,6 +916,7 @@ void Player::SetBlockColor(int32_t blockIndexY) {
 						}
 
 						field_->SetColorBlock(x, y, Color::HSVA(h_, kCombo3S_, kCombo3V_));
+						yosokuColor_ = Color::HSVA(h_, kCombo3S_, kCombo3V_);
 					}
 				}
 			}
@@ -780,6 +936,7 @@ void Player::SetBlockColor(int32_t blockIndexY) {
 							h_ = 0.0f;
 						}
 						field_->SetColorBlock(x, y, Color::HSVA(h_, kCombo3S_, kCombo3V_));
+						yosokuColor_ = Color::HSVA(h_, kCombo3S_, kCombo3V_);
 					}
 				}
 			}
